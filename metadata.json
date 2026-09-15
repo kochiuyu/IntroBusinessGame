@@ -1,0 +1,6 @@
+{
+  "name": "Strategic Thinking: Game Theory for Business Strategy",
+  "description": "Executive education platform and 12-week curriculum for applied game theory in business strategy, pricing, and market competition.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
