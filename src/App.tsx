@@ -28,7 +28,10 @@ import React, { useState, useEffect, useMemo } from "react";
         shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
         sparkles: <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />,
         x: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
-        printer: <><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></>
+        printer: <><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></>,
+        code: <><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></>,
+        gitBranch: <><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></>,
+        table: <><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></>
       };
 
       // Parse Tailwind width/height classes into explicit pixel dimensions for fallback safety
@@ -420,6 +423,84 @@ import React, { useState, useEffect, useMemo } from "react";
       ]
     };
 
+    const WEEK3_RECAP = {
+      weekId: 3,
+      title: "Course Recap: Games with Simultaneous Moves and Nash Equilibrium",
+      chineseTitle: "課堂精華回顧：同時博弈、納什均衡與寡頭競爭",
+      duration: "3 Hours • Quantitative Workshop & Case Lab",
+      markdownPath: "./recaps/week03-recap.md",
+      academicTakeaway: "In simultaneous moves, no player observes the other's choice before acting. Strategic stability requires that every player chooses their best response to the choices of everyone else.",
+      chineseTakeaway: "在同時博弈中，參與者在決策時無法預知對手的當前選擇。戰略穩定性要求每一位參與者的決策，都必須是對其他所有人決策的最佳回應（Best Response）。",
+      readTime: "9 min read • Executive Quantitative Synthesis",
+      intro: "Week 3 advances from sequential decisions into games with simultaneous moves, where executives must commit capital without observing competitor choices in real time. The session establishes the formal mathematics of best response functions, Iterated Elimination of Strictly Dominated Strategies (IESDS), the concept of strategic stability through Nash Equilibrium, the four archetypal 2x2 games, and the foundational oligopoly models of Cournot (quantity) and Bertrand (price) competition.",
+      sections: [
+        {
+          id: "w3-simultaneous-timing",
+          title: "The Nature of Simultaneous Moves",
+          chineseTitle: "同時博弈的本質：資訊不完全性而非鐘錶時間",
+          content: [
+            "In business decision-making, 'simultaneous' does not mean actions occur at the exact same second. Rather, it means that neither decision-maker observes the competitor's choice prior to committing resources.",
+            "Examples include sealed-bid tenders, corporate annual R&D allocations, Black Friday promotional pricing, and console hardware launch pricing. Because you cannot react, you must formulate rational beliefs about rival actions and optimize against those expectations."
+          ]
+        },
+        {
+          id: "w3-best-response-dominance",
+          title: "Best Responses & Strictly Dominated Strategies",
+          chineseTitle: "最佳回應函數與嚴格劣勢策略",
+          definition: "An action is player i's Best Response if it delivers the highest payoff given the rival's strategy: u_i(s_i*, s_{-i}) >= u_i(s_i, s_{-i}) for all available s_i.",
+          rule: "Strictly Dominated Strategy: An action that delivers strictly lower payoffs than some alternative under EVERY conceivable rival choice. Rational executives NEVER play strictly dominated strategies."
+        },
+        {
+          id: "w3-iesds",
+          title: "Iterated Elimination of Strictly Dominated Strategies (IESDS)",
+          chineseTitle: "嚴格劣勢策略的重複剔除（IESDS）",
+          content: [
+            "Pruning dominated actions reduces strategic noise. Rational players never play dominated moves, and knowing rivals are rational, you anticipate they will not play them either.",
+            "Theorem: IESDS never eliminates any Nash Equilibrium. When IESDS reduces a game to a unique outcome, the game is Dominance Solvable without requiring communication or trust."
+          ]
+        },
+        {
+          id: "w3-nash-eq",
+          title: "Nash Equilibrium & Strategic Stability",
+          chineseTitle: "納什均衡與自我履約的穩定性",
+          content: [
+            "A Nash Equilibrium is a state where each player's strategy is simultaneously a best response to the strategies chosen by everyone else. No player has a unilateral incentive to deviate.",
+            "Crucial Distinction: Strategic stability does NOT equal collective optimality. In the Prisoner's Dilemma, individually rational equilibrium produces mutual profit destruction."
+          ]
+        },
+        {
+          id: "w3-archetypes",
+          title: "The 4 Classic 2x2 Simultaneous Game Archetypes",
+          chineseTitle: "四大經典 2x2 同時博弈範式",
+          archetypes: [
+            { name: "Prisoner's Dilemma", eq: "1 Unique (Defect, Defect)", issue: "Pareto inefficient; price-war trap.", solution: "Binding contracts, repeated interaction." },
+            { name: "Coordination Game", eq: "2 Pure Eq on diagonal", issue: "Risk of miscoordination (0, 0).", solution: "Focal points (Schelling points), pre-announcements." },
+            { name: "Hawk-Dove / Chicken", eq: "2 Asymmetric Eq", issue: "Mutual aggression causes disaster.", solution: "Irreversible commitment to stand firm." },
+            { name: "Matching Pennies", eq: "0 Pure Strategy Eq", issue: "Cyclic incentives; pure conflict.", solution: "Mixed strategies (Week 4 deliberate randomization)." }
+          ]
+        },
+        {
+          id: "w3-cournot-bertrand",
+          title: "Oligopoly Competition: Cournot vs. Bertrand",
+          chineseTitle: "寡頭競爭模型：古諾（產量）vs. 伯川德（價格）",
+          comparison: [
+            {
+              model: "Cournot (Quantity / Capacity Competition)",
+              mechanism: "Firms choose output simultaneously; market price clears total supply.",
+              properties: "Quantities are strategic substitutes (rival expands -> you contract). Equilibrium price settles between monopoly and perfect competition.",
+              domain: "Heavy asset industries with long lead times (Aircraft assembly, wafer fab allocation, oil quotas)."
+            },
+            {
+              model: "Bertrand (Price Competition)",
+              mechanism: "Firms set prices simultaneously for homogeneous goods; lowest price captures 100% market.",
+              properties: "Bertrand Paradox: With only 2 firms, price collapses to Marginal Cost (P = MC), destroying all economic profit.",
+              domain: "Commoditized digital goods or retail. Executives escape through differentiation, capacity constraints, and switching costs."
+            }
+          ]
+        }
+      ]
+    };
+
     // --- Complete 12-Week Curriculum Data Architecture ---
     const CURRICULUM_DATA = [
       {
@@ -569,25 +650,68 @@ import React, { useState, useEffect, useMemo } from "react";
         id: 3,
         title: "Games with Simultaneous Moves & Nash Equilibrium",
         chineseTitle: "同時博弈與納什均衡分析",
-        status: "upcoming",
-        duration: "3 Hours • Quantitative Workshop",
+        status: "active",
+        duration: "3 Hours • Quantitative Workshop & Case Lab",
         preReadingUrl: "https://x.com/kochiuyu/status/2040209356831199262",
+        recap: WEEK3_RECAP,
         coreConcepts: [
-          "Nash Equilibrium in Pure Strategies",
+          "Simultaneous Decision-Making",
+          "Normal Form (Payoff Matrix) Representation",
           "Best Response Functions",
-          "Cournot vs. Bertrand Competition",
-          "Capacity Preemption & Price Sensitivity",
-          "Rationalizability & Iterative Elimination"
+          "Strict Dominance & IESDS Pruning",
+          "Nash Equilibrium & Strategic Stability",
+          "4 Classic 2x2 Archetypes (Dilemma, Coordination, Chicken, Matching Pennies)",
+          "Cournot (Quantity) vs. Bertrand (Price) Competition",
+          "The Bertrand Paradox & Escaping Price Traps"
         ],
         businessCases: [
-          "Airbus vs. Boeing (Wide-Body Commercial Capacity)",
-          "AMD vs. Intel (Semiconductor Fab Node Allocations)",
-          "OPEC+ Crude Oil Production Quotas & Cheating",
-          "Sony PlayStation vs. Microsoft Xbox Launch Pricing"
+          "Airbus vs. Boeing (Wide-Body Capacity Preemption)",
+          "Sony PlayStation vs. Microsoft Xbox Launch Pricing",
+          "OPEC+ Crude Oil Production Quotas & Cartel Cheating",
+          "EV Supercharging Standards: NACS vs. CCS Coordination War",
+          "Semiconductor Fab Node Allocations (TSMC vs. Samsung)"
         ],
         slidePath: "./slides/week03.pdf",
-        pageCount: 44,
-        upcomingNote: "Lecture slides, problem sets, and spreadsheet models will unlock after the Week 2 seminar session."
+        pageCount: 20,
+        executiveSummary: [
+          "Formulate Conjectures Before Action: In simultaneous competition, you cannot wait to see what rivals do. Model their best responses mathematically rather than assuming they will make convenient errors.",
+          "Prune Dominated Moves Systematically: Execute Iterated Elimination of Strictly Dominated Strategies (IESDS) to collapse complex multi-variable options into dominance-solvable solutions.",
+          "Compete on Capacity Rather than Homogeneous Price: In oligopolistic markets, competing in quantities (Cournot) preserves operating margins; competing purely in prices (Bertrand) triggers a race to marginal cost."
+        ],
+        caseAnalysis: {
+          title: "Airbus vs. Boeing: Wide-Body Capacity Allocation & Duopoly Preemption",
+          subtitle: "Cournot Competition & Capacity Commitment in Global Aviation",
+          scenario: "Airbus and Boeing are setting their annual wide-body production schedules (A350 vs. B787). The global commercial airline market can absorb 120 aircraft annually at premium lease yields ($8.0B profit each if both maintain Moderate Capacity). If one manufacturer unilaterally expands to High Capacity (80 aircraft) while the other stays Moderate (60 aircraft), the aggressive builder captures 65% market share ($10.0B profit) while the conservative builder suffers excess inventory ($2.0B profit). If both expand to High Capacity (160 total aircraft), oversupply depresses aircraft market prices, slashing profits to $4.0B each.",
+          matrix: {
+            player1: "Airbus",
+            player2: "Boeing",
+            actions: ["Moderate Capacity (60 Units)", "High Capacity (80 Units)"],
+            payoffs: [
+              [["$8.0B", "$8.0B"], ["$2.0B", "$10.0B"]],
+              [["$10.0B", "$2.0B"], ["$4.0B", "$4.0B"]]
+            ]
+          },
+          cellLabels: [
+            ["Joint Welfare Max", "Boeing Preempts"],
+            ["Airbus Preempts", "★ Nash Equilibrium"]
+          ],
+          cellDescriptions: [
+            [
+              "[Moderate, Moderate] — Joint Surplus Maximum ($8.0B, $8.0B): Both manufacturers exercise output discipline at 60 units each, sustaining high market lease yields. Total industry profit is maximized at $16.0B. However, this is NOT a Nash equilibrium: either manufacturer has an individual temptation to expand to 80 units to capture $10.0B.",
+              "[Moderate, High] — Asymmetric Expansion ($2.0B, $10.0B): Boeing preempts the delivery slots by expanding to 80 units, generating $10.0B while leaving Airbus under-scaled at $2.0B. Airbus's immediate rational best response is to expand to High Capacity as well, moving the game to ($4.0B, $4.0B)."
+            ],
+            [
+              "[High, Moderate] — Asymmetric Expansion ($10.0B, $2.0B): Airbus scales assembly lines to 80 units ($10.0B) while Boeing remains passive at 60 units ($2.0B). Boeing's rational best response is to retaliate with High Capacity, shifting the outcome to ($4.0B, $4.0B).",
+              "[High, High] — Nash Equilibrium in Strictly Dominant Strategies ($4.0B, $4.0B): High Capacity is a strictly dominant strategy for both Airbus and Boeing ($10B > $8B; $4B > $2B). The commercial market becomes saturated with 160 aircraft, cutting profit in half and destroying $8.0B in cumulative industry surplus."
+            ]
+          ],
+          prompt: "As Senior Vice President of Strategic Planning at Airbus, explain why High Capacity is your strictly dominant strategy, and what contractual or signaling mechanisms could credibly prevent mutual overcapacity in global aerospace.",
+          solution: {
+            equilibrium: "Nash Equilibrium in Strictly Dominant Strategies: [High Capacity, High Capacity] ($4.0B, $4.0B)",
+            breakdown: "Regardless of whether Boeing selects Moderate or High capacity, Airbus earns strictly higher profit with High ($10.0B > $8.0B if Boeing is Moderate; $4.0B > $2.0B if Boeing is High). High Capacity is strictly dominant for both firms. Individual rationality forces the duopoly into [High, High], destroying $8.0B in joint industry surplus compared to the collusive outcome ($8.0B, $8.0B).",
+            managerialTakeaway: "To escape destructive capacity flooding, leading aerospace duopolists utilize long-term customer purchase commitments with severe cancellation penalties, transparent multi-year order backlogs, and multi-sourced component bottlenecks (e.g. CFM International and Rolls-Royce jet engines) that act as natural capacity governors."
+          }
+        }
       },
       {
         id: 4,
@@ -928,6 +1052,54 @@ import React, { useState, useEffect, useMemo } from "react";
         ],
         correctIndex: 0,
         rationale: "In game theory, an action is a specific choice at one decision point, whereas a strategy is a complete contingent plan for every node where a player might act. Furthermore, waiting (second-mover) is advantageous when demand uncertainty and technological bugs are high, allowing the follower to learn from the pioneer's costly mistakes."
+      },
+      {
+        id: "q7",
+        weekId: 3,
+        weekTag: "Week 3: Simultaneous Moves & Best Response",
+        title: "Commercial Aircraft Capacity Preemption (Airbus vs. Boeing)",
+        scenario: "Airbus and Boeing are setting wide-body production schedules simultaneously without observing the other's assembly rate. If both maintain Moderate Capacity (60 aircraft), each earns $8.0B profit. If one expands to High Capacity (80 aircraft) while the other stays Moderate, the aggressive builder captures $10.0B while the conservative builder suffers excess inventory ($2.0B). If both expand to High Capacity, market oversupply slashes profits to $4.0B each.",
+        question: "What is the strategic nature of the High Capacity action for Airbus, and what market equilibrium will emerge if both firms maximize independent shareholder returns?",
+        options: [
+          "High Capacity is Airbus's strictly dominated strategy; the equilibrium is [Moderate, Moderate] ($8.0B, $8.0B).",
+          "High Capacity is Airbus's strictly dominant strategy; both firms choose High Capacity, reaching the unique Nash Equilibrium [High, High] ($4.0B, $4.0B).",
+          "There is no pure strategy Nash equilibrium because capacity games require continuous price randomization.",
+          "Airbus will select Moderate Capacity because duopolists always cooperate tacitly in simultaneous moves."
+        ],
+        correctIndex: 1,
+        rationale: "For Airbus: If Boeing is Moderate, High yields $10B vs $8B. If Boeing is High, High yields $4B vs $2B. High Capacity is strictly dominant regardless of Boeing's choice. By symmetry, the same holds for Boeing. Both select High Capacity, landing at the Nash equilibrium [High, High] ($4.0B, $4.0B) — demonstrating how individual rationality can cut duopoly profits in half."
+      },
+      {
+        id: "q8",
+        weekId: 3,
+        weekTag: "Week 3: IESDS & Dominance Solvability",
+        title: "Iterated Elimination of Strictly Dominated Strategies (IESDS)",
+        scenario: "An executive strategy committee is evaluating a multi-product entry matrix against an aggressive regional rival. Before calculating complex mixed probabilities, the Chief Strategy Officer proposes using Iterated Elimination of Strictly Dominated Strategies (IESDS) to simplify the game tree.",
+        question: "Which of the following represents a mathematically guaranteed property of the IESDS algorithm?",
+        options: [
+          "IESDS can inadvertently eliminate true Nash Equilibria if the wrong player's dominated moves are deleted first.",
+          "IESDS only works on zero-sum games and is inapplicable to corporate business strategy.",
+          "IESDS never eliminates any Nash Equilibrium; furthermore, if IESDS reduces the game to a single profile, that outcome is the unique, predictable Nash Equilibrium.",
+          "IESDS requires both firms to legally sign an agreement disclosing their internal cost functions prior to analysis."
+        ],
+        correctIndex: 2,
+        rationale: "A foundational theorem of game theory states that strictly dominated strategies cannot be part of any Nash Equilibrium (pure or mixed). Therefore, iterated elimination never removes any true equilibrium. When a game is dominance solvable, the surviving profile is the unique, stable Nash equilibrium."
+      },
+      {
+        id: "q9",
+        weekId: 3,
+        weekTag: "Week 3: Cournot vs. Bertrand Competition",
+        title: "The Bertrand Paradox in Price Competition",
+        scenario: "Two tech platforms sell identical cloud storage subscriptions with constant marginal cost MC = $10/user/year. They choose prices simultaneously in an unconstrained market where price-sensitive customers switch entirely to whichever platform is even one cent cheaper.",
+        question: "What does the Bertrand duopoly model predict regarding equilibrium price and profit, and how do successful executives escape this trap?",
+        options: [
+          "Both firms price at monopoly levels ($100/user) and split the market 50-50 without antitrust scrutiny.",
+          "Prices collapse to marginal cost (P = $10), yielding zero economic profit; executives escape via differentiation, capacity limits, and switching costs.",
+          "Both firms alternate pricing high and low each quarter in a guaranteed cyclic cooperative equilibrium.",
+          "Price settles halfway between marginal cost and monopoly price because duopolies always share surplus evenly."
+        ],
+        correctIndex: 1,
+        rationale: "The classic Bertrand Paradox proves that with homogeneous goods and simultaneous price competition, the unilateral incentive to undercut forces equilibrium price down to marginal cost (P* = MC = $10), wiping out all economic profit despite having only two competitors. High-performing executives escape the trap through product differentiation, capacity constraints, customer switching costs, and brand equity."
       }
     ];
 
@@ -946,32 +1118,49 @@ import React, { useState, useEffect, useMemo } from "react";
     // --- Curated Reference Tools & Mini-Games ---
     const REFERENCE_TOOLS = [
       {
+        id: "gametikz",
+        title: "GameTikzStudio: Game Tree, Payoff Matrix & Timeline Generator",
+        type: "Interactive Tool & TikZ Export",
+        url: "https://kochiuyu.github.io/GameTikzStudio/",
+        description: "Official visual authoring studio developed by Prof. Chiu Yu Ko. Interactively construct extensive-form game trees with information sets, normal-form payoff matrices, and sequential event timelines with instant LaTeX TikZ code generation.",
+        badge: "Official Authoring Suite",
+        isLab: true
+      },
+      {
+        id: "dote3090",
         title: "DOTE 3090: Strategic Interactive Simulations",
         type: "Interactive Tool",
         url: "https://kochiuyu.github.io/dote3090/",
         description: "Official interactive behavioral game theory simulator suite developed by Prof. Chiu Yu Ko. Test real-time bargaining, beauty contests, and repeated dilemmas.",
-        badge: "Curriculum Highlight"
+        badge: "Curriculum Highlight",
+        isLab: true
       },
       {
+        id: "pd_video",
         title: "The Prisoner's Dilemma in Oligopolistic Markets",
         type: "Video Case",
         url: "https://www.youtube.com/results?search_query=Prisoner%27s+Dilemma+Business+Strategy+Game+Theory",
         description: "Managerial exploration of how duopolies destroy margin through simultaneous discounting, and structural fixes through brand and warranty design.",
-        badge: "Core Video"
+        badge: "Core Video",
+        isLab: false
       },
       {
+        id: "bertrand_video",
         title: "Price Wars & Bertrand Paradox Escalation",
         type: "Video Case",
         url: "https://www.youtube.com/results?search_query=Bertrand+Paradox+Price+Wars+Game+Theory",
         description: "Why two identical firms competing on price can drive economic profits to zero, and how differentiated features restore pricing power.",
-        badge: "Case Video"
+        badge: "Case Video",
+        isLab: false
       },
       {
+        id: "ultimatum_video",
         title: "Ultimatum Bargaining & Strategic BATNA",
         type: "Video Case",
         url: "https://www.youtube.com/results?search_query=Ultimatum+Game+Negotiation+BATNA+Strategy",
         description: "Executive negotiations: how emotional fairness thresholds, outside options, and delay costs shift surplus distribution in M&A deals.",
-        badge: "Executive Seminar"
+        badge: "Executive Seminar",
+        isLab: false
       }
     ];
 
@@ -1535,6 +1724,332 @@ import React, { useState, useEffect, useMemo } from "react";
         </div>
       );
     }
+
+    // ==========================================
+    // GAMETIKZSTUDIO INTERACTIVE VIEW COMPONENT
+    // ==========================================
+    function GameTikzStudioView({ onNavigateTab }) {
+      const [iframeKey, setIframeKey] = useState(0);
+      const [copiedId, setCopiedId] = useState(null);
+      const [activeSnippetTab, setActiveSnippetTab] = useState("tree");
+
+      const handleCopy = (id, text) => {
+        try {
+          navigator.clipboard.writeText(text);
+          setCopiedId(id);
+          setTimeout(() => setCopiedId(null), 2500);
+        } catch (e) {
+          console.error("Clipboard copy failed:", e);
+        }
+      };
+
+      const TIKZ_TEMPLATES = {
+        tree: {
+          title: "Extensive Form Game Tree",
+          description: "Subgame perfect equilibrium in an Incumbent vs. Entrant entry game with terminal payoffs.",
+          code: `% \\usepackage{tikz} in preamble
+\\begin{tikzpicture}[scale=1.4, font=\\small,
+  node/.style={circle, fill=black, inner sep=1.5pt},
+  payoff/.style={text=black, font=\\footnotesize}
+]
+  % Initial Node (Player 1: Entrant)
+  \\node[node, label=above:{\\textbf{Entrant}}] (root) at (0, 0) {};
+
+  % Decision Branches
+  \\node[node, label=above:{\\textbf{Incumbent}}] (incumbent) at (2.5, 1) {};
+  \\node[payoff, label=right:{$(0, 10)$}] (stay_out) at (2.5, -1) {};
+
+  % Terminal Nodes
+  \\node[payoff, label=right:{$(2, 3)$}] (accommodate) at (5, 1.8) {};
+  \\node[payoff, label=right:{$(-1, -1)$}] (fight) at (5, 0.2) {};
+
+  % Edges with Action Labels
+  \\draw[thick, ->] (root) -- (incumbent) node[midway, above left] {Enter};
+  \\draw[thick, ->] (root) -- (stay_out) node[midway, below left] {Stay Out};
+  
+  % Highlighted Subgame Perfect Path
+  \\draw[very thick, red, ->] (incumbent) -- (accommodate) node[midway, above left, text=red] {Accommodate*};
+  \\draw[thick, dashed, ->] (incumbent) -- (fight) node[midway, below left] {Price War};
+\\end{tikzpicture}`
+        },
+        matrix: {
+          title: "2x2 Normal Form Payoff Matrix",
+          description: "Oligopoly pricing dilemma formatted as a clean TikZ bimatrix game with best response markings.",
+          code: `% \\usepackage{tikz} in preamble
+\\begin{tikzpicture}[scale=1.2]
+  % Matrix grid & border
+  \\draw[thick] (0,0) grid (4,4);
+  \\draw[thick] (0,2) -- (4,2);
+  \\draw[thick] (2,0) -- (2,4);
+
+  % Player Labels
+  \\node[above] at (2, 4.3) {\\textbf{Firm B (Column Player)}};
+  \\node[left, rotate=90] at (-0.6, 2) {\\textbf{Firm A (Row Player)}};
+
+  % Action Labels
+  \\node[above] at (1, 4) {Maintain High Price};
+  \\node[above] at (3, 4) {Discount / Cut};
+  \\node[left] at (0, 3) {High Price};
+  \\node[left] at (0, 1) {Discount};
+
+  % Payoff Cells (Firm A, Firm B)
+  \\node at (1, 3) {$(10, 10)$};
+  \\node at (3, 3) {$(-2, \\underline{15})$};
+  \\node at (1, 1) {$(\\underline{15}, -2)$};
+  \\node at (3, 1) {\\textbf{$(\\underline{2}, \\underline{2})^*$}};
+\\end{tikzpicture}`
+        },
+        timeline: {
+          title: "Strategic Event Timeline",
+          description: "Multi-stage sequential game showing commitment milestones, rival observation, and market pricing.",
+          code: `% \\usepackage{tikz} in preamble
+\\begin{tikzpicture}[xscale=2.2, font=\\small]
+  % Horizontal timeline axis
+  \\draw[thick, ->] (0,0) -- (4.5,0) node[right] {\\textbf{Time $t$}};
+
+  % Stage ticks & nodes
+  \\foreach \\x/\\t/\\label in {
+    0.5/t=0/Irreversible Capex Investment,
+    2.0/t=1/Market Demand Shock Revealed,
+    3.5/t=2/Simultaneous Price Competition
+  } {
+    \\draw[thick] (\\x, 0.15) -- (\\x, -0.15);
+    \\node[below=5pt, align=center] at (\\x, 0) {\\textbf{\\t} \\\\[2pt] \\footnotesize \\label};
+  }
+
+  % Annotations
+  \\draw[<->, dashed, blue] (0.5, 0.8) -- (2.0, 0.8) node[midway, above] {Commitment Horizon};
+  \\draw[<->, dashed, purple] (2.0, 0.8) -- (3.5, 0.8) node[midway, above] {Information State};
+\\end{tikzpicture}`
+        }
+      };
+
+      return (
+        <div className="space-y-8 animate-fadeIn max-w-6xl mx-auto">
+          {/* Hero Banner */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 border border-purple-700/50 p-6 sm:p-8 shadow-xl">
+            <div className="relative z-10">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-xs font-semibold">
+                  <Icon name="gitBranch" className="w-3.5 h-3.5 text-purple-400" />
+                  Official Visual Authoring Suite • Created by Prof. Chiu Yu Ko
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIframeKey((prev) => prev + 1)}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition-colors"
+                    title="Reload Embedded Studio"
+                  >
+                    <Icon name="refresh" className="w-3.5 h-3.5 text-slate-400" />
+                    Reload Canvas
+                  </button>
+                  <a
+                    href="https://kochiuyu.github.io/GameTikzStudio/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3.5 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-md shadow-purple-600/30 flex items-center gap-1.5 transition-all"
+                  >
+                    <span>Fullscreen in New Tab</span>
+                    <Icon name="externalLink" className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
+                GameTikzStudio — Game Tree, Payoff Matrix & Timeline Generator
+              </h2>
+              <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+                Design formal game theoretic diagrams interactively in your browser. Whether you need extensive-form decision trees with imperfect information sets, normal-form strategic bimatrices, or multi-period sequential timelines, GameTikzStudio instantly generates publication-ready TikZ LaTeX code for research papers, executive slides, and Beamer presentations.
+              </p>
+
+              {/* Feature Capabilities Pills */}
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/30">
+                    <Icon name="gitBranch" className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white">Extensive Form Game Trees</h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Decision nodes, action branches, information sets, and backward induction payoffs.</p>
+                  </div>
+                </div>
+
+                <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/30">
+                    <Icon name="table" className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white">Normal Form Payoff Matrices</h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5">2x2 and NxM strategic bimatrices, payoff vectors, and Nash equilibrium highlights.</p>
+                  </div>
+                </div>
+
+                <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                    <Icon name="clock" className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white">Multi-Stage Timelines</h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Sequential stages t=0,1,2..., commitment gates, and information arrival milestones.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-600/15 via-transparent to-transparent pointer-events-none" />
+          </div>
+
+          {/* Embedded Studio Canvas Container */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+            {/* Top Bar with URL & Controls */}
+            <div className="px-4 py-3 bg-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className="font-mono text-slate-400 text-[11px]">Studio Service:</span>
+                <a
+                  href="https://kochiuyu.github.io/GameTikzStudio/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-mono text-purple-400 hover:text-purple-300 underline font-semibold flex items-center gap-1"
+                >
+                  https://kochiuyu.github.io/GameTikzStudio/
+                  <Icon name="externalLink" className="w-3 h-3 inline" />
+                </a>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-slate-500 hidden sm:inline">
+                  Visual Diagramming Canvas • Instant TikZ LaTeX Export
+                </span>
+                <a
+                  href="https://kochiuyu.github.io/GameTikzStudio/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-md text-xs font-medium flex items-center gap-1 transition-colors"
+                >
+                  <Icon name="externalLink" className="w-3 h-3 text-purple-400" />
+                  Open in New Window
+                </a>
+              </div>
+            </div>
+
+            {/* Embedded Iframe */}
+            <div className="relative w-full bg-slate-950 min-h-[750px] sm:min-h-[850px]">
+              <iframe
+                key={iframeKey}
+                src="https://kochiuyu.github.io/GameTikzStudio/"
+                title="GameTikzStudio - Game Tree, Payoff Matrix & Timeline Generator"
+                className="w-full h-[750px] sm:h-[850px] border-0"
+                allow="clipboard-write; clipboard-read"
+              />
+            </div>
+
+            {/* Bottom Footer Note */}
+            <div className="px-4 py-3 bg-slate-950/80 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
+              <div className="flex items-center gap-2">
+                <Icon name="lightbulb" className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>
+                  Tip: Copy the generated TikZ code from GameTikzStudio and paste directly into your Overleaf or LaTeX document with <code className="text-purple-300 font-mono bg-slate-900 px-1 py-0.5 rounded">\usepackage&#123;tikz&#125;</code>.
+                </span>
+              </div>
+              <a
+                href="https://kochiuyu.github.io/GameTikzStudio/"
+                target="_blank"
+                rel="noreferrer"
+                className="text-purple-400 hover:text-purple-300 font-semibold underline shrink-0"
+              >
+                Go to Dedicated Page →
+              </a>
+            </div>
+          </div>
+
+          {/* Quick-Start TikZ LaTeX Templates Gallery */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-slate-800">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                  <Icon name="code" className="w-5 h-5 text-purple-400" />
+                  Ready-to-Use LaTeX TikZ Starter Code
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Quick reference examples generated with GameTikzStudio. Easily copy and paste into Overleaf or Beamer decks.
+                </p>
+              </div>
+
+              {/* Template Selector Pills */}
+              <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                <button
+                  onClick={() => setActiveSnippetTab("tree")}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                    activeSnippetTab === "tree"
+                      ? "bg-purple-600 text-white shadow-sm"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Icon name="gitBranch" className="w-3.5 h-3.5" />
+                  Game Tree
+                </button>
+                <button
+                  onClick={() => setActiveSnippetTab("matrix")}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                    activeSnippetTab === "matrix"
+                      ? "bg-purple-600 text-white shadow-sm"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Icon name="table" className="w-3.5 h-3.5" />
+                  Payoff Matrix
+                </button>
+                <button
+                  onClick={() => setActiveSnippetTab("timeline")}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                    activeSnippetTab === "timeline"
+                      ? "bg-purple-600 text-white shadow-sm"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Icon name="clock" className="w-3.5 h-3.5" />
+                  Timeline
+                </button>
+              </div>
+            </div>
+
+            {/* Active Code Display */}
+            {TIKZ_TEMPLATES[activeSnippetTab] && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <div>
+                    <span className="font-bold text-slate-200">{TIKZ_TEMPLATES[activeSnippetTab].title}</span>
+                    <span className="text-slate-500 mx-1.5">•</span>
+                    <span className="text-slate-400">{TIKZ_TEMPLATES[activeSnippetTab].description}</span>
+                  </div>
+                  <button
+                    onClick={() => handleCopy(activeSnippetTab, TIKZ_TEMPLATES[activeSnippetTab].code)}
+                    className="px-3 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 font-semibold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+                  >
+                    {copiedId === activeSnippetTab ? (
+                      <>
+                        <Icon name="check" className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-300">Copied to Clipboard!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="save" className="w-3.5 h-3.5" />
+                        <span>Copy TikZ Code</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="relative">
+                  <pre className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono text-purple-200 overflow-x-auto leading-relaxed max-h-72">
+                    {TIKZ_TEMPLATES[activeSnippetTab].code}
+                  </pre>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
     function App() {
       // --- Persistent State Hooks ---
       const [completedWeeks, setCompletedWeeks] = useState(() => {
@@ -1598,6 +2113,8 @@ import React, { useState, useEffect, useMemo } from "react";
       const [copiedRecap, setCopiedRecap] = useState(false);
       const [embeddedSlideMode, setEmbeddedSlideMode] = useState(false);
       const [caseCellSelected, setCaseCellSelected] = useState([1, 1]);
+      const [activeArchetypeWeek3, setActiveArchetypeWeek3] = useState(0);
+      const [activeCournotTabWeek3, setActiveCournotTabWeek3] = useState(0);
 
       const openWeekRecap = (weekId) => {
         setSelectedWeekId(weekId);
@@ -1644,7 +2161,7 @@ import React, { useState, useEffect, useMemo } from "react";
 
       // --- Calculated Metrics ---
       const activeModulesCompletedCount = useMemo(() => {
-        const activeIds = [0, 1, 2];
+        const activeIds = CURRICULUM_DATA.filter(w => w.status === "active").map(w => w.id);
         return activeIds.filter(id => completedWeeks.includes(id)).length;
       }, [completedWeeks]);
 
@@ -1820,6 +2337,21 @@ import React, { useState, useEffect, useMemo } from "react";
                   <Icon name="sparkles" className="w-4 h-4" />
                   Simulations & Tools
                 </button>
+
+                <button
+                  onClick={() => setActiveTab("gametikz")}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                    activeTab === "gametikz"
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30 ring-1 ring-purple-400/40"
+                      : "text-purple-300 hover:text-white hover:bg-purple-950/40 border border-purple-800/40"
+                  }`}
+                >
+                  <Icon name="gitBranch" className="w-4 h-4 text-purple-400" />
+                  GameTikz Studio
+                  <span className="ml-1 px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 text-[10px] font-mono border border-purple-500/30">
+                    TikZ
+                  </span>
+                </button>
               </div>
             </div>
           </header>
@@ -1874,6 +2406,13 @@ import React, { useState, useEffect, useMemo } from "react";
                         <Icon name="externalLink" className="w-4 h-4 text-emerald-400" />
                         Launch DOTE 3090 Simulator
                       </a>
+                      <button
+                        onClick={() => setActiveTab("gametikz")}
+                        className="px-4 py-2 bg-gradient-to-r from-purple-950/70 to-indigo-950/70 hover:from-purple-900/90 hover:to-indigo-900/90 text-purple-200 border border-purple-700/60 font-semibold rounded-lg text-xs sm:text-sm transition-all flex items-center gap-2 shadow-sm"
+                      >
+                        <Icon name="gitBranch" className="w-4 h-4 text-purple-400" />
+                        GameTikz Studio (Trees & Matrices)
+                      </button>
                     </div>
                   </div>
                   <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none" />
@@ -1891,10 +2430,10 @@ import React, { useState, useEffect, useMemo } from "react";
                     </div>
                     <div className="mt-3 flex items-baseline gap-2">
                       <span className="text-2xl sm:text-3xl font-black text-white font-mono">
-                        {activeModulesCompletedCount} <span className="text-slate-500 text-lg font-normal">/ 3</span>
+                        {activeModulesCompletedCount} <span className="text-slate-500 text-lg font-normal">/ {CURRICULUM_DATA.filter(w => w.status === "active").length}</span>
                       </span>
                       <span className="text-xs text-emerald-400 font-semibold">
-                        ({Math.round((activeModulesCompletedCount / 3) * 100)}% active)
+                        ({Math.round((activeModulesCompletedCount / (CURRICULUM_DATA.filter(w => w.status === "active").length || 1)) * 100)}% active)
                       </span>
                     </div>
                     <p className="mt-1 text-xs text-slate-400">
@@ -1903,7 +2442,7 @@ import React, { useState, useEffect, useMemo } from "react";
                     <div className="mt-3 w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
                       <div
                         className="bg-emerald-500 h-full rounded-full transition-all duration-500"
-                        style={{ width: `${(activeModulesCompletedCount / 3) * 100}%` }}
+                        style={{ width: `${(activeModulesCompletedCount / (CURRICULUM_DATA.filter(w => w.status === "active").length || 1)) * 100}%` }}
                       />
                     </div>
                   </div>
@@ -2108,7 +2647,7 @@ import React, { useState, useEffect, useMemo } from "react";
                   </div>
                 </div>
 
-                {/* Featured Course Recaps Showcase (Weeks 1 & 2) */}
+                {/* Featured Course Recaps Showcase (Weeks 0, 1, 2 & 3) */}
                 <div className="bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-6 shadow-sm">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 border-b border-slate-800">
                     <div>
@@ -2129,12 +2668,12 @@ import React, { useState, useEffect, useMemo } from "react";
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-slate-400">Available:</span>
                       <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-mono font-bold">
-                        WEEKS 0, 1 & 2 READY
+                        WEEKS 0, 1, 2 & 3 READY
                       </span>
                     </div>
                   </div>
 
-                  <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-5">
+                  <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                     {/* Week 0 Recap Card */}
                     <div className="bg-slate-950/70 border border-slate-800 hover:border-indigo-500/50 rounded-xl p-5 flex flex-col justify-between transition-all group">
                       <div>
@@ -2303,6 +2842,65 @@ import React, { useState, useEffect, useMemo } from "react";
                         <a
                           href="./recaps/week02-recap.md"
                           download="week02-recap.md"
+                          className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-mono flex items-center gap-1 border border-slate-700 transition-all"
+                          title="Download Markdown summary"
+                        >
+                          <Icon name="download" className="w-3.5 h-3.5" />
+                          .md
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Week 3 Recap Card */}
+                    <div className="bg-slate-950/70 border border-slate-800 hover:border-indigo-500/50 rounded-xl p-5 flex flex-col justify-between transition-all group">
+                      <div>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-600/30 text-indigo-300 border border-indigo-600/40 font-bold">
+                            WEEK 03 RECAP • 9 MIN READ
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-mono">./recaps/week03-recap.md</span>
+                        </div>
+                        <h4 className="text-base font-bold text-white mt-2 group-hover:text-indigo-300 transition-colors">
+                          {WEEK3_RECAP.title}
+                        </h4>
+                        <p className="text-xs text-indigo-300/80 font-medium mt-0.5">
+                          {WEEK3_RECAP.chineseTitle}
+                        </p>
+
+                        {/* Professor Quote */}
+                        <div className="mt-3 p-3 rounded-lg bg-indigo-950/30 border border-indigo-800/40 relative">
+                          <span className="text-indigo-400 text-xs font-mono font-bold uppercase tracking-wider block mb-1">
+                            Academic Takeaway:
+                          </span>
+                          <p className="text-xs text-indigo-100 italic leading-relaxed">
+                            "{WEEK3_RECAP.academicTakeaway}"
+                          </p>
+                        </div>
+
+                        {/* Topics & Concepts */}
+                        <div className="mt-3">
+                          <p className="text-[11px] font-semibold text-slate-400 mb-1.5">Key Methodologies & Frameworks:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {["Simultaneous Moves", "Payoff Matrix", "Best Responses", "IESDS Elimination", "Nash Equilibrium", "4 Classic Archetypes", "Cournot vs Bertrand", "Bertrand Paradox"].map((c, i) => (
+                              <span key={i} className="text-[10px] bg-slate-900 text-slate-300 px-2 py-0.5 rounded border border-slate-800">
+                                {c}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                        <button
+                          onClick={() => openWeekRecap(3)}
+                          className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
+                        >
+                          <span>Read Full Lecture Recap</span>
+                          <Icon name="chevronRight" className="w-3.5 h-3.5" />
+                        </button>
+                        <a
+                          href="./recaps/week03-recap.md"
+                          download="week03-recap.md"
                           className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-mono flex items-center gap-1 border border-slate-700 transition-all"
                           title="Download Markdown summary"
                         >
@@ -3306,14 +3904,24 @@ import React, { useState, useEffect, useMemo } from "react";
 
                               {/* 2. Interactive Backward Induction Solver */}
                               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 02</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    Interactive Backward Induction Algorithm (向後歸納法解析器)
-                                  </h3>
-                                  <p className="text-xs text-slate-400">
-                                    Step through the market entry game tree to identify the subgame-perfect equilibrium.
-                                  </p>
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-800 pb-3 mb-4">
+                                  <div>
+                                    <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 02</span>
+                                    <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
+                                      Interactive Backward Induction Algorithm (向後歸納法解析器)
+                                    </h3>
+                                    <p className="text-xs text-slate-400">
+                                      Step through the market entry game tree to identify the subgame-perfect equilibrium.
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() => setActiveTab("gametikz")}
+                                    className="self-start sm:self-auto px-3 py-1.5 rounded-lg bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 border border-purple-800/60 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
+                                    title="Open GameTikzStudio to draw custom extensive form game trees"
+                                  >
+                                    <Icon name="gitBranch" className="w-3.5 h-3.5 text-purple-400" />
+                                    <span>Draw Trees in GameTikzStudio</span>
+                                  </button>
                                 </div>
 
                                 {/* Step Selector Pills */}
@@ -3466,6 +4074,371 @@ import React, { useState, useEffect, useMemo } from "react";
                                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                                   Game theoretic models are not designed to capture every detail of reality. Instead, like an architectural blueprint or transit map, they isolate key variables (timing, payoff asymmetry, informational transparency) to reveal counter-intuitive strategic realities that intuition alone would miss.
                                 </p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* WEEK 3 RECAP SECTIONS */}
+                          {selectedWeek.id === 3 && (
+                            <div className="space-y-6">
+                              {/* 1. Simultaneous Timing & Best Response Functions */}
+                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                                <div className="border-b border-slate-800 pb-3 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                  <div>
+                                    <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 01</span>
+                                    <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
+                                      Simultaneous Decision Timing & Best Response Functions (最佳回應函數)
+                                    </h3>
+                                    <p className="text-xs text-slate-400">
+                                      Formulating rational beliefs when actions are chosen without observing competitor choices.
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() => setActiveTab("gametikz")}
+                                    className="self-start sm:self-auto px-3 py-1.5 rounded-lg bg-indigo-950/60 hover:bg-indigo-900/80 text-indigo-300 border border-indigo-700/50 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                                  >
+                                    <Icon name="table" className="w-3.5 h-3.5 text-indigo-400" />
+                                    <span>Draw Matrix in GameTikzStudio</span>
+                                  </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                                    <div className="flex items-center gap-2">
+                                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                                      <h4 className="text-xs sm:text-sm font-bold text-white">What 'Simultaneous' Means in Business:</h4>
+                                    </div>
+                                    <p className="text-xs text-slate-300 leading-relaxed">
+                                      It does not mean clocks tick simultaneously. It means <strong className="text-white">neither firm can observe the rival's decision prior to committing its own capital</strong>.
+                                    </p>
+                                    <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-400 font-mono">
+                                      Examples: Sealed-bid procurement, annual holiday pricing, chip foundry node commitments, platform hardware pricing.
+                                    </div>
+                                  </div>
+
+                                  <div className="p-4 bg-indigo-950/30 rounded-xl border border-indigo-700/50 space-y-2">
+                                    <div className="flex items-center gap-2">
+                                      <span className="w-2 h-2 rounded-full bg-indigo-400" />
+                                      <h4 className="text-xs sm:text-sm font-bold text-indigo-200">The Best Response Condition:</h4>
+                                    </div>
+                                    <div className="p-2 rounded-lg bg-slate-950/80 border border-indigo-500/30 font-mono text-xs text-indigo-300">
+                                      u_i(s_i*, s_&#123;-i&#125;) &ge; u_i(s_i, s_&#123;-i&#125;) &forall; s_i &isin; S_i
+                                    </div>
+                                    <p className="text-xs text-slate-300 leading-relaxed">
+                                      An action <code className="text-emerald-300 font-mono">s_i*</code> is a Best Response if it gives player i the highest payoff against the competitor's chosen action. Rationality demands that you only select best responses.
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* 2. IESDS & Dominance Solvability */}
+                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                                <div className="border-b border-slate-800 pb-3 mb-4">
+                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 02</span>
+                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
+                                    Iterated Elimination of Strictly Dominated Strategies (IESDS)
+                                  </h3>
+                                  <p className="text-xs text-slate-400">
+                                    Pruning non-rational strategic noise to find unique dominance-solvable market equilibria.
+                                  </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                                  <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+                                    <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase block mb-1">Axiom 1</span>
+                                    <h4 className="text-xs font-bold text-white">Never Play Dominated</h4>
+                                    <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                                      A rational player will never choose an action that is strictly dominated by another move under every rival scenario.
+                                    </p>
+                                  </div>
+
+                                  <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+                                    <span className="text-[10px] font-mono text-sky-400 font-bold uppercase block mb-1">Axiom 2</span>
+                                    <h4 className="text-xs font-bold text-white">Anticipate Rival Pruning</h4>
+                                    <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                                      Knowing rivals are rational, you delete their dominated moves. In round 2, previously viable actions may now become dominated.
+                                    </p>
+                                  </div>
+
+                                  <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+                                    <span className="text-[10px] font-mono text-amber-400 font-bold uppercase block mb-1">Guarantee</span>
+                                    <h4 className="text-xs font-bold text-white">Equilibrium Preservation</h4>
+                                    <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                                      Theorem: IESDS never eliminates any Nash Equilibrium. Dominance-solvable games yield unique, robust predictions.
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* 3. The 4 Classic 2x2 Simultaneous Game Archetypes */}
+                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                                <div className="border-b border-slate-800 pb-3 mb-4">
+                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 03</span>
+                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
+                                    The 4 Classic 2x2 Simultaneous Game Archetypes (四大經典博弈範式)
+                                  </h3>
+                                  <p className="text-xs text-slate-400">
+                                    Click each archetype below to inspect its matrix structure, strategic incentives, and real-world corporate manifestations.
+                                  </p>
+                                </div>
+
+                                {/* Archetype Selector Buttons */}
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                                  {[
+                                    { title: "Prisoner's Dilemma", badge: "Price Wars", color: "red" },
+                                    { title: "Coordination Game", badge: "Standard Wars", color: "indigo" },
+                                    { title: "Hawk-Dove / Chicken", badge: "Brinkmanship", color: "amber" },
+                                    { title: "Matching Pennies", badge: "Zero-Sum Inspection", color: "purple" }
+                                  ].map((arch, idx) => (
+                                    <button
+                                      key={idx}
+                                      onClick={() => setActiveArchetypeWeek3(idx)}
+                                      className={`p-3 rounded-xl border text-left transition-all ${
+                                        activeArchetypeWeek3 === idx
+                                          ? "bg-indigo-600 border-indigo-400 text-white shadow-md ring-1 ring-indigo-400"
+                                          : "bg-slate-950 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700"
+                                      }`}
+                                    >
+                                      <span className="text-[10px] font-mono block opacity-80">{arch.badge}</span>
+                                      <span className="text-xs font-bold mt-0.5 block truncate">{arch.title}</span>
+                                    </button>
+                                  ))}
+                                </div>
+
+                                {/* Active Archetype Showcase Card */}
+                                <div className="p-5 rounded-xl bg-slate-950 border border-slate-800">
+                                  {activeArchetypeWeek3 === 0 && (
+                                    <div className="space-y-3">
+                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-800">
+                                        <div>
+                                          <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                            <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-300 text-[10px] font-mono border border-red-500/30">1. Prisoner's Dilemma</span>
+                                            Price Wars & Defection Traps
+                                          </h4>
+                                          <p className="text-xs text-slate-400 mt-0.5">Strictly dominant defection yields unique Pareto-inferior equilibrium [Defect, Defect].</p>
+                                        </div>
+                                        <span className="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 text-xs font-mono font-bold self-start sm:self-auto border border-amber-500/30">
+                                          1 Pure Nash Eq
+                                        </span>
+                                      </div>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5">
+                                          <div className="font-bold text-slate-200">Matrix Structure (Row vs Col):</div>
+                                          <div className="font-mono text-[11px] text-slate-300">
+                                            [Cooperate, Cooperate] &rarr; ($10M, $10M) &bull; Collusive Max<br/>
+                                            [Cooperate, Defect] &rarr; ($2M, $14M) &bull; Col Exploits<br/>
+                                            [Defect, Cooperate] &rarr; ($14M, $2M) &bull; Row Exploits<br/>
+                                            <span className="text-amber-300 font-bold">[Defect, Defect] &rarr; ($4M, $4M) &bull; &#9733; Unique Nash Eq</span>
+                                          </div>
+                                        </div>
+                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                                          <div className="font-bold text-indigo-300">Executive Resolution Mechanism:</div>
+                                          <p className="text-slate-300 leading-relaxed">
+                                            Escape through structural redesign: binding contracts with anti-discount penalties, long-term repeated interactions (tit-for-tat trigger strategies in Week 6), and brand moats.
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {activeArchetypeWeek3 === 1 && (
+                                    <div className="space-y-3">
+                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-800">
+                                        <div>
+                                          <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                            <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono border border-indigo-500/30">2. Coordination Game</span>
+                                            Standard Wars & Network Externalities
+                                          </h4>
+                                          <p className="text-xs text-slate-400 mt-0.5">Two pure Nash equilibria along diagonal; miscoordination produces mutual zero surplus.</p>
+                                        </div>
+                                        <span className="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 text-xs font-mono font-bold self-start sm:self-auto border border-indigo-500/30">
+                                          2 Pure Nash Eq
+                                        </span>
+                                      </div>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5">
+                                          <div className="font-bold text-slate-200">Matrix Structure (Sony vs Microsoft):</div>
+                                          <div className="font-mono text-[11px] text-slate-300">
+                                            <span className="text-emerald-300 font-bold">[Alpha, Alpha] &rarr; ($12B, $8B) &bull; &#9733; Nash Eq 1</span><br/>
+                                            [Alpha, Beta] &rarr; ($0B, $0B) &bull; Miscoordination<br/>
+                                            [Beta, Alpha] &rarr; ($0B, $0B) &bull; Miscoordination<br/>
+                                            <span className="text-sky-300 font-bold">[Beta, Beta] &rarr; ($8B, $12B) &bull; &#9733; Nash Eq 2</span>
+                                          </div>
+                                        </div>
+                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                                          <div className="font-bold text-indigo-300">Executive Resolution Mechanism:</div>
+                                          <p className="text-slate-300 leading-relaxed">
+                                            Create Focal Points (Schelling Points) via early ecosystem commitments, industry consortia, or cross-licensing treaties (e.g. Tesla opening NACS standard to Ford and GM).
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {activeArchetypeWeek3 === 2 && (
+                                    <div className="space-y-3">
+                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-800">
+                                        <div>
+                                          <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                            <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono border border-amber-500/30">3. Hawk-Dove / Chicken</span>
+                                            Strategic Brinkmanship & Market Flooding
+                                          </h4>
+                                          <p className="text-xs text-slate-400 mt-0.5">Anti-coordination: Two asymmetric equilibria where one firm aggresses and the other accommodates.</p>
+                                        </div>
+                                        <span className="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 text-xs font-mono font-bold self-start sm:self-auto border border-amber-500/30">
+                                          2 Asymmetric Eq
+                                        </span>
+                                      </div>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5">
+                                          <div className="font-bold text-slate-200">Matrix Structure (Dove vs Hawk):</div>
+                                          <div className="font-mono text-[11px] text-slate-300">
+                                            [Dove, Dove] &rarr; ($4M, $4M) &bull; Peaceful Sharing<br/>
+                                            <span className="text-sky-300 font-bold">[Dove, Hawk] &rarr; ($1M, $8M) &bull; &#9733; Nash Eq (Col Wins)</span><br/>
+                                            <span className="text-emerald-300 font-bold">[Hawk, Dove] &rarr; ($8M, $1M) &bull; &#9733; Nash Eq (Row Wins)</span><br/>
+                                            <span className="text-red-400 font-bold">[Hawk, Hawk] &rarr; (-$10M, -$10M) &bull; Mutual Disaster</span>
+                                          </div>
+                                        </div>
+                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                                          <div className="font-bold text-amber-300">Executive Resolution Mechanism:</div>
+                                          <p className="text-slate-300 leading-relaxed">
+                                            Win by credible commitment to Hawk: publicly burn retreat bridges, sign irrevocable supply agreements, or legally bind executive bonuses to market share expansion.
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {activeArchetypeWeek3 === 3 && (
+                                    <div className="space-y-3">
+                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-800">
+                                        <div>
+                                          <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                            <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-mono border border-purple-500/30">4. Matching Pennies</span>
+                                            Zero-Sum Auditing & The Need for Randomization
+                                          </h4>
+                                          <p className="text-xs text-slate-400 mt-0.5">Strict zero-sum conflict: No pure strategy Nash equilibrium exists; requires mixed strategies.</p>
+                                        </div>
+                                        <span className="px-2.5 py-1 rounded bg-purple-500/20 text-purple-300 text-xs font-mono font-bold self-start sm:self-auto border border-purple-500/30">
+                                          0 Pure Eq
+                                        </span>
+                                      </div>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5">
+                                          <div className="font-bold text-slate-200">Matrix Structure (Inspector vs Target):</div>
+                                          <div className="font-mono text-[11px] text-slate-300">
+                                            [Audit, Comply] &rarr; (-1, +1) &bull; Target wins<br/>
+                                            [Audit, Cheat] &rarr; (+1, -1) &bull; Inspector catches<br/>
+                                            [Pass, Comply] &rarr; (+1, -1) &bull; Inspector saves cost<br/>
+                                            [Pass, Cheat] &rarr; (-1, +1) &bull; Target exploits pass<br/>
+                                            <span className="text-purple-300 font-bold">Continuous cyclical incentives &rarr; No Pure Strategy Eq</span>
+                                          </div>
+                                        </div>
+                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                                          <div className="font-bold text-purple-300">Week 4 Transition:</div>
+                                          <p className="text-slate-300 leading-relaxed">
+                                            When predictability is lethal, players must deliberately randomize actions with calculated probability distributions (Mixed Strategies, formalised in Week 4).
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* 4. Cournot vs Bertrand Oligopoly Models */}
+                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                                <div className="border-b border-slate-800 pb-3 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                  <div>
+                                    <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 04</span>
+                                    <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
+                                      Oligopolistic Competition: Cournot (Quantity) vs. Bertrand (Price)
+                                    </h3>
+                                    <p className="text-xs text-slate-400">
+                                      How the dimension of market competition determines operating margins and the Bertrand Paradox.
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-lg border border-slate-800">
+                                    <button
+                                      onClick={() => setActiveCournotTabWeek3(0)}
+                                      className={`px-2.5 py-1 rounded text-xs font-bold transition-all ${
+                                        activeCournotTabWeek3 === 0
+                                          ? "bg-indigo-600 text-white shadow-sm"
+                                          : "text-slate-400 hover:text-white"
+                                      }`}
+                                    >
+                                      Cournot (Quantity)
+                                    </button>
+                                    <button
+                                      onClick={() => setActiveCournotTabWeek3(1)}
+                                      className={`px-2.5 py-1 rounded text-xs font-bold transition-all ${
+                                        activeCournotTabWeek3 === 1
+                                          ? "bg-indigo-600 text-white shadow-sm"
+                                          : "text-slate-400 hover:text-white"
+                                      }`}
+                                    >
+                                      Bertrand (Price)
+                                    </button>
+                                  </div>
+                                </div>
+
+                                {activeCournotTabWeek3 === 0 ? (
+                                  <div className="space-y-3">
+                                    <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                      <div className="space-y-2">
+                                        <span className="text-[10px] font-mono uppercase text-emerald-400 font-bold block">The Cournot Model</span>
+                                        <h4 className="text-sm font-bold text-white">Simultaneous Output & Capacity Choice</h4>
+                                        <p className="text-slate-300 leading-relaxed">
+                                          Dual firms choose quantities <code className="text-emerald-300 font-mono">q_1, q_2</code> simultaneously. Market price clears total supply <code className="text-indigo-300 font-mono">P(Q) = a - b(q_1 + q_2)</code>.
+                                        </p>
+                                        <p className="text-slate-300 leading-relaxed">
+                                          Quantities are <strong className="text-white">strategic substitutes</strong>: when your rival expands production, your residual demand contracts, leading to a downward-sloping best response curve.
+                                        </p>
+                                      </div>
+                                      <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-2 font-mono text-[11px]">
+                                        <div className="text-indigo-300 font-bold">Equilibrium Price Hierarchy:</div>
+                                        <div className="p-2 bg-slate-950 rounded border border-indigo-500/30 text-emerald-300">
+                                          P_Monopoly &gt; P_Cournot &gt; P_Competitive (MC)
+                                        </div>
+                                        <p className="font-sans text-xs text-slate-300">
+                                          Applicable to heavy capital industries: commercial aircraft assembly (Airbus vs. Boeing), semiconductor fab allocation (TSMC vs. Samsung), and petrochemical capacity.
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="space-y-3">
+                                    <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                      <div className="space-y-2">
+                                        <span className="text-[10px] font-mono uppercase text-red-400 font-bold block">The Bertrand Trap</span>
+                                        <h4 className="text-sm font-bold text-white">The Paradox of Pure Price Competition</h4>
+                                        <p className="text-slate-300 leading-relaxed">
+                                          Dual firms choose prices <code className="text-red-300 font-mono">p_1, p_2</code> simultaneously for homogeneous products. Undercutting rival by $0.01 captures 100% market demand.
+                                        </p>
+                                        <p className="text-red-200 bg-red-950/30 p-2.5 rounded-lg border border-red-800/40 leading-relaxed">
+                                          <strong>Bertrand Paradox:</strong> With just TWO firms, equilibrium price collapses to Marginal Cost (<code className="font-mono">P* = MC</code>), destroying all economic profit!
+                                        </p>
+                                      </div>
+                                      <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-2">
+                                        <div className="text-emerald-400 font-bold text-xs uppercase">How Executives Escape the Trap:</div>
+                                        <ul className="space-y-1.5 text-xs text-slate-300">
+                                          <li className="flex items-start gap-1.5">
+                                            <span className="text-emerald-400 font-bold">&bull;</span>
+                                            <span><strong>Product Differentiation:</strong> Brand moats, proprietary UI, ecosystem lock-in.</span>
+                                          </li>
+                                          <li className="flex items-start gap-1.5">
+                                            <span className="text-emerald-400 font-bold">&bull;</span>
+                                            <span><strong>Capacity Caps:</strong> If competitor cannot serve all demand, price stays above MC.</span>
+                                          </li>
+                                          <li className="flex items-start gap-1.5">
+                                            <span className="text-emerald-400 font-bold">&bull;</span>
+                                            <span><strong>Customer Switching Costs:</strong> Contractual lock-in, data integration, APIs.</span>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           )}
@@ -3723,7 +4696,9 @@ import React, { useState, useEffect, useMemo } from "react";
                                       <span className="text-emerald-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[0][0][0]}</span>
                                       <span className="text-slate-500"> , </span>
                                       <span className="text-sky-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[0][0][1]}</span>
-                                      <div className="text-[10px] text-slate-400 font-sans mt-0.5">Joint Welfare Max</div>
+                                      <div className="text-[10px] text-slate-400 font-sans mt-0.5">
+                                        {selectedWeek.caseAnalysis.cellLabels ? selectedWeek.caseAnalysis.cellLabels[0][0] : "Joint Welfare Max"}
+                                      </div>
                                     </td>
                                     {/* Cell (0, 1) */}
                                     <td
@@ -3737,7 +4712,9 @@ import React, { useState, useEffect, useMemo } from "react";
                                       <span className="text-red-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[0][1][0]}</span>
                                       <span className="text-slate-500"> , </span>
                                       <span className="text-emerald-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[0][1][1]}</span>
-                                      <div className="text-[10px] text-slate-500 font-sans mt-0.5">Pepsi Preempts</div>
+                                      <div className="text-[10px] text-slate-500 font-sans mt-0.5">
+                                        {selectedWeek.caseAnalysis.cellLabels ? selectedWeek.caseAnalysis.cellLabels[0][1] : `${selectedWeek.caseAnalysis.matrix.player2} Preempts`}
+                                      </div>
                                     </td>
                                   </tr>
                                   {/* Row 1: Aggressive */}
@@ -3757,7 +4734,9 @@ import React, { useState, useEffect, useMemo } from "react";
                                       <span className="text-emerald-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[1][0][0]}</span>
                                       <span className="text-slate-500"> , </span>
                                       <span className="text-red-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[1][0][1]}</span>
-                                      <div className="text-[10px] text-slate-500 font-sans mt-0.5">Coke Preempts</div>
+                                      <div className="text-[10px] text-slate-500 font-sans mt-0.5">
+                                        {selectedWeek.caseAnalysis.cellLabels ? selectedWeek.caseAnalysis.cellLabels[1][0] : `${selectedWeek.caseAnalysis.matrix.player1} Preempts`}
+                                      </div>
                                     </td>
                                     {/* Cell (1, 1) */}
                                     <td
@@ -3771,7 +4750,9 @@ import React, { useState, useEffect, useMemo } from "react";
                                       <span className="text-amber-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[1][1][0]}</span>
                                       <span className="text-slate-500"> , </span>
                                       <span className="text-amber-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[1][1][1]}</span>
-                                      <div className="text-[10px] text-amber-300 font-bold font-sans mt-0.5">★ Nash Equilibrium</div>
+                                      <div className="text-[10px] text-amber-300 font-bold font-sans mt-0.5">
+                                        {selectedWeek.caseAnalysis.cellLabels ? selectedWeek.caseAnalysis.cellLabels[1][1] : "★ Nash Equilibrium"}
+                                      </div>
                                     </td>
                                   </tr>
                                 </tbody>
@@ -3779,37 +4760,47 @@ import React, { useState, useEffect, useMemo } from "react";
 
                               {/* Interactive Cell Inspector Box */}
                               <div className="p-3 rounded-lg bg-slate-900/90 border border-slate-800 text-xs leading-relaxed">
-                                {caseCellSelected[0] === 0 && caseCellSelected[1] === 0 && (
+                                {selectedWeek.caseAnalysis.cellDescriptions ? (
                                   <div>
-                                    <span className="font-bold text-emerald-300">[Normal, Normal] — Collusive Maximum ($4.0B, $4.0B): </span>
                                     <span className="text-slate-300">
-                                      Joint industry profits are maximized at $8.0B total. However, this is NOT a Nash equilibrium; either firm can defect by going Aggressive to steal market share and boost profits to $4.5B. Without a binding cartel or anti-trust exemption, defection is inevitable.
+                                      {selectedWeek.caseAnalysis.cellDescriptions[caseCellSelected[0]][caseCellSelected[1]]}
                                     </span>
                                   </div>
-                                )}
-                                {caseCellSelected[0] === 0 && caseCellSelected[1] === 1 && (
-                                  <div>
-                                    <span className="font-bold text-amber-300">[Normal, Aggressive] — Asymmetric Defection ($2.0B, $4.5B): </span>
-                                    <span className="text-slate-300">
-                                      Pepsi captures decisive market share ($4.5B) while Coca-Cola is caught flat-footed ($2.0B). Coca-Cola's immediate best response is to counter with Aggressive ad spend, shifting the outcome to [Aggressive, Aggressive] ($2.5B).
-                                    </span>
-                                  </div>
-                                )}
-                                {caseCellSelected[0] === 1 && caseCellSelected[1] === 0 && (
-                                  <div>
-                                    <span className="font-bold text-amber-300">[Aggressive, Normal] — Asymmetric Defection ($4.5B, $2.0B): </span>
-                                    <span className="text-slate-300">
-                                      Coca-Cola aggressively promotes and earns $4.5B, taking market share from passive Pepsi ($2.0B). Pepsi's rational response is to retaliate with Aggressive ad spend, shifting the outcome to [Aggressive, Aggressive] ($2.5B).
-                                    </span>
-                                  </div>
-                                )}
-                                {caseCellSelected[0] === 1 && caseCellSelected[1] === 1 && (
-                                  <div>
-                                    <span className="font-bold text-amber-300">[Aggressive, Aggressive] — Nash Equilibrium ($2.5B, $2.5B): </span>
-                                    <span className="text-slate-300">
-                                      The unique pure Nash equilibrium. Aggressive advertising is a strictly dominant strategy for both firms. Neither firm can unilaterally switch to Normal without sacrificing profit ($2.0B &lt; $2.5B). The duopoly collectively burns $3.0B in defensive marketing.
-                                    </span>
-                                  </div>
+                                ) : (
+                                  <>
+                                    {caseCellSelected[0] === 0 && caseCellSelected[1] === 0 && (
+                                      <div>
+                                        <span className="font-bold text-emerald-300">[Normal, Normal] — Collusive Maximum ($4.0B, $4.0B): </span>
+                                        <span className="text-slate-300">
+                                          Joint industry profits are maximized at $8.0B total. However, this is NOT a Nash equilibrium; either firm can defect by going Aggressive to steal market share and boost profits to $4.5B. Without a binding cartel or anti-trust exemption, defection is inevitable.
+                                        </span>
+                                      </div>
+                                    )}
+                                    {caseCellSelected[0] === 0 && caseCellSelected[1] === 1 && (
+                                      <div>
+                                        <span className="font-bold text-amber-300">[Normal, Aggressive] — Asymmetric Defection ($2.0B, $4.5B): </span>
+                                        <span className="text-slate-300">
+                                          Pepsi captures decisive market share ($4.5B) while Coca-Cola is caught flat-footed ($2.0B). Coca-Cola's immediate best response is to counter with Aggressive ad spend, shifting the outcome to [Aggressive, Aggressive] ($2.5B).
+                                        </span>
+                                      </div>
+                                    )}
+                                    {caseCellSelected[0] === 1 && caseCellSelected[1] === 0 && (
+                                      <div>
+                                        <span className="font-bold text-amber-300">[Aggressive, Normal] — Asymmetric Defection ($4.5B, $2.0B): </span>
+                                        <span className="text-slate-300">
+                                          Coca-Cola aggressively promotes and earns $4.5B, taking market share from passive Pepsi ($2.0B). Pepsi's rational response is to retaliate with Aggressive ad spend, shifting the outcome to [Aggressive, Aggressive] ($2.5B).
+                                        </span>
+                                      </div>
+                                    )}
+                                    {caseCellSelected[0] === 1 && caseCellSelected[1] === 1 && (
+                                      <div>
+                                        <span className="font-bold text-amber-300">[Aggressive, Aggressive] — Nash Equilibrium ($2.5B, $2.5B): </span>
+                                        <span className="text-slate-300">
+                                          The unique pure Nash equilibrium. Aggressive advertising is a strictly dominant strategy for both firms. Neither firm can unilaterally switch to Normal without sacrificing profit ($2.0B &lt; $2.5B). The duopoly collectively burns $3.0B in defensive marketing.
+                                        </span>
+                                      </div>
+                                    )}
+                                  </>
                                 )}
                               </div>
                             </div>
@@ -4209,6 +5200,53 @@ import React, { useState, useEffect, useMemo } from "react";
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* GameTikzStudio Visual Suite Card */}
+                  <div className="md:col-span-2 bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 border border-purple-600/50 rounded-2xl p-6 shadow-xl">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="px-2.5 py-1 rounded bg-purple-500/20 text-purple-300 text-xs font-bold uppercase tracking-wider border border-purple-500/30">
+                            Visual Authoring Suite
+                          </span>
+                          <span className="text-xs text-slate-400 font-mono">
+                            By Prof. Chiu Yu Ko
+                          </span>
+                        </div>
+                        <h3 className="text-lg sm:text-xl font-bold text-white mt-2 flex items-center gap-2">
+                          <Icon name="gitBranch" className="w-5 h-5 text-purple-400" />
+                          GameTikzStudio: Game Tree, Payoff Matrix & Timeline Builder
+                        </h3>
+                        <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                          Official interactive web software to effortlessly construct extensive-form game trees with information sets, normal-form payoff matrices, and chronological sequential timelines. Automatically outputs ready-to-compile LaTeX TikZ code.
+                        </p>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          <span className="text-[11px] px-2.5 py-0.5 rounded bg-slate-800 text-purple-300 border border-slate-700 font-medium">🌳 Extensive Form Trees</span>
+                          <span className="text-[11px] px-2.5 py-0.5 rounded bg-slate-800 text-purple-300 border border-slate-700 font-medium">📊 Strategic Payoff Matrices</span>
+                          <span className="text-[11px] px-2.5 py-0.5 rounded bg-slate-800 text-purple-300 border border-slate-700 font-medium">⏱️ Multi-Stage Timelines</span>
+                          <span className="text-[11px] px-2.5 py-0.5 rounded bg-slate-800 text-purple-300 border border-slate-700 font-medium">📝 Instant TikZ LaTeX Export</span>
+                        </div>
+                      </div>
+                      <div className="flex sm:flex-col gap-2 shrink-0">
+                        <button
+                          onClick={() => setActiveTab("gametikz")}
+                          className="px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2 whitespace-nowrap transition-all"
+                        >
+                          <Icon name="gitBranch" className="w-4 h-4" />
+                          Open In-App Studio
+                        </button>
+                        <a
+                          href="https://kochiuyu.github.io/GameTikzStudio/"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 whitespace-nowrap transition-colors"
+                        >
+                          <Icon name="externalLink" className="w-4 h-4 text-purple-400" />
+                          Launch Fullscreen
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* DOTE 3090 Simulator Feature Card */}
                   <div className="md:col-span-2 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-700/60 rounded-2xl p-6 shadow-xl">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -4241,7 +5279,7 @@ import React, { useState, useEffect, useMemo } from "react";
                   </div>
 
                   {/* Video Dilemma Cases */}
-                  {REFERENCE_TOOLS.slice(1).map((item, idx) => (
+                  {REFERENCE_TOOLS.filter((item) => !item.isLab).map((item, idx) => (
                     <div
                       key={idx}
                       className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-all"
@@ -4276,6 +5314,11 @@ import React, { useState, useEffect, useMemo } from "react";
                   ))}
                 </div>
               </div>
+            )}
+
+            {/* VIEW 5: GAMETIKZSTUDIO PORTAL */}
+            {activeTab === "gametikz" && (
+              <GameTikzStudioView onNavigateTab={setActiveTab} />
             )}
 
           </main>
@@ -4363,6 +5406,10 @@ import React, { useState, useEffect, useMemo } from "react";
                 <span>Zero-Build Single File index.html</span>
                 <span>•</span>
                 <span>GitHub Pages Ready</span>
+                <span>•</span>
+                <a href="https://kochiuyu.github.io/GameTikzStudio/" target="_blank" rel="noreferrer" className="text-purple-400 hover:underline">
+                  GameTikzStudio
+                </a>
                 <span>•</span>
                 <a href="https://kochiuyu.github.io/dote3090/" target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline">
                   DOTE 3090 Lab
