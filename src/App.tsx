@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 
 // --- Clean Inline Lucide Icons ---
     const Icon = ({ name, className = "w-5 h-5", ...props }) => {
@@ -12,6 +12,7 @@ import React, { useState, useEffect, useMemo } from "react";
         chevronRight: <polyline points="9 18 15 12 9 6" />,
         chevronDown: <polyline points="6 9 12 15 18 9" />,
         download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></>,
+        upload: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></>,
         externalLink: <><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></>,
         play: <polygon points="5 3 19 12 5 21 5 3" />,
         fileText: <><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></>,
@@ -2115,6 +2116,100 @@ import React, { useState, useEffect, useMemo } from "react";
       const [caseCellSelected, setCaseCellSelected] = useState([1, 1]);
       const [activeArchetypeWeek3, setActiveArchetypeWeek3] = useState(0);
       const [activeCournotTabWeek3, setActiveCournotTabWeek3] = useState(0);
+      const [customSlideUrls, setCustomSlideUrls] = useState<Record<number, { url: string; name: string; size: number }>>({});
+      const fileInputRef = useRef<HTMLInputElement>(null);
+
+      // IndexedDB storage for authentic uploaded slides
+      const initSlidesDB = (): Promise<IDBDatabase> => {
+        return new Promise<IDBDatabase>((resolve, reject) => {
+          if (typeof window === "undefined" || !window.indexedDB) {
+            return reject(new Error("IndexedDB not supported"));
+          }
+          const request = window.indexedDB.open("strategic_thinking_slides_db", 1);
+          request.onupgradeneeded = () => {
+            const db = request.result;
+            if (!db.objectStoreNames.contains("slides")) {
+              db.createObjectStore("slides", { keyPath: "weekId" });
+            }
+          };
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      };
+
+      const loadCustomSlides = async () => {
+        try {
+          const db = await initSlidesDB();
+          const tx = db.transaction("slides", "readonly");
+          const store = tx.objectStore("slides");
+          const getAllRequest = store.getAll();
+          getAllRequest.onsuccess = () => {
+            const records = getAllRequest.result || [];
+            const mapping: Record<number, { url: string; name: string; size: number }> = {};
+            records.forEach((rec: any) => {
+              if (rec.blob) {
+                const url = URL.createObjectURL(rec.blob);
+                mapping[rec.weekId] = { url, name: rec.name, size: rec.size };
+              }
+            });
+            setCustomSlideUrls(mapping);
+          };
+        } catch (err) {
+          console.warn("Could not load custom slides from IndexedDB", err);
+        }
+      };
+
+      const saveCustomSlide = async (weekId: number, file: File) => {
+        try {
+          const db = await initSlidesDB();
+          const tx = db.transaction("slides", "readwrite");
+          const store = tx.objectStore("slides");
+          await new Promise<void>((resolve, reject) => {
+            const req = store.put({ weekId, blob: file, name: file.name, size: file.size, updatedAt: Date.now() });
+            req.onsuccess = () => resolve();
+            req.onerror = () => reject(req.error);
+          });
+          const url = URL.createObjectURL(file);
+          setCustomSlideUrls(prev => ({
+            ...prev,
+            [weekId]: { url, name: file.name, size: file.size }
+          }));
+        } catch (err) {
+          console.error("Failed to save custom slide to IndexedDB", err);
+        }
+      };
+
+      const removeCustomSlide = async (weekId: number) => {
+        try {
+          const db = await initSlidesDB();
+          const tx = db.transaction("slides", "readwrite");
+          const store = tx.objectStore("slides");
+          await new Promise<void>((resolve, reject) => {
+            const req = store.delete(weekId);
+            req.onsuccess = () => resolve();
+            req.onerror = () => reject(req.error);
+          });
+          setCustomSlideUrls(prev => {
+            const copy = { ...prev };
+            delete copy[weekId];
+            return copy;
+          });
+        } catch (err) {
+          console.error("Failed to delete custom slide", err);
+        }
+      };
+
+      useEffect(() => {
+        loadCustomSlides();
+      }, []);
+
+      const getActiveSlideUrl = (weekId, defaultPath) => {
+        return customSlideUrls[weekId]?.url || defaultPath;
+      };
+
+      const getActiveSlideDownloadName = (weekId, defaultPath) => {
+        return customSlideUrls[weekId]?.name || (defaultPath ? defaultPath.split('/').pop() : `week0${weekId}.pdf`);
+      };
 
       const openWeekRecap = (weekId) => {
         setSelectedWeekId(weekId);
@@ -3060,11 +3155,11 @@ import React, { useState, useEffect, useMemo } from "react";
 
                         <div className="mt-3 pt-2 border-t border-slate-800/60 flex items-center justify-center gap-1.5">
                           <a
-                            href={w.slidePath}
-                            download
+                            href={getActiveSlideUrl(w.id, w.slidePath)}
+                            download={getActiveSlideDownloadName(w.id, w.slidePath)}
                             onClick={(e) => e.stopPropagation()}
                             className="px-2.5 py-1 bg-slate-800 hover:bg-indigo-600 hover:text-white text-slate-300 rounded text-[11px] font-mono flex items-center gap-1 transition-all"
-                            title={`Download ${w.slidePath}`}
+                            title={`Download ${getActiveSlideDownloadName(w.id, w.slidePath)}`}
                           >
                             <Icon name="download" className="w-3 h-3" />
                             PDF
@@ -4513,28 +4608,75 @@ import React, { useState, useEffect, useMemo } from "react";
                       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-slate-800">
                           <div>
-                            <h3 className="text-base font-bold text-white flex items-center gap-2">
-                              <Icon name="fileText" className="w-5 h-5 text-indigo-400" />
-                              Official Slide Deck & Lecture Materials
-                            </h3>
-                            <p className="text-xs text-slate-400">
-                              Configured with relative path <code className="text-indigo-300 font-mono">{selectedWeek.slidePath}</code>
+                            <div className="flex items-center gap-2">
+                              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                                <Icon name="fileText" className="w-5 h-5 text-indigo-400" />
+                                Official Slide Deck & Lecture Materials
+                              </h3>
+                              {customSlideUrls[selectedWeek.id] && (
+                                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono font-bold flex items-center gap-1">
+                                  <Icon name="check" className="w-3 h-3 text-emerald-400 stroke-[3]" />
+                                  Original Upload Active
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              {customSlideUrls[selectedWeek.id] ? (
+                                <span className="text-emerald-300">
+                                  Using user-uploaded authentic slide deck: <span className="font-mono font-bold">{customSlideUrls[selectedWeek.id].name}</span> ({(customSlideUrls[selectedWeek.id].size / 1024).toFixed(1)} KB)
+                                </span>
+                              ) : (
+                                <>Configured with relative path <code className="text-indigo-300 font-mono">{selectedWeek.slidePath}</code></>
+                              )}
                             </p>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <a
-                              href={selectedWeek.slidePath}
-                              download
-                              className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-2 shadow-md transition-all"
+                          <div className="flex flex-wrap items-center gap-2">
+                            {/* Upload / Replace Original PDF */}
+                            <input
+                              type="file"
+                              ref={fileInputRef}
+                              accept=".pdf,application/pdf"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  saveCustomSlide(selectedWeek.id, file);
+                                  setEmbeddedSlideMode(true);
+                                }
+                              }}
+                            />
+                            <button
+                              onClick={() => fileInputRef.current?.click()}
+                              className="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-md transition-all"
+                              title="Upload or replace with your original slide PDF"
                             >
-                              <Icon name="download" className="w-4 h-4" />
-                              Download Presentation PDF
+                              <Icon name="upload" className="w-3.5 h-3.5" />
+                              <span>{customSlideUrls[selectedWeek.id] ? "Replace Original PDF" : "Upload Original PDF"}</span>
+                            </button>
+
+                            {customSlideUrls[selectedWeek.id] && (
+                              <button
+                                onClick={() => removeCustomSlide(selectedWeek.id)}
+                                className="px-2.5 py-2 bg-slate-800 hover:bg-red-950/60 hover:text-red-300 text-slate-300 rounded-lg text-xs font-semibold border border-slate-700 transition-all"
+                                title="Reset to default repository slides"
+                              >
+                                Reset to Default
+                              </button>
+                            )}
+
+                            <a
+                              href={getActiveSlideUrl(selectedWeek.id, selectedWeek.slidePath)}
+                              download={getActiveSlideDownloadName(selectedWeek.id, selectedWeek.slidePath)}
+                              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
+                            >
+                              <Icon name="download" className="w-3.5 h-3.5 text-indigo-400" />
+                              Download PDF
                             </a>
                             <button
                               onClick={() => setEmbeddedSlideMode(!embeddedSlideMode)}
                               className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-all ${
                                 embeddedSlideMode
-                                  ? "bg-indigo-600 text-white border-indigo-500 shadow-sm"
+                                  ? "bg-indigo-950/70 text-indigo-300 border-indigo-700 shadow-sm"
                                   : "bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700"
                               }`}
                             >
@@ -4552,13 +4694,37 @@ import React, { useState, useEffect, useMemo } from "react";
                           </div>
                         </div>
 
+                        {/* Callout if no custom upload for Week 3 */}
+                        {selectedWeek.id === 3 && !customSlideUrls[3] && (
+                          <div className="mt-4 p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div className="flex items-start gap-2.5">
+                              <Icon name="upload" className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+                              <div>
+                                <p className="text-xs font-semibold text-white">
+                                  Use Your Original Week 3 Slide Deck
+                                </p>
+                                <p className="text-[11px] text-slate-300 mt-0.5 leading-relaxed">
+                                  Click to select your original <span className="font-mono text-indigo-300 font-semibold">week03.pdf</span> file from your computer. It will load immediately into the live viewer and persist in your browser.
+                                </p>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => fileInputRef.current?.click()}
+                              className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shrink-0 flex items-center gap-1.5 shadow-sm transition-all"
+                            >
+                              <Icon name="upload" className="w-3.5 h-3.5" />
+                              Upload week03.pdf
+                            </button>
+                          </div>
+                        )}
+
                         {/* Presentation View: Either Live Iframe or Executive Card */}
                         {embeddedSlideMode ? (
                           <div className="mt-5 rounded-xl border border-slate-800 bg-slate-950 p-2 sm:p-3 space-y-2">
                             <div className="flex items-center justify-between px-2 text-xs text-slate-400 font-mono">
-                              <span>Live Presentation Reader: {selectedWeek.slidePath}</span>
+                              <span>Live Presentation Reader: {getActiveSlideDownloadName(selectedWeek.id, selectedWeek.slidePath)}</span>
                               <a
-                                href={selectedWeek.slidePath}
+                                href={getActiveSlideUrl(selectedWeek.id, selectedWeek.slidePath)}
                                 target="_blank"
                                 rel="noreferrer"
                                 className="text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
@@ -4569,7 +4735,7 @@ import React, { useState, useEffect, useMemo } from "react";
                             </div>
                             <div className="w-full h-[520px] sm:h-[640px] rounded-lg overflow-hidden border border-slate-800 bg-slate-900">
                               <iframe
-                                src={selectedWeek.slidePath}
+                                src={getActiveSlideUrl(selectedWeek.id, selectedWeek.slidePath)}
                                 className="w-full h-full border-0"
                                 title={`Live Deck for ${selectedWeek.title}`}
                               />
@@ -4583,7 +4749,7 @@ import React, { useState, useEffect, useMemo } from "react";
                                   STRATEGIC THINKING • EXECUTIVE SLIDE DECK
                                 </span>
                                 <span className="text-xs font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
-                                  {selectedWeek.pageCount} SLIDES • 16:9 HD
+                                  {customSlideUrls[selectedWeek.id] ? "ORIGINAL UPLOAD" : `${selectedWeek.pageCount} SLIDES`} • 16:9 HD
                                 </span>
                               </div>
 
@@ -4607,7 +4773,11 @@ import React, { useState, useEffect, useMemo } from "react";
                               </div>
 
                               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400 z-10 pt-4 border-t border-slate-800/80">
-                                <span className="font-mono">Path: {selectedWeek.slidePath}</span>
+                                <span className="font-mono">
+                                  {customSlideUrls[selectedWeek.id]
+                                    ? `Loaded: ${customSlideUrls[selectedWeek.id].name} (Authentic Upload)`
+                                    : `Path: ${selectedWeek.slidePath}`}
+                                </span>
                                 <button
                                   onClick={() => setEmbeddedSlideMode(true)}
                                   className="text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 self-start sm:self-auto"
@@ -4953,12 +5123,12 @@ import React, { useState, useEffect, useMemo } from "react";
                         {/* Course Slide Deck Download */}
                         <div className="pt-2 flex justify-center items-center">
                           <a
-                            href={selectedWeek.slidePath}
-                            download
+                            href={getActiveSlideUrl(selectedWeek.id, selectedWeek.slidePath)}
+                            download={getActiveSlideDownloadName(selectedWeek.id, selectedWeek.slidePath)}
                             className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-md transition-all"
                           >
                             <Icon name="download" className="w-4 h-4" />
-                            Download Course Slide Deck ({selectedWeek.slidePath})
+                            Download Course Slide Deck ({getActiveSlideDownloadName(selectedWeek.id, selectedWeek.slidePath)})
                           </a>
                         </div>
                       </div>
@@ -5358,7 +5528,7 @@ import React, { useState, useEffect, useMemo } from "react";
                 {/* Embedded PDF Viewer */}
                 <div className="flex-1 w-full min-h-[350px] sm:min-h-[480px] rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative">
                   <iframe
-                    src={slideModalWeek.slidePath}
+                    src={getActiveSlideUrl(slideModalWeek.id, slideModalWeek.slidePath)}
                     className="w-full h-full min-h-[350px] sm:min-h-[480px] border-0"
                     title={`Slides for ${slideModalWeek.title}`}
                   />
@@ -5366,13 +5536,17 @@ import React, { useState, useEffect, useMemo } from "react";
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs text-slate-400">
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-500 font-mono truncate max-w-xs">{slideModalWeek.slidePath}</span>
+                    <span className="text-slate-500 font-mono truncate max-w-xs">
+                      {customSlideUrls[slideModalWeek.id]
+                        ? `Custom: ${customSlideUrls[slideModalWeek.id].name}`
+                        : slideModalWeek.slidePath}
+                    </span>
                     <span>•</span>
                     <span className="text-emerald-400 font-medium">Native PDF Render</span>
                   </div>
                   <div className="flex items-center gap-2 self-end sm:self-auto">
                     <a
-                      href={slideModalWeek.slidePath}
+                      href={getActiveSlideUrl(slideModalWeek.id, slideModalWeek.slidePath)}
                       target="_blank"
                       rel="noreferrer"
                       className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center gap-1.5 border border-slate-700 transition-all"
@@ -5381,8 +5555,8 @@ import React, { useState, useEffect, useMemo } from "react";
                       Open in New Tab
                     </a>
                     <a
-                      href={slideModalWeek.slidePath}
-                      download
+                      href={getActiveSlideUrl(slideModalWeek.id, slideModalWeek.slidePath)}
+                      download={getActiveSlideDownloadName(slideModalWeek.id, slideModalWeek.slidePath)}
                       className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-1.5 shadow-md shadow-indigo-600/30 transition-all"
                     >
                       <Icon name="download" className="w-3.5 h-3.5" />
