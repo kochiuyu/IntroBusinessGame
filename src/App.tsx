@@ -504,13 +504,13 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 
     const WEEK4_RECAP = {
       weekId: 4,
-      title: "Course Recap: Mixed Strategies & Randomization in Strategy",
-      chineseTitle: "課堂精華回顧：混合策略、無差異原則與隨機化定價",
-      duration: "3 Hours • Algorithmic Strategy Seminar",
+      title: "Course Recap: Mixed Strategies & Strategic Randomisation",
+      chineseTitle: "課堂精華回顧：混合策略、預期收益與無差異原則",
+      duration: "3 Hours • Strategic Randomisation Seminar",
       markdownPath: "./recaps/week04-recap.md",
-      academicTakeaway: "When predictability makes you vulnerable, strategic stability requires deliberate randomization. In a mixed strategy equilibrium, each player randomizes to keep the opponent indifferent between their pure strategies.",
-      chineseTakeaway: "當可預測性使你處於被動劣勢時，戰略穩定性要求決策者主動進行精確比例的隨機化。在混合策略納什均衡中，每個玩家隨機化的目的，是使對手在自己的各個純策略之間無差異（Indifference Principle）。",
-      readTime: "10 min read • Executive Algorithmic Synthesis",
+      academicTakeaway: "When predictability makes you exploitable, randomisation can be rational.",
+      chineseTakeaway: "當可預測性使你處於被動劣勢時，戰略性隨機化即是理性選擇。在混合策略納什均衡中，你的混合概率是透過使對手在各純策略間無差異而決定的。",
+      readTime: "10 min read • Executive Synthesis (Slides 1–26)",
       intro: "Week 4 resolves the fundamental dilemma of games with zero pure-strategy Nash equilibria (such as Matching Pennies, Competitive Auditing, and Retail Price Promotions). When any predictable pure move allows a competitor to counter and exploit you, executives must adopt Mixed Strategies. This session covers the Indifference Principle, algebraic calculation of optimal mixing probabilities (p* and q*), empirical testing in sports and business, and modern managerial applications in algorithmic dynamic repricing, security screening, and corporate compliance audits.",
       sections: [
         {
@@ -801,44 +801,44 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
           "Airport Security Patrol Randomization (Stackelberg Games)"
         ],
         slidePath: "./slides/week04.pdf",
-        pageCount: 38,
+        pageCount: 26,
         executiveSummary: [
-          "Unpredictability as an Offensive Moat: When no pure-strategy equilibrium exists, being predictable invites targeted exploitation. Maintain calculated strategic randomness.",
-          "The Indifference Principle Engine: You do not mix to maximize your own immediate score; you mix with exact probabilities (p* and q*) that keep the competitor indifferent between their pure strategies.",
-          "Deploy Algorithmic Randomization: Human intuition suffers from severe cognitive biases (alternation bias, clustering illusion). Delegate mixed strategy execution to automated algorithmic rules."
+          "Unpredictability as an Offensive Moat: When deterministic behaviour is unstable or exploitable (Rock-Paper-Scissors), strategic stability demands deliberate randomisation.",
+          "The Indifference Principle Engine: Your equilibrium probability p* is calculated by equalising the OTHER player's payoffs, not your own.",
+          "Defend the Larger Opportunity: In asymmetric games, the defender concentrates defensive resources on the highest-stake opportunity (Monday), leading the attacker to strike the secondary flank (Wednesday) more often."
         ],
         caseAnalysis: {
-          title: "Amazon vs. Walmart.com: Algorithmic Promotional Discounting",
-          subtitle: "E-Commerce Mixed Pricing Strategies & Varian's Model of Sales",
-          scenario: "Amazon and Walmart.com compete for weekend consumer electronics buyers. Two shopper segments exist: 40% are 'Informed Deal-Hunters' who purchase from whichever platform has the lower price, while 60% are 'Brand-Loyal Convenience Shoppers' split equally between the two platforms. Each platform can either run a Surprise Flash Promotion (Heavy Discount) or Maintain Full Margins. If both maintain full margins, each earns $5.0B from loyalists. If one retailer unpredictably flashes a discount while the other maintains, the discounter captures 100% of the informed shoppers plus their loyalists, generating $7.0B, while the rival makes only $1.0B. If both discount simultaneously, a destructive price war ensues, leaving each with only $3.0B.",
+          title: "Coffee Chain Promotion Timing: Monday vs. Wednesday",
+          subtitle: "Official Lecture Case (Slides 5–13) • Mixed Strategies & Indifference",
+          scenario: "A prominent coffee chain chooses whether to launch its primary weekly discount promotion on Monday or Wednesday. Its main rival simultaneously chooses which day to deploy and staff a counter-promotional defensive campaign. Monday offers greater baseline foot-traffic demand than Wednesday. A prepared defense limits the promotion's effectiveness (yielding 3 each on Mon-Mon; 3 for chain and 2 for rival on Wed-Wed). However, preparing defensive campaigns is costly and fixed: if the rival prepares on the wrong day, it wastes resources, giving the chain a wide-open market (6, 0 on Mon-Wed; 5, 1 on Wed-Mon). Because every predictable choice can be counter-exploited, pure-strategy best responses cycle indefinitely.",
           matrix: {
-            player1: "Amazon",
-            player2: "Walmart.com",
-            actions: ["Surprise Flash Discount", "Maintain Full Margin"],
+            player1: "Coffee Chain",
+            player2: "Rival Chain",
+            actions: ["Promote Monday", "Promote Wednesday"],
             payoffs: [
-              [["$3.0B", "$3.0B"], ["$7.0B", "$1.0B"]],
-              [["$1.0B", "$7.0B"], ["$5.0B", "$5.0B"]]
+              [["3", "3"], ["6", "0"]],
+              [["5", "1"], ["3", "2"]]
             ]
           },
           cellLabels: [
-            ["Mutual Price War", "Amazon Preempts"],
-            ["Walmart Preempts", "Collusive Margins (Unstable)"]
+            ["Mon Defense Active", "Chain Captures Mon Peak"],
+            ["Rival Defends Wrong Day", "Wed Defense Active"]
           ],
           cellDescriptions: [
             [
-              "[Discount, Discount] — Mutual Price War ($3.0B, $3.0B): Both platforms slash margins simultaneously, capturing informed volume but sacrificing unit margin. If Walmart maintains while Amazon discounts, Walmart wants to switch to Discounting; but if both discount, either would prefer to maintain margins if only the rival would too.",
-              "[Discount, Maintain] — Amazon Exploits ($7.0B, $1.0B): Amazon unpredictably drops prices, sweeping informed shoppers and generating $7.0B. Walmart makes only $1.0B. Walmart's immediate best response is to counter with discounts, shifting to ($3.0B, $3.0B)."
+              "[Promote Mon, Prepare Mon] — High Demand Defense Active (3, 3): Monday has peak baseline traffic. Both firms expend resources, resulting in balanced gains (3, 3). The chain wishes to switch to Wednesday to evade defense; the rival wishes to maintain Monday.",
+              "[Promote Mon, Prepare Wed] — Chain Captures Monday Peak (6, 0): The coffee chain captures the full Monday demand peak completely undefended, generating payoff 6 while the rival earns 0 from wasted preparation."
             ],
             [
-              "[Maintain, Discount] — Walmart Exploits ($1.0B, $7.0B): Walmart flashes weekend discounts while Amazon sits passive. Amazon's rational best response is to retaliate with discounts, driving the market back into price competition.",
-              "[Maintain, Maintain] — Collusive Full Margins ($5.0B, $5.0B): Both platforms collect premium gross margins from loyal buyers ($10.0B total). However, this is NOT a Nash equilibrium: either platform gains $2.0B by unilaterally launching a surprise discount ($7.0B > $5.0B)."
+              "[Promote Wed, Prepare Mon] — Rival Defends Wrong Day (5, 1): The chain promotes on Wednesday when the rival is positioned on Monday. The chain earns 5 while the rival gets 1 from salvage customer traffic.",
+              "[Promote Wed, Prepare Wed] — Wednesday Defense Active (3, 2): The rival anticipates Wednesday promotion, capping chain payoff at 3 and rival payoff at 2."
             ]
           ],
-          prompt: "As VP of Pricing Strategy at Amazon, explain why no pure-strategy equilibrium exists in this market, and calculate the exact mathematical probability p* with which Amazon must randomize its discount timing to keep Walmart.com indifferent.",
+          prompt: "As Head of Strategic Marketing for the Coffee Chain, calculate your equilibrium promotion mix p* and the rival's defensive preparation mix q*. Explain why you promote more often on Wednesday despite Monday having larger customer traffic.",
           solution: {
-            equilibrium: "Mixed Strategy Nash Equilibrium: Amazon discounts with p* = 0.50; Walmart discounts with q* = 0.50. Expected Payoff: E[U] = $4.0B for both platforms.",
-            breakdown: "Underline analysis reveals no cell with overlapping underlines (pure strategies cycle infinitely). To find p*, equate Walmart's expected payoff from Discounting vs Maintaining: E[Walmart(Discount)] = 3p + 7(1-p) = 7 - 4p; E[Walmart(Maintain)] = 1p + 5(1-p) = 5 - 4p... Equating Walmart's payoffs: 3p + 1(1-p) = 7p + 5(1-p) => 1 + 2p = 5 - 2p => 4p = 4 => p* = 0.50 (50% discount probability). By symmetry, q* = 0.50.",
-            managerialTakeaway: "Unpredictable discount scheduling prevents customers from deferring purchases and prevents rival automated pricing scrapers from preempting. Randomizing between full margin and flash sales is an equilibrium mechanism for price-discriminating between price-sensitive deal hunters and brand-loyal convenience shoppers."
+            equilibrium: "Mixed Strategy Nash Equilibrium: Coffee Chain promotes Mon with p* = 0.25, Wed with 0.75. Rival prepares Mon with q* = 0.60, Wed with 0.40. Expected Payoffs: E[Chain] = 4.2, E[Rival] = 1.5.",
+            breakdown: "Step 1 (Find Chain's mix p by equalising Rival's payoffs): E[Rival(Prepare Mon)] = 3p + 1(1-p) = 1 + 2p; E[Rival(Prepare Wed)] = 0p + 2(1-p) = 2 - 2p. Setting equal: 1 + 2p = 2 - 2p => 4p = 1 => p* = 0.25 (Promote Mon 25%, Wed 75%). Step 2 (Find Rival's mix q by equalising Chain's payoffs): E[Chain(Promote Mon)] = 3q + 6(1-q) = 6 - 3q; E[Chain(Promote Wed)] = 5q + 3(1-q) = 3 + 2q. Setting equal: 6 - 3q = 3 + 2q => 5q = 3 => q* = 0.60 (Prepare Mon 60%, Wed 40%). Step 3 (Expected Payoffs): E[Chain] = 6 - 3(0.60) = 4.2; E[Rival] = 1 + 2(0.25) = 1.5.",
+            managerialTakeaway: "Strategic Counter-Intuition (Slide 13): Monday offers the larger market opportunity, so the rival defends Monday more heavily (q* = 0.60). Anticipating this heavier defensive wall, the rational coffee chain actually promotes more frequently on Wednesday (75% vs. 25%) to harvest unguarded demand."
           }
         }
       },
@@ -2305,6 +2305,22 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
     const MIXED_STRATEGY_PRESETS = [
       {
         id: 0,
+        name: "Coffee Chain Promotion Timing (Prof. Ko's Slide Case)",
+        tag: "Official Lecture Case",
+        rowPlayer: "Coffee Chain",
+        colPlayer: "Rival Chain",
+        act1: "Promote Monday",
+        act2: "Promote Wednesday",
+        r11: 3, r12: 6, r21: 5, r22: 3,
+        c11: 3, c12: 0, c21: 1, c22: 2,
+        pStar: 0.25,
+        qStar: 0.60,
+        expPayoffRow: 4.2,
+        expPayoffCol: 1.5,
+        description: "From Slides 5–13: Monday offers larger demand opportunity, so the rival defends Monday more heavily (q* = 0.60). Anticipating this defense, the chain promotes on Wednesday (p* = 0.25 Mon, 0.75 Wed). Chain expected payoff = 4.2; Rival expected payoff = 1.5."
+      },
+      {
+        id: 1,
         name: "E-Commerce Flash Sales (Amazon vs. Walmart)",
         tag: "Retail Strategy",
         rowPlayer: "Amazon",
@@ -2320,22 +2336,6 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         description: "Zero pure equilibria. If Walmart maintains, Amazon discounts; if Amazon discounts, Walmart discounts; if both discount, both want to escape price war. At p* = 0.50 and q* = 0.50, neither can be exploited."
       },
       {
-        id: 1,
-        name: "Soccer Penalty Kick (Striker vs. Goalkeeper)",
-        tag: "Sports Economics",
-        rowPlayer: "Striker",
-        colPlayer: "Goalkeeper",
-        act1: "Shoot Left",
-        act2: "Shoot Right",
-        r11: 58, r12: 95, r21: 92, r22: 70,
-        c11: 42, c12: 5, c21: 8, c22: 30,
-        pStar: 0.39,
-        qStar: 0.42,
-        expPayoffRow: 79.5,
-        expPayoffCol: 20.5,
-        description: "Levitt & Chiappori (2002): Kickers shoot towards their natural side with calibrated probability to balance the goalkeeper's anticipation, yielding equal 80% success rates regardless of side."
-      },
-      {
         id: 2,
         name: "Corporate Tax Compliance & Audit",
         tag: "Regulatory Governance",
@@ -2349,7 +2349,23 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         qStar: 0.40,
         expPayoffRow: 6.0,
         expPayoffCol: 2.4,
-        description: "The Auditing Paradox: Severe fines on tax evasion do not reduce the equilibrium corporate evasion rate (p*); instead, they allow the regulatory authority to inspect less frequently (q* = 0.40) while preserving deterrence."
+        description: "Slide 16 Application: The Auditing Paradox. Severe penalties on tax evasion do not reduce equilibrium corporate evasion (p*); instead, they allow the regulatory authority to inspect less frequently (q* = 0.40) while maintaining deterrence."
+      },
+      {
+        id: 3,
+        name: "Rock, Paper, Scissors (Slide 3 Intuition)",
+        tag: "Foundational Model",
+        rowPlayer: "Player 1",
+        colPlayer: "Player 2",
+        act1: "Heads / Action 1",
+        act2: "Tails / Action 2",
+        r11: 1, r12: -1, r21: -1, r22: 1,
+        c11: -1, c12: 1, c21: 1, c22: -1,
+        pStar: 0.50,
+        qStar: 0.50,
+        expPayoffRow: 0.0,
+        expPayoffCol: 0.0,
+        description: "Slide 3 & 21: Symmetric zero-sum conflict. When every predictable action is beaten by an opponent counter, only equal randomization removes the exploitable pattern."
       }
     ];
 
