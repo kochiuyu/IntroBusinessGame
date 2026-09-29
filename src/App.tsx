@@ -502,6 +502,68 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
       ]
     };
 
+    const WEEK4_RECAP = {
+      weekId: 4,
+      title: "Course Recap: Mixed Strategies & Randomization in Strategy",
+      chineseTitle: "課堂精華回顧：混合策略、無差異原則與隨機化定價",
+      duration: "3 Hours • Algorithmic Strategy Seminar",
+      markdownPath: "./recaps/week04-recap.md",
+      academicTakeaway: "When predictability makes you vulnerable, strategic stability requires deliberate randomization. In a mixed strategy equilibrium, each player randomizes to keep the opponent indifferent between their pure strategies.",
+      chineseTakeaway: "當可預測性使你處於被動劣勢時，戰略穩定性要求決策者主動進行精確比例的隨機化。在混合策略納什均衡中，每個玩家隨機化的目的，是使對手在自己的各個純策略之間無差異（Indifference Principle）。",
+      readTime: "10 min read • Executive Algorithmic Synthesis",
+      intro: "Week 4 resolves the fundamental dilemma of games with zero pure-strategy Nash equilibria (such as Matching Pennies, Competitive Auditing, and Retail Price Promotions). When any predictable pure move allows a competitor to counter and exploit you, executives must adopt Mixed Strategies. This session covers the Indifference Principle, algebraic calculation of optimal mixing probabilities (p* and q*), empirical testing in sports and business, and modern managerial applications in algorithmic dynamic repricing, security screening, and corporate compliance audits.",
+      sections: [
+        {
+          id: "w4-unpredictability",
+          title: "The Strategic Necessity of Being Unpredictable",
+          chineseTitle: "戰略不可預測性的必要性：零純策略均衡的困境",
+          content: [
+            "In zero-sum games, inspection environments, and discount wars, any fixed pure strategy creates an exploitable pattern. If your rival can forecast your move, they will position their resources to counter you.",
+            "Matching Pennies, penalty kicks, and tennis serves demonstrate that when incentives cycle infinitely, true stability can only be achieved through calculated stochastic randomization."
+          ]
+        },
+        {
+          id: "w4-indifference-principle",
+          title: "The Indifference Principle Engine",
+          chineseTitle: "無差異原則：混合策略的核心數學引擎",
+          definition: "A rational player will strictly randomize between two pure actions if and only if both actions yield the exact same expected payoff: E[U_i(Action 1)] = E[U_i(Action 2)] = E[U_i(sigma*)].",
+          rule: "The Great Counter-Intuitive Truth: You do NOT choose p* to maximize your own immediate score; you choose p* to make your RIVAL indifferent among their pure actions!"
+        },
+        {
+          id: "w4-algebra-derivation",
+          title: "Algebraic Derivation of Mixing Probabilities (p* and q*)",
+          chineseTitle: "混合均衡概率（p* 與 q*）的代數推導步驟",
+          content: [
+            "Equate Row's expected payoffs to solve for Column's probability q*: q* = (D - B) / ((A - B) - (C - D)).",
+            "Equate Column's expected payoffs to solve for Row's probability p*: p* = (d - c) / ((a - c) - (b - d)).",
+            "Nash's Theorem (1950): Every finite normal-form game has at least one Nash Equilibrium when mixed strategies are permitted."
+          ]
+        },
+        {
+          id: "w4-business-apps",
+          title: "Corporate Applications: Sales Models, Audits & Dynamic Pricing",
+          chineseTitle: "企業應用：促銷折扣模型、合規審計與動態算法定價",
+          applications: [
+            { name: "Varian's Model of Sales", domain: "Retail Pricing", insight: "Randomized discounts price-discriminate between informed bargain hunters and uninformed loyal shoppers. Predictable discount calendars destroy gross margins." },
+            { name: "The Auditing Paradox", domain: "Tax & Compliance", insight: "Increasing fines does not reduce evasion directly; it allows regulators to reduce audit frequency while maintaining taxpayer indifference." },
+            { name: "Amazon Algorithmic Repricing", domain: "E-Commerce", insight: "Deterministic pricing algorithms create automated death spirals; state-of-the-art repricers inject stochastic noise to probe elasticity." },
+            { name: "Stackelberg Security Games", domain: "Resource Defense", insight: "LAX airport screening and cyber-patrols use randomized algorithms to prevent adversaries from finding surveillance blind spots." }
+          ]
+        },
+        {
+          id: "w4-human-biases",
+          title: "Human Cognitive Traps in Randomness",
+          chineseTitle: "人類直覺在隨機化中的認知偏差",
+          biases: [
+            { name: "Alternation Bias", desc: "Humans switch options too frequently, wrongly believing repetition is non-random." },
+            { name: "Clustering Illusion", desc: "Misinterpreting true random streaks and streaks as intentional strategic trends." },
+            { name: "Gambler's Fallacy", desc: "Erroneously assuming that after several promotions, a full-price period is 'due'." }
+          ],
+          takeaway: "Never allow human intuition to manage mixed strategy decisions. Formulate the matrix, calculate p* and q*, and delegate execution to automated cryptographic randomizers."
+        }
+      ]
+    };
+
     // --- Complete 12-Week Curriculum Data Architecture ---
     const CURRICULUM_DATA = [
       {
@@ -718,25 +780,67 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         id: 4,
         title: "Mixed Strategies & Randomization in Strategy",
         chineseTitle: "混合策略與隨機化決策",
-        status: "upcoming",
+        status: "active",
         duration: "3 Hours • Algorithmic Strategy Seminar",
         preReadingUrl: "https://x.com/kochiuyu/status/2040211996885532677",
+        recap: WEEK4_RECAP,
         coreConcepts: [
           "Indifference Principle in Mixed Strategies",
           "Dynamic Algorithmic Pricing & Flash Sales",
+          "Zero Pure-Strategy Equilibrium Games",
           "Auditing Games & Corporate Compliance",
           "Unpredictability as an Offensive Moat",
+          "Empirical Sports Econometrics (Penalty Kicks & Tennis)",
           "Security Inspection & Cyber-Defense Resource Allocation"
         ],
         businessCases: [
           "Amazon Dynamic Algorithmic Repricing",
           "Target vs. Walmart Surprise Weekend Promotions",
           "IRS Audit Selection & Financial Fraud Detection",
-          "Airline Revenue Management & Seat Class Randomization"
+          "Airline Revenue Management & Seat Class Randomization",
+          "Airport Security Patrol Randomization (Stackelberg Games)"
         ],
         slidePath: "./slides/week04.pdf",
         pageCount: 38,
-        upcomingNote: "Case briefing on retail algorithmic pricing algorithms releases next Tuesday."
+        executiveSummary: [
+          "Unpredictability as an Offensive Moat: When no pure-strategy equilibrium exists, being predictable invites targeted exploitation. Maintain calculated strategic randomness.",
+          "The Indifference Principle Engine: You do not mix to maximize your own immediate score; you mix with exact probabilities (p* and q*) that keep the competitor indifferent between their pure strategies.",
+          "Deploy Algorithmic Randomization: Human intuition suffers from severe cognitive biases (alternation bias, clustering illusion). Delegate mixed strategy execution to automated algorithmic rules."
+        ],
+        caseAnalysis: {
+          title: "Amazon vs. Walmart.com: Algorithmic Promotional Discounting",
+          subtitle: "E-Commerce Mixed Pricing Strategies & Varian's Model of Sales",
+          scenario: "Amazon and Walmart.com compete for weekend consumer electronics buyers. Two shopper segments exist: 40% are 'Informed Deal-Hunters' who purchase from whichever platform has the lower price, while 60% are 'Brand-Loyal Convenience Shoppers' split equally between the two platforms. Each platform can either run a Surprise Flash Promotion (Heavy Discount) or Maintain Full Margins. If both maintain full margins, each earns $5.0B from loyalists. If one retailer unpredictably flashes a discount while the other maintains, the discounter captures 100% of the informed shoppers plus their loyalists, generating $7.0B, while the rival makes only $1.0B. If both discount simultaneously, a destructive price war ensues, leaving each with only $3.0B.",
+          matrix: {
+            player1: "Amazon",
+            player2: "Walmart.com",
+            actions: ["Surprise Flash Discount", "Maintain Full Margin"],
+            payoffs: [
+              [["$3.0B", "$3.0B"], ["$7.0B", "$1.0B"]],
+              [["$1.0B", "$7.0B"], ["$5.0B", "$5.0B"]]
+            ]
+          },
+          cellLabels: [
+            ["Mutual Price War", "Amazon Preempts"],
+            ["Walmart Preempts", "Collusive Margins (Unstable)"]
+          ],
+          cellDescriptions: [
+            [
+              "[Discount, Discount] — Mutual Price War ($3.0B, $3.0B): Both platforms slash margins simultaneously, capturing informed volume but sacrificing unit margin. If Walmart maintains while Amazon discounts, Walmart wants to switch to Discounting; but if both discount, either would prefer to maintain margins if only the rival would too.",
+              "[Discount, Maintain] — Amazon Exploits ($7.0B, $1.0B): Amazon unpredictably drops prices, sweeping informed shoppers and generating $7.0B. Walmart makes only $1.0B. Walmart's immediate best response is to counter with discounts, shifting to ($3.0B, $3.0B)."
+            ],
+            [
+              "[Maintain, Discount] — Walmart Exploits ($1.0B, $7.0B): Walmart flashes weekend discounts while Amazon sits passive. Amazon's rational best response is to retaliate with discounts, driving the market back into price competition.",
+              "[Maintain, Maintain] — Collusive Full Margins ($5.0B, $5.0B): Both platforms collect premium gross margins from loyal buyers ($10.0B total). However, this is NOT a Nash equilibrium: either platform gains $2.0B by unilaterally launching a surprise discount ($7.0B > $5.0B)."
+            ]
+          ],
+          prompt: "As VP of Pricing Strategy at Amazon, explain why no pure-strategy equilibrium exists in this market, and calculate the exact mathematical probability p* with which Amazon must randomize its discount timing to keep Walmart.com indifferent.",
+          solution: {
+            equilibrium: "Mixed Strategy Nash Equilibrium: Amazon discounts with p* = 0.50; Walmart discounts with q* = 0.50. Expected Payoff: E[U] = $4.0B for both platforms.",
+            breakdown: "Underline analysis reveals no cell with overlapping underlines (pure strategies cycle infinitely). To find p*, equate Walmart's expected payoff from Discounting vs Maintaining: E[Walmart(Discount)] = 3p + 7(1-p) = 7 - 4p; E[Walmart(Maintain)] = 1p + 5(1-p) = 5 - 4p... Equating Walmart's payoffs: 3p + 1(1-p) = 7p + 5(1-p) => 1 + 2p = 5 - 2p => 4p = 4 => p* = 0.50 (50% discount probability). By symmetry, q* = 0.50.",
+            managerialTakeaway: "Unpredictable discount scheduling prevents customers from deferring purchases and prevents rival automated pricing scrapers from preempting. Randomizing between full margin and flash sales is an equilibrium mechanism for price-discriminating between price-sensitive deal hunters and brand-loyal convenience shoppers."
+          }
+        }
       },
       {
         id: 5,
@@ -1101,6 +1205,38 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         ],
         correctIndex: 1,
         rationale: "The classic Bertrand Paradox proves that with homogeneous goods and simultaneous price competition, the unilateral incentive to undercut forces equilibrium price down to marginal cost (P* = MC = $10), wiping out all economic profit despite having only two competitors. High-performing executives escape the trap through product differentiation, capacity constraints, customer switching costs, and brand equity."
+      },
+      {
+        id: "q10",
+        weekId: 4,
+        weekTag: "Week 4: Mixed Strategies & The Indifference Principle",
+        title: "The Mathematical Engine of Mixed Strategy Nash Equilibrium",
+        scenario: "Two competing e-commerce platforms must choose whether to launch unexpected flash sales on the weekend. Because any predictable discounting schedule is countered by competitors, both platforms randomize their promotions using mixed strategies (p* and q*).",
+        question: "According to the Indifference Principle of mixed strategy Nash equilibria, what fundamental condition determines the probability p* chosen by Player 1?",
+        options: [
+          "Player 1 chooses p* to maximize Player 1's expected payoff directly without regard to Player 2.",
+          "Player 1 chooses p* such that Player 2 is strictly indifferent between Player 2's available pure strategies.",
+          "Player 1 chooses p* so that both players earn identical profits in all 4 matrix cells.",
+          "Player 1 always sets p* = 0.50 regardless of the underlying payoff numbers."
+        ],
+        correctIndex: 1,
+        rationale: "The foundational insight of mixed strategy Nash equilibria is the Indifference Principle: Player 1 randomizes with probability p* not to optimize their own payoff directly, but to calibrate the opponent's expected payoffs so that Player 2 has no unilateral incentive to favor one pure action over another. If Player 2 preferred one action, they would play it 100% of the time, destroying the equilibrium."
+      },
+      {
+        id: "q11",
+        weekId: 4,
+        weekTag: "Week 4: Business Randomization & Varian's Model",
+        title: "Retail Price Promotions and The Deterrence Paradox in Auditing",
+        scenario: "A retail chain currently schedules 30% off discounts every first weekend of the month. The Chief Commercial Officer proposes switching to algorithmic randomized flash sales based on Varian's Model of Sales.",
+        question: "Why does predictable promotional scheduling destroy operating margins, and how does randomized dynamic pricing solve this problem?",
+        options: [
+          "Predictable discounts cause informed shoppers to defer purchases and allow rivals to undercut 2 days early; randomized promotions price-discriminate effectively by capturing informed searchers while preserving full margins from brand-loyal convenience shoppers.",
+          "Predictable discounts are illegal under federal antitrust law; randomized discounts are required by the SEC.",
+          "Predictable discounts attract too many customers, which causes stores to exceed maximum fire code occupancy.",
+          "Randomized pricing guarantees that all customers pay the exact average cost of production."
+        ],
+        correctIndex: 0,
+        rationale: "Under Varian's Model of Sales, predictable discount calendars train informed consumers to never buy at full price and invite competitor preemption. Unpredictable randomized promotional timing forces convenience-seeking uninformed consumers to pay full price while still capturing price-sensitive deal hunters who invest time to monitor flash markdowns."
       }
     ];
 
@@ -1113,7 +1249,9 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
       { id: "comp_5", label: "Evaluate first-mover preemption vs. fast-follower second-mover timing advantages", category: "Strategic Timing" },
       { id: "comp_6", label: "Distinguish an isolated 'action' from a complete contingent 'strategy'", category: "Extensive Form Fundamentals" },
       { id: "comp_7", label: "Analyze technology capex & coupon warfare via strategic interdependence", category: "Capital Allocation" },
-      { id: "comp_8", label: "Assess repeated interaction mechanisms, monitoring, and cartel discipline (OPEC)", category: "Cooperation & Enforcement" }
+      { id: "comp_8", label: "Assess repeated interaction mechanisms, monitoring, and cartel discipline (OPEC)", category: "Cooperation & Enforcement" },
+      { id: "comp_9", label: "Calculate Mixed Strategy Nash Equilibria using the Indifference Principle (p*, q*)", category: "Algorithmic & Mixed Games" },
+      { id: "comp_10", label: "Deploy algorithmic dynamic randomization to protect promotional and cybersecurity margins", category: "Managerial Randomization" }
     ];
 
     // --- Curated Reference Tools & Mini-Games ---
@@ -1336,6 +1474,43 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
           });
         });
 
+        // Mixed strategy Nash equilibrium derivation (Week 04 Indifference Principle Engine)
+        // Row plays Action 1 with prob p, Col plays Action 1 with prob q
+        const r11 = p[0][0][0], r12 = p[0][1][0];
+        const r21 = p[1][0][0], r22 = p[1][1][0];
+        const c11 = p[0][0][1], c12 = p[0][1][1];
+        const c21 = p[1][0][1], c22 = p[1][1][1];
+
+        // Col is indifferent when E[Col(Act1)] = E[Col(Act2)]:
+        // p * c11 + (1-p) * c21 = p * c12 + (1-p) * c22
+        // => p * ((c11 + c22) - (c12 + c21)) = c22 - c21
+        const denomP = (c11 + c22) - (c12 + c21);
+        const numerP = c22 - c21;
+        let mixedP = null;
+        if (denomP !== 0) {
+          const val = numerP / denomP;
+          if (val >= 0 && val <= 1) {
+            mixedP = val;
+          }
+        }
+
+        // Row is indifferent when E[Row(Act1)] = E[Row(Act2)]:
+        // q * r11 + (1-q) * r12 = q * r21 + (1-q) * r22
+        // => q * ((r11 + r22) - (r12 + r21)) = r22 - r12
+        const denomQ = (r11 + r22) - (r12 + r21);
+        const numerQ = r22 - r12;
+        let mixedQ = null;
+        if (denomQ !== 0) {
+          const val = numerQ / denomQ;
+          if (val >= 0 && val <= 1) {
+            mixedQ = val;
+          }
+        }
+
+        const hasValidMixed = mixedP !== null && mixedQ !== null;
+        const mixedExpRow = hasValidMixed ? (mixedQ! * r11 + (1 - mixedQ!) * r12) : null;
+        const mixedExpCol = hasValidMixed ? (mixedP! * c11 + (1 - mixedP!) * c21) : null;
+
         return {
           br1,
           br2,
@@ -1343,7 +1518,12 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
           p1Dominant: p1DominantRow0 ? 0 : p1DominantRow1 ? 1 : null,
           p2Dominant: p2DominantCol0 ? 0 : p2DominantCol1 ? 1 : null,
           paretoOptimal,
-          isSocialDilemma
+          isSocialDilemma,
+          mixedP,
+          mixedQ,
+          hasValidMixed,
+          mixedExpRow,
+          mixedExpCol
         };
       }, [payoffs]);
 
@@ -1636,8 +1816,34 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
               <div>
                 <h4 className="text-xs font-bold text-slate-300 uppercase">Pure Strategy Nash Equilibria:</h4>
                 {solution.equilibria.length === 0 ? (
-                  <div className="mt-1.5 p-3 rounded-lg bg-amber-950/20 border border-amber-500/30 text-xs text-amber-200">
-                    <strong>No Pure Strategy Nash Equilibrium exists.</strong> The players face cyclical incentives (like Rock-Paper-Scissors or Inspection Game). The game resolves via a mixed-strategy equilibrium where players randomize moves to remain unpredictable.
+                  <div className="mt-1.5 p-3 rounded-lg bg-amber-950/20 border border-amber-500/30 text-xs text-amber-200 space-y-2.5">
+                    <p>
+                      <strong>No Pure Strategy Nash Equilibrium exists.</strong> The players face cyclical incentives (like Rock-Paper-Scissors or Inspection Game). The game resolves via a mixed-strategy equilibrium where players randomize moves to remain unpredictable.
+                    </p>
+                    {solution.hasValidMixed && solution.mixedP !== null && solution.mixedQ !== null && (
+                      <div className="pt-2 border-t border-amber-500/30 space-y-2">
+                        <div className="flex items-center gap-1.5 text-emerald-300 font-bold font-mono text-[11px]">
+                          <Icon name="target" className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Mixed Strategy Nash Equilibrium (Week 04 Engine):</span>
+                        </div>
+                        <div className="bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 space-y-1.5 text-[11px] font-mono">
+                          <div className="flex justify-between items-center text-slate-200">
+                            <span>{p1Name} (p*):</span>
+                            <span className="text-emerald-400 font-bold">{(solution.mixedP * 100).toFixed(1)}% {a1Name}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-slate-200">
+                            <span>{p2Name} (q*):</span>
+                            <span className="text-sky-400 font-bold">{(solution.mixedQ * 100).toFixed(1)}% {a1Name}</span>
+                          </div>
+                          {solution.mixedExpRow !== null && solution.mixedExpCol !== null && (
+                            <div className="pt-1.5 border-t border-slate-800 text-[10px] text-slate-400 flex justify-between">
+                              <span>E[u({p1Name})]: <strong className="text-emerald-300">{solution.mixedExpRow.toFixed(2)}</strong></span>
+                              <span>E[u({p2Name})]: <strong className="text-sky-300">{solution.mixedExpCol.toFixed(2)}</strong></span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="mt-1.5 space-y-1.5">
@@ -1821,6 +2027,39 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
   % Annotations
   \\draw[<->, dashed, blue] (0.5, 0.8) -- (2.0, 0.8) node[midway, above] {Commitment Horizon};
   \\draw[<->, dashed, purple] (2.0, 0.8) -- (3.5, 0.8) node[midway, above] {Information State};
+\\end{tikzpicture}`
+        },
+        mixed: {
+          title: "Mixed Strategy Matrix with Probabilities (Week 04)",
+          description: "2x2 normal form matrix with randomization probabilities p, 1-p, q, 1-q and indifference conditions.",
+          code: `% \\usepackage{tikz} in preamble
+\\begin{tikzpicture}[scale=1.2]
+  % Matrix grid & border
+  \\draw[thick] (0,0) grid (4,4);
+  \\draw[thick] (0,2) -- (4,2);
+  \\draw[thick] (2,0) -- (2,4);
+
+  % Player & Probability Labels
+  \\node[above] at (2, 4.6) {\\textbf{Player 2 (Goalkeeper / Competitor)}};
+  \\node[left, rotate=90] at (-0.8, 2) {\\textbf{Player 1 (Kicker / Firm)}};
+
+  % Action Labels with Probabilities (q, 1-q, p, 1-p)
+  \\node[above] at (1, 4.1) {Action 1: Left ($q$)};
+  \\node[above] at (3, 4.1) {Action 2: Right ($1-q$)};
+  \\node[left] at (-0.1, 3) {Action 1: Left ($p$)};
+  \\node[left] at (-0.1, 1) {Action 2: Right ($1-p$)};
+
+  % Payoff Cells (Row, Column)
+  \\node at (1, 3) {$(1, -1)$};
+  \\node at (3, 3) {$(-1, 1)$};
+  \\node at (1, 1) {$(-1, 1)$};
+  \\node at (3, 1) {$(1, -1)$};
+
+  % Equilibrium annotation
+  \\node[below, font=\\small, align=center] at (2, -0.3) {
+    \\textbf{Mixed Strategy Nash Equilibrium (MSNE):} $p^* = \\frac{1}{2}, \\; q^* = \\frac{1}{2}$ \\\\[2pt]
+    \\textit{Indifference condition:} $E[u_2(\\text{Left})] = E[u_2(\\text{Right})] = 0$
+  };
 \\end{tikzpicture}`
         }
       };
@@ -2010,6 +2249,17 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
                   <Icon name="clock" className="w-3.5 h-3.5" />
                   Timeline
                 </button>
+                <button
+                  onClick={() => setActiveSnippetTab("mixed")}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                    activeSnippetTab === "mixed"
+                      ? "bg-purple-600 text-white shadow-sm"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Icon name="target" className="w-3.5 h-3.5" />
+                  Mixed Strategy Matrix
+                </button>
               </div>
             </div>
 
@@ -2051,6 +2301,58 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         </div>
       );
     }
+
+    const MIXED_STRATEGY_PRESETS = [
+      {
+        id: 0,
+        name: "E-Commerce Flash Sales (Amazon vs. Walmart)",
+        tag: "Retail Strategy",
+        rowPlayer: "Amazon",
+        colPlayer: "Walmart",
+        act1: "Flash Discount",
+        act2: "Maintain Margin",
+        r11: 3, r12: 7, r21: 1, r22: 5,
+        c11: 3, c12: 1, c21: 7, c22: 5,
+        pStar: 0.50,
+        qStar: 0.50,
+        expPayoffRow: 4.0,
+        expPayoffCol: 4.0,
+        description: "Zero pure equilibria. If Walmart maintains, Amazon discounts; if Amazon discounts, Walmart discounts; if both discount, both want to escape price war. At p* = 0.50 and q* = 0.50, neither can be exploited."
+      },
+      {
+        id: 1,
+        name: "Soccer Penalty Kick (Striker vs. Goalkeeper)",
+        tag: "Sports Economics",
+        rowPlayer: "Striker",
+        colPlayer: "Goalkeeper",
+        act1: "Shoot Left",
+        act2: "Shoot Right",
+        r11: 58, r12: 95, r21: 92, r22: 70,
+        c11: 42, c12: 5, c21: 8, c22: 30,
+        pStar: 0.39,
+        qStar: 0.42,
+        expPayoffRow: 79.5,
+        expPayoffCol: 20.5,
+        description: "Levitt & Chiappori (2002): Kickers shoot towards their natural side with calibrated probability to balance the goalkeeper's anticipation, yielding equal 80% success rates regardless of side."
+      },
+      {
+        id: 2,
+        name: "Corporate Tax Compliance & Audit",
+        tag: "Regulatory Governance",
+        rowPlayer: "Corporation",
+        colPlayer: "Tax Auditor",
+        act1: "Aggressive Evasion",
+        act2: "Strict Compliance",
+        r11: 0, r12: 10, r21: 6, r22: 6,
+        c11: 4, c12: 0, c21: 2, c22: 3,
+        pStar: 0.20,
+        qStar: 0.40,
+        expPayoffRow: 6.0,
+        expPayoffCol: 2.4,
+        description: "The Auditing Paradox: Severe fines on tax evasion do not reduce the equilibrium corporate evasion rate (p*); instead, they allow the regulatory authority to inspect less frequently (q* = 0.40) while preserving deterrence."
+      }
+    ];
+
     function App() {
       // --- Persistent State Hooks ---
       const [completedWeeks, setCompletedWeeks] = useState(() => {
@@ -2118,6 +2420,8 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
       const [activeCournotTabWeek3, setActiveCournotTabWeek3] = useState(0);
       const [activeIesdsStep, setActiveIesdsStep] = useState(0);
       const [activeEquilibriumRegime, setActiveEquilibriumRegime] = useState(0);
+      const [activeMixedPresetWeek4, setActiveMixedPresetWeek4] = useState(0);
+      const [customP1ProbWeek4, setCustomP1ProbWeek4] = useState(0.5);
       const [customSlideUrls, setCustomSlideUrls] = useState<Record<number, { url: string; name: string; size: number }>>({});
       const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -2488,6 +2792,14 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
                         <Icon name="chevronRight" className="w-4 h-4" />
                       </button>
                       <button
+                        onClick={() => { setActiveTab("modules"); setSelectedWeekId(4); }}
+                        className="px-4 py-2 bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-200 border border-emerald-600/50 font-semibold rounded-lg text-xs sm:text-sm transition-all flex items-center gap-2 shadow-sm"
+                      >
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        Week 4: Mixed Strategies
+                        <Icon name="chevronRight" className="w-4 h-4" />
+                      </button>
+                      <button
                         onClick={() => setActiveTab("quizzes")}
                         className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold rounded-lg text-xs sm:text-sm transition-all flex items-center gap-2"
                       >
@@ -2744,7 +3056,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
                   </div>
                 </div>
 
-                {/* Featured Course Recaps Showcase (Weeks 0, 1, 2 & 3) */}
+                {/* Featured Course Recaps Showcase (Weeks 0, 1, 2, 3 & 4) */}
                 <div className="bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-6 shadow-sm">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 border-b border-slate-800">
                     <div>
@@ -2765,12 +3077,12 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-slate-400">Available:</span>
                       <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-mono font-bold">
-                        WEEKS 0, 1, 2 & 3 READY
+                        WEEKS 0, 1, 2, 3 & 4 READY
                       </span>
                     </div>
                   </div>
 
-                  <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                  <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
                     {/* Week 0 Recap Card */}
                     <div className="bg-slate-950/70 border border-slate-800 hover:border-indigo-500/50 rounded-xl p-5 flex flex-col justify-between transition-all group">
                       <div>
@@ -3006,6 +3318,65 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
                         </a>
                       </div>
                     </div>
+
+                    {/* Week 4 Recap Card */}
+                    <div className="bg-slate-950/70 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-5 flex flex-col justify-between transition-all group">
+                      <div>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-600/30 text-emerald-300 border border-emerald-600/40 font-bold">
+                            WEEK 04 RECAP • 10 MIN READ
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-mono">./recaps/week04-recap.md</span>
+                        </div>
+                        <h4 className="text-base font-bold text-white mt-2 group-hover:text-emerald-300 transition-colors">
+                          {WEEK4_RECAP.title}
+                        </h4>
+                        <p className="text-xs text-emerald-300/80 font-medium mt-0.5">
+                          {WEEK4_RECAP.chineseTitle}
+                        </p>
+
+                        {/* Professor Quote */}
+                        <div className="mt-3 p-3 rounded-lg bg-emerald-950/30 border border-emerald-800/40 relative">
+                          <span className="text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider block mb-1">
+                            Academic Takeaway:
+                          </span>
+                          <p className="text-xs text-emerald-100 italic leading-relaxed">
+                            "{WEEK4_RECAP.academicTakeaway}"
+                          </p>
+                        </div>
+
+                        {/* Topics & Concepts */}
+                        <div className="mt-3">
+                          <p className="text-[11px] font-semibold text-slate-400 mb-1.5">Key Methodologies & Frameworks:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {["Indifference Principle", "Mixed Strategy (p*, q*)", "Zero-Sum Conflict", "Matching Pennies", "Varian's Sales Model", "Penalty Kicks & Tennis", "Audit Paradox", "Algorithmic Repricing"].map((c, i) => (
+                              <span key={i} className="text-[10px] bg-slate-900 text-slate-300 px-2 py-0.5 rounded border border-slate-800">
+                                {c}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                        <button
+                          onClick={() => openWeekRecap(4)}
+                          className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
+                        >
+                          <span>Read Full Lecture Recap</span>
+                          <Icon name="chevronRight" className="w-3.5 h-3.5" />
+                        </button>
+                        <a
+                          href="./recaps/week04-recap.md"
+                          download="week04-recap.md"
+                          className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-mono flex items-center gap-1 border border-slate-700 transition-all"
+                          title="Download Markdown summary"
+                        >
+                          <Icon name="download" className="w-3.5 h-3.5" />
+                          .md
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -3213,13 +3584,13 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
                           onClick={() => setModuleFilter("active")}
                           className={`px-2 py-1 text-[11px] font-semibold rounded ${moduleFilter === "active" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"}`}
                         >
-                          Active (3)
+                          Active ({CURRICULUM_DATA.filter(w => w.status === "active").length})
                         </button>
                         <button
                           onClick={() => setModuleFilter("upcoming")}
                           className={`px-2 py-1 text-[11px] font-semibold rounded ${moduleFilter === "upcoming" ? "bg-slate-700 text-white" : "text-slate-400 hover:text-white"}`}
                         >
-                          Upcoming
+                          Upcoming ({CURRICULUM_DATA.filter(w => w.status === "upcoming").length})
                         </button>
                       </div>
                     </div>
@@ -5078,6 +5449,431 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
                             </div>
                           )}
 
+                          {/* WEEK 4 RECAP SECTIONS */}
+                          {selectedWeek.id === 4 && (
+                            <div className="space-y-6">
+                              {/* Week 4 Slides Updated Status Banner */}
+                              <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900 to-indigo-950/40 border border-emerald-500/40 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="flex items-start gap-3">
+                                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40 mt-0.5">
+                                    <Icon name="checkCircle" className="w-5 h-5" />
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                                        SLIDES & LECTURE UPDATED
+                                      </span>
+                                      <span className="text-xs text-slate-300 font-semibold">
+                                        Week 04 Materials Synchronized
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                                      Week 04 materials covering <strong>Mixed Strategies & Randomization</strong> are active. Explore the 5 core modules below or open the slide reader.
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+                                  <button
+                                    onClick={() => {
+                                      setWeekSubTab("slides");
+                                      setEmbeddedSlideMode(true);
+                                    }}
+                                    className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
+                                  >
+                                    <Icon name="eye" className="w-3.5 h-3.5" />
+                                    <span>View Slides</span>
+                                  </button>
+                                  <a
+                                    href={getActiveSlideUrl(4, "./slides/week04.pdf")}
+                                    download={getActiveSlideDownloadName(4, "./slides/week04.pdf")}
+                                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all"
+                                  >
+                                    <Icon name="download" className="w-3.5 h-3.5 text-indigo-400" />
+                                    <span>PDF</span>
+                                  </a>
+                                </div>
+                              </div>
+                              {/* 1. Unpredictability & Zero-Sum Conflict */}
+                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                                <div className="border-b border-slate-800 pb-3 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                  <div>
+                                    <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">Section 01</span>
+                                    <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
+                                      The Failure of Pure Strategies & The Value of Unpredictability (零純策略困境)
+                                    </h3>
+                                    <p className="text-xs text-slate-400">
+                                      When predictability makes you an easy target, pure rationality demands calculated strategic randomization.
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() => setActiveTab("gametikz")}
+                                    className="self-start sm:self-auto px-3 py-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-700/50 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                                  >
+                                    <Icon name="table" className="w-3.5 h-3.5 text-emerald-400" />
+                                    <span>Model in GameTikzStudio</span>
+                                  </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                                    <div className="flex items-center gap-2">
+                                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                                      <h4 className="text-xs sm:text-sm font-bold text-white">The Cyclic Deviation Trap:</h4>
+                                    </div>
+                                    <p className="text-xs text-slate-300 leading-relaxed">
+                                      In games like Matching Pennies, Penalty Kicks, and Retail Sales Battles, <strong className="text-white">no cell has overlapping underlines</strong>. If you commit to an action, the competitor immediately switches to counter you. If you anticipate that counter, you want to switch again.
+                                    </p>
+                                    <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-400 font-mono">
+                                      Key Takeaway: A pure strategy can NEVER be an equilibrium when having your move known beforehand guarantees defeat.
+                                    </div>
+                                  </div>
+
+                                  <div className="p-4 bg-emerald-950/30 rounded-xl border border-emerald-700/50 space-y-2">
+                                    <div className="flex items-center gap-2">
+                                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                                      <h4 className="text-xs sm:text-sm font-bold text-emerald-200">The Mixed Strategy Concept:</h4>
+                                    </div>
+                                    <div className="p-2 rounded-lg bg-slate-950/80 border border-emerald-500/30 font-mono text-xs text-emerald-300">
+                                      &sigma;_i = (p, 1-p) &isin; &Delta;(S_i) &nbsp;|&nbsp; p &ge; 0, sum = 1
+                                    </div>
+                                    <p className="text-xs text-slate-300 leading-relaxed">
+                                      A mixed strategy is a <strong className="text-white">probability distribution</strong> over available pure moves. Randomization is not chaotic gambling; it is a calculated equilibrium commitment to prevent rivals from exploiting predictable behavior.
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* 2. The Indifference Principle */}
+                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                                <div className="border-b border-slate-800 pb-3 mb-4">
+                                  <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">Section 02</span>
+                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
+                                    The Indifference Principle: Mathematical Foundation (無差異原則)
+                                  </h3>
+                                  <p className="text-xs text-slate-400">
+                                    Why players randomize and how equilibrium probabilities are determined.
+                                  </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                  <div className="md:col-span-7 p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+                                    <h4 className="text-xs font-bold text-white uppercase tracking-wider text-emerald-400">
+                                      The Core Mathematical Condition
+                                    </h4>
+                                    <p className="text-xs text-slate-300 leading-relaxed">
+                                      A rational player will only randomize between Action 1 and Action 2 if <strong className="text-white">both actions yield the exact same expected payoff</strong>:
+                                    </p>
+                                    <div className="p-3 rounded-lg bg-slate-900 border border-emerald-500/30 font-mono text-xs text-emerald-300 text-center font-bold">
+                                      E[u_i(Action 1)] = E[u_i(Action 2)] = E[u_i(&sigma;_i*)]
+                                    </div>
+                                    <p className="text-xs text-slate-400 leading-relaxed">
+                                      If Action 1 gave an expected payoff of $10M and Action 2 gave $9.9M, a rational executive would choose Action 1 with 100% probability! Randomization is only stable when the alternatives are equally lucrative in expectation.
+                                    </p>
+                                  </div>
+
+                                  <div className="md:col-span-5 p-4 bg-indigo-950/40 rounded-xl border border-indigo-700/50 space-y-2">
+                                    <h4 className="text-xs font-bold text-indigo-200">
+                                      The Fundamental Paradox
+                                    </h4>
+                                    <p className="text-xs text-slate-300 leading-relaxed">
+                                      <strong className="text-white">You do NOT mix to maximize your own immediate score.</strong> You mix with probability <code className="text-emerald-300 font-mono">p*</code> to make the <strong className="text-indigo-200">RIVAL indifferent</strong> between their pure options!
+                                    </p>
+                                    <div className="p-2 rounded bg-slate-950/80 border border-indigo-500/30 text-[11px] text-indigo-300 font-mono">
+                                      Row sets p* &rarr; Column is Indifferent<br />
+                                      Column sets q* &rarr; Row is Indifferent
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* 3. Interactive Mixed Strategy Engine & Simulator */}
+                              <div className="bg-gradient-to-b from-slate-900 via-slate-900 to-emerald-950/20 border-2 border-emerald-500/50 rounded-2xl p-6 shadow-xl shadow-emerald-950/25 space-y-6 ring-1 ring-emerald-500/30">
+                                <div className="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-300 font-bold px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/50">
+                                        Section 03 • Interactive Simulator
+                                      </span>
+                                      <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
+                                        <Icon name="checkCircle" className="w-3.5 h-3.5" />
+                                        Probability Engine Live
+                                      </span>
+                                    </div>
+                                    <h3 className="text-base sm:text-xl font-black text-white mt-1.5 flex items-center gap-2">
+                                      <Icon name="target" className="w-5 h-5 text-emerald-400" />
+                                      2&times;2 Mixed Strategy Equilibrium Calculator & Matrix Simulator
+                                    </h3>
+                                    <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
+                                      Select an archetypal business scenario below to compute the equilibrium probabilities (p*, q*) and test how deviations break rival indifference.
+                                    </p>
+                                  </div>
+
+                                  {/* Preset Selector */}
+                                  <div className="flex flex-wrap items-center gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+                                    {MIXED_STRATEGY_PRESETS.map((preset) => (
+                                      <button
+                                        key={preset.id}
+                                        onClick={() => {
+                                          setActiveMixedPresetWeek4(preset.id);
+                                          setCustomP1ProbWeek4(preset.pStar);
+                                        }}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                          activeMixedPresetWeek4 === preset.id
+                                            ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                                            : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                                        }`}
+                                      >
+                                        {preset.name.split(" ")[0]}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                {(() => {
+                                  const p = MIXED_STRATEGY_PRESETS[activeMixedPresetWeek4];
+                                  const curP = customP1ProbWeek4;
+                                  const expCol1 = curP * p.c11 + (1 - curP) * p.c21;
+                                  const expCol2 = curP * p.c12 + (1 - curP) * p.c22;
+                                  const isIndifferent = Math.abs(expCol1 - expCol2) < 0.05;
+
+                                  return (
+                                    <div className="space-y-5 animate-fadeIn">
+                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                                        <div>
+                                          <div className="flex items-center gap-2">
+                                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
+                                              {p.tag}
+                                            </span>
+                                            <h4 className="text-sm font-bold text-white">{p.name}</h4>
+                                          </div>
+                                          <p className="text-xs text-slate-400 mt-0.5">{p.description}</p>
+                                        </div>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                          <div className="px-3 py-1.5 rounded-lg bg-emerald-950/50 border border-emerald-700/50 text-right">
+                                            <span className="text-[10px] text-slate-400 uppercase font-mono block">Equilibrium p*</span>
+                                            <span className="font-mono text-sm font-bold text-emerald-300">{(p.pStar * 100).toFixed(0)}% {p.act1}</span>
+                                          </div>
+                                          <div className="px-3 py-1.5 rounded-lg bg-indigo-950/50 border border-indigo-700/50 text-right">
+                                            <span className="text-[10px] text-slate-400 uppercase font-mono block">Equilibrium q*</span>
+                                            <span className="font-mono text-sm font-bold text-indigo-300">{(p.qStar * 100).toFixed(0)}% {p.act1}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+                                        {/* Payoff Matrix Table */}
+                                        <div className="md:col-span-6 overflow-x-auto">
+                                          <table className="w-full text-center border-collapse">
+                                            <thead>
+                                              <tr>
+                                                <th className="p-2 text-xs text-slate-500 font-mono">{p.rowPlayer} \ {p.colPlayer}</th>
+                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">
+                                                  {p.act1} (q)
+                                                </th>
+                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">
+                                                  {p.act2} (1-q)
+                                                </th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">
+                                                  {p.act1} (p)
+                                                </td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/40">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-400 font-bold">{p.r11}</span>, <span className="text-rose-400 font-bold">{p.c11}</span>
+                                                  </div>
+                                                </td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/40">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-400 font-bold">{p.r12}</span>, <span className="text-rose-400 font-bold">{p.c12}</span>
+                                                  </div>
+                                                </td>
+                                              </tr>
+                                              <tr>
+                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">
+                                                  {p.act2} (1-p)
+                                                </td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/40">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-400 font-bold">{p.r21}</span>, <span className="text-rose-400 font-bold">{p.c21}</span>
+                                                  </div>
+                                                </td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/40">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-400 font-bold">{p.r22}</span>, <span className="text-rose-400 font-bold">{p.c22}</span>
+                                                  </div>
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                          <div className="mt-2 text-[11px] text-slate-500 text-center font-mono">
+                                            Row Payoff (Blue) • Column Payoff (Red)
+                                          </div>
+                                        </div>
+
+                                        {/* Real-Time Interactive Probability Slider */}
+                                        <div className="md:col-span-6 p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                                          <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                                              <Icon name="sliders" className="w-4 h-4 text-emerald-400" />
+                                              Simulate {p.rowPlayer}'s Mixing Probability (p):
+                                            </span>
+                                            <span className="font-mono text-xs font-bold text-emerald-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                                              p = {(curP * 100).toFixed(0)}%
+                                            </span>
+                                          </div>
+
+                                          <input
+                                            type="range"
+                                            min="0"
+                                            max="1"
+                                            step="0.01"
+                                            value={curP}
+                                            onChange={(e) => setCustomP1ProbWeek4(parseFloat(e.target.value))}
+                                            className="w-full accent-emerald-500 cursor-pointer h-2 bg-slate-800 rounded-lg"
+                                          />
+
+                                          <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+                                            <span>0% (100% {p.act2})</span>
+                                            <button
+                                              onClick={() => setCustomP1ProbWeek4(p.pStar)}
+                                              className="text-emerald-400 hover:underline font-bold"
+                                            >
+                                              Reset to Equilibrium p* ({(p.pStar * 100).toFixed(0)}%)
+                                            </button>
+                                            <span>100% ({p.act1})</span>
+                                          </div>
+
+                                          {/* Rival's Response Feedback */}
+                                          <div className="pt-2 border-t border-slate-800 space-y-2 text-xs">
+                                            <div className="flex items-center justify-between text-slate-300">
+                                              <span>{p.colPlayer}'s E[{p.act1}]:</span>
+                                              <span className="font-mono font-bold text-rose-300">{expCol1.toFixed(2)}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between text-slate-300">
+                                              <span>{p.colPlayer}'s E[{p.act2}]:</span>
+                                              <span className="font-mono font-bold text-rose-300">{expCol2.toFixed(2)}</span>
+                                            </div>
+
+                                            <div className={`p-2.5 rounded-lg border text-xs font-semibold text-center transition-all ${
+                                              isIndifferent
+                                                ? "bg-emerald-950/50 border-emerald-500 text-emerald-300"
+                                                : "bg-amber-950/40 border-amber-600/50 text-amber-200"
+                                            }`}>
+                                              {isIndifferent ? (
+                                                <span>★ Opponent is Indifferent! E[{p.act1}] &approx; E[{p.act2}]. Stable Nash Equilibrium!</span>
+                                              ) : expCol1 > expCol2 ? (
+                                                <span>Warning: {p.colPlayer} strictly prefers {p.act1}! (E[{p.act1}] &gt; E[{p.act2}])</span>
+                                              ) : (
+                                                <span>Warning: {p.colPlayer} strictly prefers {p.act2}! (E[{p.act2}] &gt; E[{p.act1}])</span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })()}
+                              </div>
+
+                              {/* 4. Corporate Applications: Varian's Model & The Inspection Paradox */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+                                  <div className="flex items-center gap-2">
+                                    <span className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-mono text-[10px] font-bold border border-sky-500/30">
+                                      Retail Application
+                                    </span>
+                                    <h4 className="text-sm font-bold text-white">Varian's Model of Sales (Randomized Markdowns)</h4>
+                                  </div>
+                                  <p className="text-xs text-slate-300 leading-relaxed">
+                                    Why do department stores and e-commerce platforms hold unpredictable flash sales rather than permanent everyday price cuts?
+                                  </p>
+                                  <ul className="space-y-1.5 text-xs text-slate-400">
+                                    <li className="flex items-start gap-1.5">
+                                      <span className="text-sky-400 font-bold">&bull;</span>
+                                      <span><strong>Customer Segmentation:</strong> Informed bargain hunters search for deals; uninformed loyalists buy at convenience.</span>
+                                    </li>
+                                    <li className="flex items-start gap-1.5">
+                                      <span className="text-sky-400 font-bold">&bull;</span>
+                                      <span><strong>The Predictability Trap:</strong> If sales are scheduled (e.g. 1st Saturday of the month), buyers defer purchases and rivals discount on Friday.</span>
+                                    </li>
+                                    <li className="flex items-start gap-1.5">
+                                      <span className="text-sky-400 font-bold">&bull;</span>
+                                      <span><strong>Equilibrium Mixing:</strong> Randomizing promotional timing price-discriminates perfectly, extracting full margins from loyalists while retaining deal hunters.</span>
+                                    </li>
+                                  </ul>
+                                </div>
+
+                                <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+                                  <div className="flex items-center gap-2">
+                                    <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[10px] font-bold border border-purple-500/30">
+                                      Governance Application
+                                    </span>
+                                    <h4 className="text-sm font-bold text-white">The Deterrence Paradox in Regulatory Auditing</h4>
+                                  </div>
+                                  <p className="text-xs text-slate-300 leading-relaxed">
+                                    When the government or board audits corporate compliance (e.g., tax evasion, securities reporting, safety inspections):
+                                  </p>
+                                  <ul className="space-y-1.5 text-xs text-slate-400">
+                                    <li className="flex items-start gap-1.5">
+                                      <span className="text-purple-400 font-bold">&bull;</span>
+                                      <span><strong>Intuition vs. Reality:</strong> Common belief holds that increasing fines will directly force more taxpayers to comply.</span>
+                                    </li>
+                                    <li className="flex items-start gap-1.5">
+                                      <span className="text-purple-400 font-bold">&bull;</span>
+                                      <span><strong>The Indifference Proof:</strong> Evasion rate (p*) is determined by the auditor's inspection cost! Higher penalties instead allow the regulator to audit <em>less often</em> while keeping evasion constant.</span>
+                                    </li>
+                                    <li className="flex items-start gap-1.5">
+                                      <span className="text-purple-400 font-bold">&bull;</span>
+                                      <span><strong>Stackelberg Security:</strong> Modern TSA airport screening and cyber-defense patrols implement randomized routing algorithms.</span>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+
+                              {/* 5. Empirical Evidence & Human Cognitive Biases */}
+                              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+                                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                                  <div className="flex items-center gap-2">
+                                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
+                                      Empirical Testing
+                                    </span>
+                                    <h4 className="text-sm font-bold text-white">Sports Econometrics & The Alternation Bias</h4>
+                                  </div>
+                                  <span className="text-[11px] font-mono text-slate-400">Levitt & Chiappori (2002)</span>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                                  <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5">
+                                    <span className="font-bold text-emerald-400 uppercase tracking-wider text-[10px] block">Empirical Proof</span>
+                                    <h5 className="font-bold text-white text-xs">Penalty Kick Indifference</h5>
+                                    <p className="text-slate-300 leading-relaxed text-[11px]">
+                                      Analysis of 1,417 professional European penalty kicks showed scoring rates across Left (80.1%) and Right (79.8%) shots were statistically identical, proving players converge to minimax mixed equilibria.
+                                    </p>
+                                  </div>
+
+                                  <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5">
+                                    <span className="font-bold text-amber-400 uppercase tracking-wider text-[10px] block">Human Cognitive Trap</span>
+                                    <h5 className="font-bold text-white text-xs">The Alternation Bias</h5>
+                                    <p className="text-slate-300 leading-relaxed text-[11px]">
+                                      Human executives fail at true randomness because they switch options too frequently (believing streaks are non-random). True randomness exhibits streaks that human intuition mistakenly rejects.
+                                    </p>
+                                  </div>
+
+                                  <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5">
+                                    <span className="font-bold text-indigo-400 uppercase tracking-wider text-[10px] block">Managerial Rule</span>
+                                    <h5 className="font-bold text-white text-xs">Automate with Algorithms</h5>
+                                    <p className="text-slate-300 leading-relaxed text-[11px]">
+                                      Never allow human managers to randomize promotions or audits manually. Calibrate payoff matrices, compute p* and q*, and delegate execution to automated algorithmic engines.
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
                           {/* Quick Jump Buttons to Case Study & Quiz */}
                           <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
                             <div>
@@ -5234,26 +6030,43 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
                           </div>
                         </div>
 
-                        {/* Callout if no custom upload for Week 3 */}
-                        {selectedWeek.id === 3 && !customSlideUrls[3] && (
-                          <div className="mt-4 p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        {/* Callout if no custom upload for Week 3 or Week 4 */}
+                        {(selectedWeek.id === 3 || selectedWeek.id === 4) && !customSlideUrls[selectedWeek.id] && (
+                          <div className={`mt-4 p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                            selectedWeek.id === 4
+                              ? "bg-emerald-950/30 border border-emerald-500/30"
+                              : "bg-indigo-950/30 border border-indigo-500/30"
+                          }`}>
                             <div className="flex items-start gap-2.5">
-                              <Icon name="upload" className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+                              <Icon
+                                name={selectedWeek.id === 4 ? "checkCircle" : "upload"}
+                                className={`w-4 h-4 shrink-0 mt-0.5 ${
+                                  selectedWeek.id === 4 ? "text-emerald-400" : "text-indigo-400"
+                                }`}
+                              />
                               <div>
                                 <p className="text-xs font-semibold text-white">
-                                  Use Your Original Week 3 Slide Deck
+                                  {selectedWeek.id === 4
+                                    ? "Week 04 Slides Active"
+                                    : `Use Your Original Week ${selectedWeek.id} Slide Deck`}
                                 </p>
                                 <p className="text-[11px] text-slate-300 mt-0.5 leading-relaxed">
-                                  Click to select your original <span className="font-mono text-indigo-300 font-semibold">week03.pdf</span> file from your computer. It will load immediately into the live viewer and persist in your browser.
+                                  {selectedWeek.id === 4
+                                    ? <>Click to select your original <span className="font-mono text-emerald-300 font-semibold">{selectedWeek.slidePath.split('/').pop()}</span> file from your computer to load it into the live viewer and persist in browser storage.</>
+                                    : <>Click to select your original <span className="font-mono text-indigo-300 font-semibold">{selectedWeek.slidePath.split('/').pop()}</span> file from your computer. It will load immediately into the live viewer and persist in your browser.</>}
                                 </p>
                               </div>
                             </div>
                             <button
                               onClick={() => fileInputRef.current?.click()}
-                              className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shrink-0 flex items-center gap-1.5 shadow-sm transition-all"
+                              className={`px-3.5 py-1.5 rounded-lg text-white text-xs font-semibold shrink-0 flex items-center gap-1.5 shadow-sm transition-all ${
+                                selectedWeek.id === 4
+                                  ? "bg-emerald-600 hover:bg-emerald-500"
+                                  : "bg-indigo-600 hover:bg-indigo-500"
+                              }`}
                             >
                               <Icon name="upload" className="w-3.5 h-3.5" />
-                              Upload week03.pdf
+                              {selectedWeek.id === 4 ? "Upload Custom Revision" : `Upload ${selectedWeek.slidePath.split('/').pop()}`}
                             </button>
                           </div>
                         )}
