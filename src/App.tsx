@@ -673,7 +673,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
           "Semiconductor Fab Node Allocations (TSMC vs. Samsung)"
         ],
         slidePath: "./slides/week03.pdf",
-        pageCount: 20,
+        pageCount: 24,
         executiveSummary: [
           "Formulate Conjectures Before Action: In simultaneous competition, you cannot wait to see what rivals do. Model their best responses mathematically rather than assuming they will make convenient errors.",
           "Prune Dominated Moves Systematically: Execute Iterated Elimination of Strictly Dominated Strategies (IESDS) to collapse complex multi-variable options into dominance-solvable solutions.",
@@ -2116,6 +2116,8 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
       const [caseCellSelected, setCaseCellSelected] = useState([1, 1]);
       const [activeArchetypeWeek3, setActiveArchetypeWeek3] = useState(0);
       const [activeCournotTabWeek3, setActiveCournotTabWeek3] = useState(0);
+      const [activeIesdsStep, setActiveIesdsStep] = useState(0);
+      const [activeEquilibriumRegime, setActiveEquilibriumRegime] = useState(0);
       const [customSlideUrls, setCustomSlideUrls] = useState<Record<number, { url: string; name: string; size: number }>>({});
       const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -4265,179 +4267,717 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
                                 </div>
                               </div>
 
-                              {/* 3. The 4 Classic 2x2 Simultaneous Game Archetypes */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 03</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    The 4 Classic 2x2 Simultaneous Game Archetypes (四大經典博弈範式)
-                                  </h3>
-                                  <p className="text-xs text-slate-400">
-                                    Click each archetype below to inspect its matrix structure, strategic incentives, and real-world corporate manifestations.
-                                  </p>
+                              {/* 3. Nash Equilibrium Analysis & Iterated Elimination */}
+                              <div className="bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950/20 border-2 border-indigo-500/50 rounded-2xl p-6 shadow-xl shadow-indigo-950/25 space-y-6 ring-1 ring-indigo-500/30">
+                                <div className="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-300 font-bold px-2 py-0.5 rounded bg-indigo-950/80 border border-indigo-500/50">
+                                        Section 03 • Core Theory
+                                      </span>
+                                      <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
+                                        <Icon name="checkCircle" className="w-3.5 h-3.5" />
+                                        Chapter 3 Lecture Core
+                                      </span>
+                                      <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 border border-indigo-500/30 px-2 py-0.5 rounded font-semibold">
+                                        Nash Equilibrium & IESDS
+                                      </span>
+                                    </div>
+                                    <h3 className="text-base sm:text-xl font-black text-white mt-1.5 flex items-center gap-2">
+                                      <Icon name="target" className="w-5 h-5 text-indigo-400" />
+                                      Nash Equilibrium & Iterated Elimination of Dominated Strategies
+                                    </h3>
+                                    <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-3xl leading-relaxed bg-indigo-950/40 border border-indigo-500/30 rounded-xl p-3 shadow-inner">
+                                      <strong className="text-white block mb-1">
+                                        Yes — This is the primary section where Chapter 3's core analytical frameworks are detailed:
+                                      </strong>
+                                      <span>
+                                        It integrates <strong className="text-emerald-300">Nash Equilibrium</strong> (formal definition <code className="font-mono text-indigo-300 text-[11px]">u_i(s_i*, s_-i*) &ge; u_i(s_i, s_-i*)</code>, the Underline Method, Dominant Strategy contrast, and the 3 Canonical Regimes) alongside <strong className="text-sky-300">Iterated Elimination of Strictly Dominated Strategies (IESDS)</strong> with an interactive 4-step 3&times;3 matrix pruning walkthrough below.
+                                      </span>
+                                    </p>
+                                  </div>
+
+                                  <button
+                                    onClick={() => setActiveTab("gametikz")}
+                                    className="self-start sm:self-auto px-3.5 py-2 rounded-xl bg-purple-950/70 hover:bg-purple-900 text-purple-200 border border-purple-700/60 text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all shrink-0"
+                                  >
+                                    <Icon name="gitBranch" className="w-3.5 h-3.5 text-purple-400" />
+                                    <span>Matrix Builder in GameTikzStudio</span>
+                                  </button>
                                 </div>
 
-                                {/* Archetype Selector Buttons */}
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-                                  {[
-                                    { title: "Prisoner's Dilemma", badge: "Price Wars", color: "red" },
-                                    { title: "Coordination Game", badge: "Standard Wars", color: "indigo" },
-                                    { title: "Hawk-Dove / Chicken", badge: "Brinkmanship", color: "amber" },
-                                    { title: "Matching Pennies", badge: "Zero-Sum Inspection", color: "purple" }
-                                  ].map((arch, idx) => (
-                                    <button
-                                      key={idx}
-                                      onClick={() => setActiveArchetypeWeek3(idx)}
-                                      className={`p-3 rounded-xl border text-left transition-all ${
-                                        activeArchetypeWeek3 === idx
-                                          ? "bg-indigo-600 border-indigo-400 text-white shadow-md ring-1 ring-indigo-400"
-                                          : "bg-slate-950 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700"
-                                      }`}
-                                    >
-                                      <span className="text-[10px] font-mono block opacity-80">{arch.badge}</span>
-                                      <span className="text-xs font-bold mt-0.5 block truncate">{arch.title}</span>
-                                    </button>
-                                  ))}
+                                {/* Mathematical Definition & Underline Method Banner */}
+                                <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                  <div className="md:col-span-7 p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                                        <Icon name="award" className="w-4 h-4 text-indigo-400" />
+                                        Formal Definition of Nash Equilibrium (Slide 6 & 21)
+                                      </span>
+                                      <span className="text-[10px] font-mono text-indigo-300 bg-indigo-950/80 px-2 py-0.5 rounded border border-indigo-700/40">
+                                        John Nash (1950)
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-slate-300 leading-relaxed">
+                                      A strategy profile <code className="text-emerald-300 font-mono">s* = (s_1*, ..., s_n*)</code> is a <strong className="text-white">Nash Equilibrium</strong> if, for every player <code className="font-mono text-indigo-300">i</code>:
+                                    </p>
+                                    <div className="p-2.5 rounded-lg bg-slate-900 border border-indigo-500/30 font-mono text-xs text-emerald-300 text-center tracking-wide font-semibold">
+                                      u_i(s_i*, s_&#123;-i&#125;*) &ge; u_i(s_i, s_&#123;-i&#125;*) &nbsp;&nbsp;&forall; s_i &isin; S_i
+                                    </div>
+                                    <ul className="space-y-1 text-[11px] text-slate-400 pt-1">
+                                      <li className="flex items-start gap-1.5">
+                                        <span className="text-indigo-400 font-bold">•</span>
+                                        <span><strong>No Unilateral Profitable Deviation:</strong> Holding all other players' strategies fixed, player <em>i</em> cannot gain by changing strategy alone.</span>
+                                      </li>
+                                      <li className="flex items-start gap-1.5">
+                                        <span className="text-indigo-400 font-bold">•</span>
+                                        <span><strong>Strategic Stability &ne; Efficiency:</strong> An equilibrium means strategically stable, not necessarily socially optimal or profit-maximizing.</span>
+                                      </li>
+                                    </ul>
+                                  </div>
+
+                                  {/* Mechanical Best Response Underline Rule */}
+                                  <div className="md:col-span-5 p-4 bg-indigo-950/30 rounded-xl border border-indigo-700/50 space-y-2">
+                                    <span className="text-xs font-bold text-indigo-200 flex items-center gap-1.5">
+                                      <Icon name="table" className="w-4 h-4 text-indigo-400" />
+                                      The Underline Method (Slide 5)
+                                    </span>
+                                    <div className="space-y-2 text-xs">
+                                      <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
+                                        <span className="font-bold text-blue-400 block mb-0.5">Row Player (Blue Payoff):</span>
+                                        <span className="text-slate-300 text-[11px]">Hold each column fixed. Compare first numbers <strong className="text-white">vertically</strong>. Underline the highest payoff.</span>
+                                      </div>
+                                      <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
+                                        <span className="font-bold text-rose-400 block mb-0.5">Column Player (Red Payoff):</span>
+                                        <span className="text-slate-300 text-[11px]">Hold each row fixed. Compare second numbers <strong className="text-white">horizontally</strong>. Underline the highest payoff.</span>
+                                      </div>
+                                      <div className="p-1.5 rounded bg-emerald-950/40 border border-emerald-500/40 text-[11px] text-emerald-300 font-semibold text-center">
+                                        &star; Overlapping Underlines in a cell = Pure Nash Equilibrium!
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
 
-                                {/* Active Archetype Showcase Card */}
-                                <div className="p-5 rounded-xl bg-slate-950 border border-slate-800">
-                                  {activeArchetypeWeek3 === 0 && (
-                                    <div className="space-y-3">
-                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-800">
+                                {/* Comparison: Dominant Strategy vs. Nash Equilibrium (Slide 8) */}
+                                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                                  <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-800">
+                                    <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+                                      <Icon name="layers" className="w-4 h-4 text-indigo-400" />
+                                      Dominant Strategy vs. Nash Equilibrium (Slide 8 Distinction)
+                                    </h4>
+                                    <span className="text-[10px] font-mono text-slate-400">Core Conceptual Contrast</span>
+                                  </div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                    <div className="p-3.5 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5">
+                                      <div className="flex items-center justify-between">
+                                        <span className="font-bold text-emerald-400 uppercase tracking-wider text-[11px]">Dominant Strategy</span>
+                                        <span className="text-[10px] font-mono text-slate-400">1 Player's Property</span>
+                                      </div>
+                                      <p className="text-slate-300 leading-relaxed">
+                                        A strategy is best against <strong className="text-white">every conceivable strategy</strong> the rival might choose. The executive does not even need to predict what the rival will do.
+                                      </p>
+                                    </div>
+                                    <div className="p-3.5 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5">
+                                      <div className="flex items-center justify-between">
+                                        <span className="font-bold text-indigo-400 uppercase tracking-wider text-[11px]">Nash Equilibrium</span>
+                                        <span className="text-[10px] font-mono text-slate-400">Full Profile Property</span>
+                                      </div>
+                                      <p className="text-slate-300 leading-relaxed">
+                                        Each player's selected strategy is best against the strategy <strong className="text-white">actually selected by the rival</strong>. Requires strategic beliefs to be mutually fulfilled.
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="mt-3 p-2.5 rounded-lg bg-indigo-950/40 border border-indigo-700/40 text-xs text-indigo-200">
+                                    <strong className="text-white">Golden Rule:</strong> Every dominant-strategy equilibrium is a Nash equilibrium, but <span className="underline decoration-indigo-400 font-semibold">many Nash equilibria do not use dominant strategies</span>.
+                                  </div>
+                                </div>
+
+                                {/* THE 3 CANONICAL EQUILIBRIUM REGIMES (Slides 9, 10, 11) */}
+                                <div className="space-y-3">
+                                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                    <div>
+                                      <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                        <Icon name="barChart" className="w-4 h-4 text-indigo-400" />
+                                        The 3 Canonical Equilibrium Regimes in Chapter 3
+                                      </h4>
+                                      <p className="text-xs text-slate-400">
+                                        A simultaneous game may have <strong>one, several, or zero</strong> pure-strategy Nash equilibria (Slides 9–11).
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0">
+                                      {[
+                                        { label: "1 Pure Eq (Price War)", id: 0 },
+                                        { label: "2 Pure Eq (Standards)", id: 1 },
+                                        { label: "0 Pure Eq (Positioning)", id: 2 }
+                                      ].map((reg) => (
+                                        <button
+                                          key={reg.id}
+                                          onClick={() => setActiveEquilibriumRegime(reg.id)}
+                                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                            activeEquilibriumRegime === reg.id
+                                              ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                                              : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                                          }`}
+                                        >
+                                          {reg.label}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  {/* Regime 1: One Pure Equilibrium (Price Competition, Slide 9) */}
+                                  {activeEquilibriumRegime === 0 && (
+                                    <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4 animate-fadeIn">
+                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
                                         <div>
-                                          <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                            <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-300 text-[10px] font-mono border border-red-500/30">1. Prisoner's Dilemma</span>
-                                            Price Wars & Defection Traps
-                                          </h4>
-                                          <p className="text-xs text-slate-400 mt-0.5">Strictly dominant defection yields unique Pareto-inferior equilibrium [Defect, Defect].</p>
+                                          <div className="flex items-center gap-2">
+                                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
+                                              Slide 09
+                                            </span>
+                                            <h5 className="text-sm font-bold text-white">One Pure Equilibrium: Price Competition</h5>
+                                          </div>
+                                          <p className="text-xs text-slate-400 mt-0.5">Strictly dominant price-cutting drives unique stable outcome [Cut, Cut].</p>
                                         </div>
-                                        <span className="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 text-xs font-mono font-bold self-start sm:self-auto border border-amber-500/30">
-                                          1 Pure Nash Eq
+                                        <span className="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold border border-emerald-500/30 self-start sm:self-auto">
+                                          Unique Nash Eq
                                         </span>
                                       </div>
-                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5">
-                                          <div className="font-bold text-slate-200">Matrix Structure (Row vs Col):</div>
-                                          <div className="font-mono text-[11px] text-slate-300">
-                                            [Cooperate, Cooperate] &rarr; ($10M, $10M) &bull; Collusive Max<br/>
-                                            [Cooperate, Defect] &rarr; ($2M, $14M) &bull; Col Exploits<br/>
-                                            [Defect, Cooperate] &rarr; ($14M, $2M) &bull; Row Exploits<br/>
-                                            <span className="text-amber-300 font-bold">[Defect, Defect] &rarr; ($4M, $4M) &bull; &#9733; Unique Nash Eq</span>
-                                          </div>
+
+                                      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+                                        {/* Matrix Table */}
+                                        <div className="md:col-span-6 overflow-x-auto">
+                                          <table className="w-full text-center border-collapse">
+                                            <thead>
+                                              <tr>
+                                                <th className="p-2 text-xs text-slate-500 font-mono">You \ Rival</th>
+                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">Rival: Cut</th>
+                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">Rival: Maintain</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">You: Cut</td>
+                                                <td className="p-3 border-2 border-emerald-500 bg-emerald-950/30 rounded-lg shadow-inner">
+                                                  <div className="font-mono text-sm font-bold">
+                                                    <span className="text-blue-400 underline decoration-blue-400 font-extrabold">2</span>,{" "}
+                                                    <span className="text-rose-400 underline decoration-rose-400 font-extrabold">2</span>
+                                                  </div>
+                                                  <span className="text-[10px] text-emerald-400 font-bold block mt-0.5">&star; Unique Nash Eq</span>
+                                                </td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-400 underline decoration-blue-400 font-bold">4</span>, <span className="text-rose-300">1</span>
+                                                  </div>
+                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Row Exploits</span>
+                                                </td>
+                                              </tr>
+                                              <tr>
+                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">You: Maintain</td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-300">1</span>, <span className="text-rose-400 underline decoration-rose-400 font-bold">4</span>
+                                                  </div>
+                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Col Exploits</span>
+                                                </td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/30">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-300">3</span>, <span className="text-rose-300">3</span>
+                                                  </div>
+                                                  <span className="text-[10px] text-amber-400 block mt-0.5">Collective Best (Unstable)</span>
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
                                         </div>
-                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                          <div className="font-bold text-indigo-300">Executive Resolution Mechanism:</div>
-                                          <p className="text-slate-300 leading-relaxed">
-                                            Escape through structural redesign: binding contracts with anti-discount penalties, long-term repeated interactions (tit-for-tat trigger strategies in Week 6), and brand moats.
-                                          </p>
+
+                                        {/* Strategic Takeaway */}
+                                        <div className="md:col-span-6 space-y-2 text-xs">
+                                          <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                                            <span className="font-bold text-emerald-400 block">Analysis:</span>
+                                            <p className="text-slate-300 leading-relaxed">
+                                              <strong>Cut</strong> is strictly dominant for both firms. Regardless of whether the rival cuts (2 &gt; 1) or maintains (4 &gt; 3), cutting yields higher payoffs. The best-response marks overlap exclusively at <strong className="text-white">[Cut, Cut]</strong>.
+                                            </p>
+                                          </div>
+                                          <div className="p-3 bg-amber-950/30 rounded-lg border border-amber-800/40 space-y-1">
+                                            <span className="font-bold text-amber-300 block">Professor's Core Lesson:</span>
+                                            <p className="text-amber-100 leading-relaxed italic">
+                                              "Strategic stability and collective desirability are completely different ideas. [Maintain, Maintain] gives (3,3), but either firm gains by switching alone to Cut and receiving 4."
+                                            </p>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
                                   )}
 
-                                  {activeArchetypeWeek3 === 1 && (
-                                    <div className="space-y-3">
-                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-800">
+                                  {/* Regime 2: Two Pure Equilibria (Product Standards, Slide 10) */}
+                                  {activeEquilibriumRegime === 1 && (
+                                    <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4 animate-fadeIn">
+                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
                                         <div>
-                                          <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                            <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono border border-indigo-500/30">2. Coordination Game</span>
-                                            Standard Wars & Network Externalities
-                                          </h4>
-                                          <p className="text-xs text-slate-400 mt-0.5">Two pure Nash equilibria along diagonal; miscoordination produces mutual zero surplus.</p>
+                                          <div className="flex items-center gap-2">
+                                            <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono text-[10px] font-bold border border-indigo-500/30">
+                                              Slide 10
+                                            </span>
+                                            <h5 className="text-sm font-bold text-white">Two Pure Equilibria: Product Standards Coordination</h5>
+                                          </div>
+                                          <p className="text-xs text-slate-400 mt-0.5">Both coordinated standards are stable Nash equilibria along the diagonal.</p>
                                         </div>
-                                        <span className="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 text-xs font-mono font-bold self-start sm:self-auto border border-indigo-500/30">
+                                        <span className="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 text-xs font-mono font-bold border border-indigo-500/30 self-start sm:self-auto">
                                           2 Pure Nash Eq
                                         </span>
                                       </div>
-                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5">
-                                          <div className="font-bold text-slate-200">Matrix Structure (Sony vs Microsoft):</div>
-                                          <div className="font-mono text-[11px] text-slate-300">
-                                            <span className="text-emerald-300 font-bold">[Alpha, Alpha] &rarr; ($12B, $8B) &bull; &#9733; Nash Eq 1</span><br/>
-                                            [Alpha, Beta] &rarr; ($0B, $0B) &bull; Miscoordination<br/>
-                                            [Beta, Alpha] &rarr; ($0B, $0B) &bull; Miscoordination<br/>
-                                            <span className="text-sky-300 font-bold">[Beta, Beta] &rarr; ($8B, $12B) &bull; &#9733; Nash Eq 2</span>
-                                          </div>
+
+                                      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+                                        {/* Matrix Table */}
+                                        <div className="md:col-span-6 overflow-x-auto">
+                                          <table className="w-full text-center border-collapse">
+                                            <thead>
+                                              <tr>
+                                                <th className="p-2 text-xs text-slate-500 font-mono">You \ Partner</th>
+                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">Partner: Standard A</th>
+                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">Partner: Standard B</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">You: Standard A</td>
+                                                <td className="p-3 border-2 border-indigo-500 bg-indigo-950/40 rounded-lg shadow-inner">
+                                                  <div className="font-mono text-sm font-bold">
+                                                    <span className="text-blue-400 underline decoration-blue-400 font-extrabold">4</span>,{" "}
+                                                    <span className="text-rose-400 underline decoration-rose-400 font-extrabold">3</span>
+                                                  </div>
+                                                  <span className="text-[10px] text-indigo-300 font-bold block mt-0.5">&star; Nash Eq 1 (Pref A)</span>
+                                                </td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-300">1</span>, <span className="text-rose-300">1</span>
+                                                  </div>
+                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Miscoordination</span>
+                                                </td>
+                                              </tr>
+                                              <tr>
+                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">You: Standard B</td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-300">1</span>, <span className="text-rose-300">1</span>
+                                                  </div>
+                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Miscoordination</span>
+                                                </td>
+                                                <td className="p-3 border-2 border-indigo-500 bg-indigo-950/40 rounded-lg shadow-inner">
+                                                  <div className="font-mono text-sm font-bold">
+                                                    <span className="text-blue-400 underline decoration-blue-400 font-extrabold">3</span>,{" "}
+                                                    <span className="text-rose-400 underline decoration-rose-400 font-extrabold">4</span>
+                                                  </div>
+                                                  <span className="text-[10px] text-indigo-300 font-bold block mt-0.5">&star; Nash Eq 2 (Pref B)</span>
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
                                         </div>
-                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                          <div className="font-bold text-indigo-300">Executive Resolution Mechanism:</div>
-                                          <p className="text-slate-300 leading-relaxed">
-                                            Create Focal Points (Schelling Points) via early ecosystem commitments, industry consortia, or cross-licensing treaties (e.g. Tesla opening NACS standard to Ford and GM).
-                                          </p>
+
+                                        {/* Strategic Takeaway */}
+                                        <div className="md:col-span-6 space-y-2 text-xs">
+                                          <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                                            <span className="font-bold text-indigo-300 block">Analysis:</span>
+                                            <p className="text-slate-300 leading-relaxed">
+                                              Neither player has a dominant strategy. Both prefer compatibility (4,3 or 3,4 &gt; 1,1), but they disagree about which standard to adopt (You favor A; Partner favors B). Both <strong className="text-white">[A, A]</strong> and <strong className="text-white">[B, B]</strong> are self-enforcing Nash equilibria!
+                                            </p>
+                                          </div>
+                                          <div className="p-3 bg-indigo-950/40 rounded-lg border border-indigo-700/50 space-y-1">
+                                            <span className="font-bold text-indigo-300 block">The Prediction Problem:</span>
+                                            <p className="text-slate-300 leading-relaxed">
+                                              Equilibrium analysis identifies all stable states, but cannot determine by itself which equilibrium will occur without <strong className="text-white">Focal Points (Schelling Points)</strong>, history, or pre-play communication.
+                                            </p>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
                                   )}
 
-                                  {activeArchetypeWeek3 === 2 && (
-                                    <div className="space-y-3">
-                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-800">
+                                  {/* Regime 3: No Pure Equilibrium (Competitive Positioning, Slide 11) */}
+                                  {activeEquilibriumRegime === 2 && (
+                                    <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4 animate-fadeIn">
+                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
                                         <div>
-                                          <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                            <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono border border-amber-500/30">3. Hawk-Dove / Chicken</span>
-                                            Strategic Brinkmanship & Market Flooding
-                                          </h4>
-                                          <p className="text-xs text-slate-400 mt-0.5">Anti-coordination: Two asymmetric equilibria where one firm aggresses and the other accommodates.</p>
+                                          <div className="flex items-center gap-2">
+                                            <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[10px] font-bold border border-purple-500/30">
+                                              Slide 11
+                                            </span>
+                                            <h5 className="text-sm font-bold text-white">No Pure Equilibrium: Competitive Positioning</h5>
+                                          </div>
+                                          <p className="text-xs text-slate-400 mt-0.5">Continuous cycle of strategic deviation; no stable pure profile exists.</p>
                                         </div>
-                                        <span className="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 text-xs font-mono font-bold self-start sm:self-auto border border-amber-500/30">
-                                          2 Asymmetric Eq
+                                        <span className="px-2.5 py-1 rounded bg-purple-500/20 text-purple-300 text-xs font-mono font-bold border border-purple-500/30 self-start sm:self-auto">
+                                          0 Pure Nash Eq
                                         </span>
                                       </div>
-                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5">
-                                          <div className="font-bold text-slate-200">Matrix Structure (Dove vs Hawk):</div>
-                                          <div className="font-mono text-[11px] text-slate-300">
-                                            [Dove, Dove] &rarr; ($4M, $4M) &bull; Peaceful Sharing<br/>
-                                            <span className="text-sky-300 font-bold">[Dove, Hawk] &rarr; ($1M, $8M) &bull; &#9733; Nash Eq (Col Wins)</span><br/>
-                                            <span className="text-emerald-300 font-bold">[Hawk, Dove] &rarr; ($8M, $1M) &bull; &#9733; Nash Eq (Row Wins)</span><br/>
-                                            <span className="text-red-400 font-bold">[Hawk, Hawk] &rarr; (-$10M, -$10M) &bull; Mutual Disaster</span>
-                                          </div>
-                                        </div>
-                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                          <div className="font-bold text-amber-300">Executive Resolution Mechanism:</div>
-                                          <p className="text-slate-300 leading-relaxed">
-                                            Win by credible commitment to Hawk: publicly burn retreat bridges, sign irrevocable supply agreements, or legally bind executive bonuses to market share expansion.
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
 
-                                  {activeArchetypeWeek3 === 3 && (
-                                    <div className="space-y-3">
-                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-800">
-                                        <div>
-                                          <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                            <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-mono border border-purple-500/30">4. Matching Pennies</span>
-                                            Zero-Sum Auditing & The Need for Randomization
-                                          </h4>
-                                          <p className="text-xs text-slate-400 mt-0.5">Strict zero-sum conflict: No pure strategy Nash equilibrium exists; requires mixed strategies.</p>
+                                      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+                                        {/* Matrix Table */}
+                                        <div className="md:col-span-6 overflow-x-auto">
+                                          <table className="w-full text-center border-collapse">
+                                            <thead>
+                                              <tr>
+                                                <th className="p-2 text-xs text-slate-500 font-mono">You \ Rival</th>
+                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">Rival: Segment A</th>
+                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">Rival: Segment B</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">You: Segment A</td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-300">1</span>, <span className="text-rose-400 underline decoration-rose-400 font-bold">3</span>
+                                                  </div>
+                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Col matches (Happy)</span>
+                                                </td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-400 underline decoration-blue-400 font-bold">3</span>, <span className="text-rose-300">1</span>
+                                                  </div>
+                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Row differentiates (Happy)</span>
+                                                </td>
+                                              </tr>
+                                              <tr>
+                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">You: Segment B</td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-400 underline decoration-blue-400 font-bold">3</span>, <span className="text-rose-300">1</span>
+                                                  </div>
+                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Row differentiates (Happy)</span>
+                                                </td>
+                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
+                                                  <div className="font-mono text-sm">
+                                                    <span className="text-blue-300">1</span>, <span className="text-rose-400 underline decoration-rose-400 font-bold">3</span>
+                                                  </div>
+                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Col matches (Happy)</span>
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
                                         </div>
-                                        <span className="px-2.5 py-1 rounded bg-purple-500/20 text-purple-300 text-xs font-mono font-bold self-start sm:self-auto border border-purple-500/30">
-                                          0 Pure Eq
-                                        </span>
-                                      </div>
-                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5">
-                                          <div className="font-bold text-slate-200">Matrix Structure (Inspector vs Target):</div>
-                                          <div className="font-mono text-[11px] text-slate-300">
-                                            [Audit, Comply] &rarr; (-1, +1) &bull; Target wins<br/>
-                                            [Audit, Cheat] &rarr; (+1, -1) &bull; Inspector catches<br/>
-                                            [Pass, Comply] &rarr; (+1, -1) &bull; Inspector saves cost<br/>
-                                            [Pass, Cheat] &rarr; (-1, +1) &bull; Target exploits pass<br/>
-                                            <span className="text-purple-300 font-bold">Continuous cyclical incentives &rarr; No Pure Strategy Eq</span>
+
+                                        {/* Strategic Takeaway */}
+                                        <div className="md:col-span-6 space-y-2 text-xs">
+                                          <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                                            <span className="font-bold text-purple-300 block">Analysis:</span>
+                                            <p className="text-slate-300 leading-relaxed">
+                                              You prefer to target a <strong className="text-white">different segment</strong> from the rival. The rival prefers to target the <strong className="text-white">same segment</strong> as you. Every cell gives at least one player an incentive to change. No cell has overlapping underlines!
+                                            </p>
                                           </div>
-                                        </div>
-                                        <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                          <div className="font-bold text-purple-300">Week 4 Transition:</div>
-                                          <p className="text-slate-300 leading-relaxed">
-                                            When predictability is lethal, players must deliberately randomize actions with calculated probability distributions (Mixed Strategies, formalised in Week 4).
-                                          </p>
+                                          <div className="p-3 bg-purple-950/40 rounded-lg border border-purple-700/50 space-y-1">
+                                            <span className="font-bold text-purple-300 block">Week 4 Preview: Mixed Strategies</span>
+                                            <p className="text-slate-300 leading-relaxed">
+                                              When being predictable makes a firm exploitable, managers must deliberately randomize their actions with calculated probabilities.
+                                            </p>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
                                   )}
+                                </div>
+
+                                {/* INTERACTIVE WORKED EXAMPLE: ITERATED ELIMINATION (Slide 13) */}
+                                <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
+                                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
+                                    <div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-mono text-[10px] font-bold border border-sky-500/30">
+                                          Slide 13 Worked Example
+                                        </span>
+                                        <h4 className="text-sm font-bold text-white">
+                                          Interactive IESDS: Eliminate and Reconsider (The 3&times;3 Game)
+                                        </h4>
+                                      </div>
+                                      <p className="text-xs text-slate-400 mt-0.5">
+                                        Step through Prof. Chiu Yu Ko's 4-step pruning sequence to solve the 3&times;3 matrix down to its unique equilibrium.
+                                      </p>
+                                    </div>
+
+                                    {/* Stepper Controls */}
+                                    <div className="flex items-center gap-1.5 self-start sm:self-auto">
+                                      <button
+                                        onClick={() => setActiveIesdsStep(Math.max(0, activeIesdsStep - 1))}
+                                        disabled={activeIesdsStep === 0}
+                                        className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs font-semibold border border-slate-700 transition-all"
+                                      >
+                                        &larr; Prev
+                                      </button>
+                                      <span className="px-2 py-1 font-mono text-xs text-indigo-300 bg-slate-900 rounded border border-slate-800 font-bold">
+                                        Step {activeIesdsStep} / 4
+                                      </span>
+                                      <button
+                                        onClick={() => setActiveIesdsStep(Math.min(4, activeIesdsStep + 1))}
+                                        disabled={activeIesdsStep === 4}
+                                        className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-semibold shadow-sm transition-all"
+                                      >
+                                        Next Step &rarr;
+                                      </button>
+                                      <button
+                                        onClick={() => setActiveIesdsStep(0)}
+                                        className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs transition-colors"
+                                        title="Reset to original 3x3 matrix"
+                                      >
+                                        <Icon name="refresh" className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+                                    {/* 3x3 Pruning Table */}
+                                    <div className="md:col-span-7 overflow-x-auto">
+                                      <table className="w-full text-center border-collapse">
+                                        <thead>
+                                          <tr>
+                                            <th className="p-2 text-xs text-slate-500 font-mono">Row \ Col</th>
+                                            <th className="p-2 text-xs font-bold text-slate-300 bg-slate-900/80 border border-slate-800 rounded-t">Left</th>
+                                            <th className="p-2 text-xs font-bold text-slate-300 bg-slate-900/80 border border-slate-800 rounded-t">Centre</th>
+                                            <th className={`p-2 text-xs font-bold border border-slate-800 rounded-t transition-colors ${
+                                              activeIesdsStep >= 2 ? "text-red-400/60 line-through bg-red-950/20" : "text-slate-300 bg-slate-900/80"
+                                            }`}>
+                                              Right {activeIesdsStep >= 2 && <span className="text-[10px] text-red-400 block no-underline font-normal">Pruned</span>}
+                                            </th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {/* Up Row */}
+                                          <tr className={activeIesdsStep === 4 ? "bg-emerald-950/20 ring-1 ring-emerald-500/50" : ""}>
+                                            <td className="p-2.5 text-xs font-bold text-slate-300 bg-slate-900/80 border border-slate-800 text-right pr-3">Up</td>
+                                            <td className={`p-3 border transition-all ${
+                                              activeIesdsStep === 4
+                                                ? "border-2 border-emerald-400 bg-emerald-950/60 shadow-lg ring-2 ring-emerald-500"
+                                                : "border-slate-800 bg-slate-900/50"
+                                            }`}>
+                                              <span className="font-mono text-sm font-bold text-white">(4, 3)</span>
+                                              {activeIesdsStep === 4 && (
+                                                <span className="text-[10px] text-emerald-300 font-bold block mt-0.5">&star; Unique Surviving Eq!</span>
+                                              )}
+                                            </td>
+                                            <td className="p-3 border border-slate-800 bg-slate-900/50">
+                                              <span className="font-mono text-sm text-slate-300">(3, 2)</span>
+                                            </td>
+                                            <td className={`p-3 border transition-all ${
+                                              activeIesdsStep >= 2
+                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
+                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
+                                            }`}>
+                                              <span className="font-mono text-sm">(2, 1)</span>
+                                            </td>
+                                          </tr>
+
+                                          {/* Middle Row */}
+                                          <tr className={activeIesdsStep >= 3 ? "opacity-40" : ""}>
+                                            <td className={`p-2.5 text-xs font-bold border border-slate-800 text-right pr-3 transition-colors ${
+                                              activeIesdsStep >= 3 ? "text-red-400/60 line-through bg-red-950/20" : "text-slate-300 bg-slate-900/80"
+                                            }`}>
+                                              Middle {activeIesdsStep >= 3 && <span className="text-[9px] text-red-400 block no-underline font-normal">Pruned</span>}
+                                            </td>
+                                            <td className={`p-3 border transition-all ${
+                                              activeIesdsStep >= 3
+                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
+                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
+                                            }`}>
+                                              <span className="font-mono text-sm">(3, 1)</span>
+                                            </td>
+                                            <td className={`p-3 border transition-all ${
+                                              activeIesdsStep >= 3
+                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
+                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
+                                            }`}>
+                                              <span className="font-mono text-sm">(2, 4)</span>
+                                            </td>
+                                            <td className={`p-3 border transition-all ${
+                                              activeIesdsStep >= 2
+                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
+                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
+                                            }`}>
+                                              <span className="font-mono text-sm">(1, 3)</span>
+                                            </td>
+                                          </tr>
+
+                                          {/* Down Row */}
+                                          <tr className={activeIesdsStep >= 1 ? "opacity-40" : ""}>
+                                            <td className={`p-2.5 text-xs font-bold border border-slate-800 text-right pr-3 transition-colors ${
+                                              activeIesdsStep >= 1 ? "text-red-400/60 line-through bg-red-950/20" : "text-slate-300 bg-slate-900/80"
+                                            }`}>
+                                              Down {activeIesdsStep >= 1 && <span className="text-[9px] text-red-400 block no-underline font-normal">Pruned</span>}
+                                            </td>
+                                            <td className={`p-3 border transition-all ${
+                                              activeIesdsStep >= 1
+                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
+                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
+                                            }`}>
+                                              <span className="font-mono text-sm">(1, 2)</span>
+                                            </td>
+                                            <td className={`p-3 border transition-all ${
+                                              activeIesdsStep >= 1
+                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
+                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
+                                            }`}>
+                                              <span className="font-mono text-sm">(1, 1)</span>
+                                            </td>
+                                            <td className={`p-3 border transition-all ${
+                                              activeIesdsStep >= 1
+                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
+                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
+                                            }`}>
+                                              <span className="font-mono text-sm">(0, 0)</span>
+                                            </td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                    </div>
+
+                                    {/* Step Explanation Card */}
+                                    <div className="md:col-span-5 space-y-2 text-xs">
+                                      {activeIesdsStep === 0 && (
+                                        <div className="p-3.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1.5 animate-fadeIn">
+                                          <span className="text-[10px] font-mono text-indigo-400 font-bold uppercase block">Round 0: Full Matrix</span>
+                                          <h5 className="font-bold text-white">Compare Row Strategies Across Columns</h5>
+                                          <p className="text-slate-300 leading-relaxed text-[11px]">
+                                            Look at Row player's payoffs for <code className="text-indigo-300 font-mono">Up (4, 3, 2)</code> versus <code className="text-indigo-300 font-mono">Down (1, 1, 0)</code>.
+                                          </p>
+                                          <div className="p-2 rounded bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-400">
+                                            Left: 4 &gt; 1 &bull; Centre: 3 &gt; 1 &bull; Right: 2 &gt; 0
+                                          </div>
+                                          <p className="text-emerald-300 font-semibold text-[11px]">
+                                            &rarr; Down is strictly dominated by Up! Click Next Step.
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {activeIesdsStep === 1 && (
+                                        <div className="p-3.5 bg-slate-900 rounded-xl border border-indigo-700/50 space-y-1.5 animate-fadeIn">
+                                          <span className="text-[10px] font-mono text-sky-400 font-bold uppercase block">Step 1 Completed</span>
+                                          <h5 className="font-bold text-white">Down Is Eliminated</h5>
+                                          <p className="text-slate-300 leading-relaxed text-[11px]">
+                                            Rational Column knows Row will never play Down. In the reduced game (Up &amp; Middle only):
+                                          </p>
+                                          <div className="p-2 rounded bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300">
+                                            Centre vs Right for Column:<br/>
+                                            If Up: Centre (2) &gt; Right (1)<br/>
+                                            If Middle: Centre (4) &gt; Right (3)
+                                          </div>
+                                          <p className="text-sky-300 font-semibold text-[11px]">
+                                            &rarr; Right is now strictly dominated by Centre!
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {activeIesdsStep === 2 && (
+                                        <div className="p-3.5 bg-slate-900 rounded-xl border border-indigo-700/50 space-y-1.5 animate-fadeIn">
+                                          <span className="text-[10px] font-mono text-sky-400 font-bold uppercase block">Step 2 Completed</span>
+                                          <h5 className="font-bold text-white">Right Is Eliminated</h5>
+                                          <p className="text-slate-300 leading-relaxed text-[11px]">
+                                            With Right removed, we have a 2&times;2 game (Up &amp; Middle vs. Left &amp; Centre):
+                                          </p>
+                                          <div className="p-2 rounded bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300">
+                                            Up vs Middle for Row:<br/>
+                                            Against Left: Up (4) &gt; Middle (3)<br/>
+                                            Against Centre: Up (3) &gt; Middle (2)
+                                          </div>
+                                          <p className="text-amber-300 font-semibold text-[11px]">
+                                            &rarr; Middle is now strictly dominated by Up!
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {activeIesdsStep === 3 && (
+                                        <div className="p-3.5 bg-slate-900 rounded-xl border border-indigo-700/50 space-y-1.5 animate-fadeIn">
+                                          <span className="text-[10px] font-mono text-amber-400 font-bold uppercase block">Step 3 Completed</span>
+                                          <h5 className="font-bold text-white">Middle Is Eliminated</h5>
+                                          <p className="text-slate-300 leading-relaxed text-[11px]">
+                                            Now Row only has <strong className="text-white">Up</strong> remaining.
+                                          </p>
+                                          <div className="p-2 rounded bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300">
+                                            Column faces Up only:<br/>
+                                            Chooses between Left (3) and Centre (2).<br/>
+                                            Since 3 &gt; 2, Column chooses Left!
+                                          </div>
+                                          <p className="text-emerald-300 font-semibold text-[11px]">
+                                            &rarr; Pruning collapses to single surviving cell!
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {activeIesdsStep === 4 && (
+                                        <div className="p-3.5 bg-emerald-950/40 rounded-xl border border-emerald-500/50 space-y-1.5 animate-fadeIn">
+                                          <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs uppercase tracking-wider">
+                                            <Icon name="checkCircle" className="w-4 h-4" />
+                                            Surviving Prediction (Slide 13)
+                                          </div>
+                                          <h5 className="font-extrabold text-white text-sm">Unique Dominance-Solvable Outcome</h5>
+                                          <p className="text-emerald-100 leading-relaxed text-[11px]">
+                                            <strong>Up – Left</strong> with payoffs <strong>(4, 3)</strong> is the unique surviving prediction and the unique Nash equilibrium of this game!
+                                          </p>
+                                          <div className="p-2 rounded bg-slate-950/80 border border-emerald-500/30 text-[11px] text-slate-300">
+                                            Theorem confirmed: IESDS preserves all Nash equilibria and simplifies complex multi-action interactions.
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* 5 Common Errors in Matrix Analysis (Slide 24) */}
+                                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                                  <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                                    <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+                                      <Icon name="shield" className="w-4 h-4 text-rose-400" />
+                                      Common Errors in Matrix Analysis &amp; Corrections (Slide 24)
+                                    </h4>
+                                    <span className="text-[10px] font-mono text-slate-400">Executive Exam Rubric</span>
+                                  </div>
+
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+                                    <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                                      <span className="text-[10px] font-mono text-rose-400 font-bold uppercase block">&times; Error 1</span>
+                                      <p className="font-semibold text-white text-[11px]">Comparing two numbers inside one cell</p>
+                                      <p className="text-slate-400 text-[10px] leading-relaxed">
+                                        <strong className="text-emerald-300">Correction:</strong> Follow one player's payoff position/color across strategies while holding rival fixed.
+                                      </p>
+                                    </div>
+
+                                    <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                                      <span className="text-[10px] font-mono text-rose-400 font-bold uppercase block">&times; Error 2</span>
+                                      <p className="font-semibold text-white text-[11px]">Finding largest number and calling it dominant</p>
+                                      <p className="text-slate-400 text-[10px] leading-relaxed">
+                                        <strong className="text-emerald-300">Correction:</strong> Dominance requires comparison against <em>every</em> rival strategy.
+                                      </p>
+                                    </div>
+
+                                    <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                                      <span className="text-[10px] font-mono text-rose-400 font-bold uppercase block">&times; Error 3</span>
+                                      <p className="font-semibold text-white text-[11px]">Stopping after finding one equilibrium</p>
+                                      <p className="text-slate-400 text-[10px] leading-relaxed">
+                                        <strong className="text-emerald-300">Correction:</strong> Check every cell for overlapping best-response marks.
+                                      </p>
+                                    </div>
+
+                                    <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                                      <span className="text-[10px] font-mono text-rose-400 font-bold uppercase block">&times; Error 4</span>
+                                      <p className="font-semibold text-white text-[11px]">Assuming equilibrium is efficient</p>
+                                      <p className="text-slate-400 text-[10px] leading-relaxed">
+                                        <strong className="text-emerald-300">Correction:</strong> Equilibrium means no profitable unilateral deviation, not maximum joint payoff.
+                                      </p>
+                                    </div>
+
+                                    <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
+                                      <span className="text-[10px] font-mono text-rose-400 font-bold uppercase block">&times; Error 5</span>
+                                      <p className="font-semibold text-white text-[11px]">Eliminating an unattractive cell</p>
+                                      <p className="text-slate-400 text-[10px] leading-relaxed">
+                                        <strong className="text-emerald-300">Correction:</strong> Eliminate an entire dominated strategy (a complete row or column).
+                                      </p>
+                                    </div>
+
+                                    <div className="p-3 bg-indigo-950/40 rounded-lg border border-indigo-700/50 space-y-1 flex flex-col justify-center">
+                                      <span className="text-[10px] font-mono text-indigo-300 font-bold uppercase block">Professor's Rule</span>
+                                      <p className="text-indigo-100 font-semibold text-[11px]">
+                                        "Best-response marking is mechanical; constructing and defending the model is the demanding part."
+                                      </p>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
 
