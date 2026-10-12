@@ -1308,6 +1308,45 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
     // ==========================================
     const MATRIX_PRESETS = [
       {
+        id: "coffee_chain",
+        name: "Coffee Chain Promotion (Prof. Ko's Slide Case)",
+        p1Name: "Coffee Chain",
+        p2Name: "Rival Chain",
+        a1Name: "Promote Monday",
+        a2Name: "Promote Wednesday",
+        payoffs: [
+          [[3, 3], [6, 0]],
+          [[5, 1], [3, 2]]
+        ],
+        description: "From Slides 5–13: Simultaneous promotion scheduling duel. No pure Nash equilibrium exists. Chain promotes Mon with p* = 0.25 (Wed 75%); Rival defends Mon with q* = 0.60 (Wed 40%). Expected Payoffs: E[Chain] = 4.2, E[Rival] = 1.5."
+      },
+      {
+        id: "flash_sales",
+        name: "E-Commerce Flash Sales (Amazon vs. Walmart)",
+        p1Name: "Amazon",
+        p2Name: "Walmart",
+        a1Name: "Flash Discount",
+        a2Name: "Maintain Regular Price",
+        payoffs: [
+          [[3, 3], [7, 1]],
+          [[1, 7], [5, 5]]
+        ],
+        description: "Zero pure equilibria. If Walmart maintains, Amazon discounts; if Amazon discounts, Walmart discounts. At p* = 0.50, q* = 0.50, neither is exploited. E[Payoff] = $4.0B."
+      },
+      {
+        id: "tax_audit",
+        name: "Tax Compliance & Corporate Audit",
+        p1Name: "Tax Authority",
+        p2Name: "Corporation",
+        a1Name: "Audit Account",
+        a2Name: "No Audit",
+        payoffs: [
+          [[2, -10], [-1, 0]],
+          [[0, -10], [0, 4]]
+        ],
+        description: "Slide 16 Application: The Auditing Paradox. Severe penalties on tax evasion do not reduce equilibrium corporate evasion; they allow the authority to audit less frequently while maintaining deterrence."
+      },
+      {
         id: "prisoners_dilemma",
         name: "Prisoner's Dilemma (Price War)",
         p1Name: "Firm A (Coke)",
@@ -1374,583 +1413,8 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
       }
     ];
 
-    function PayoffMatrixSimulator() {
-      const [selectedPresetId, setSelectedPresetId] = useState("prisoners_dilemma");
-      const [p1Name, setP1Name] = useState(MATRIX_PRESETS[0].p1Name);
-      const [p2Name, setP2Name] = useState(MATRIX_PRESETS[0].p2Name);
-      const [a1Name, setA1Name] = useState(MATRIX_PRESETS[0].a1Name);
-      const [a2Name, setA2Name] = useState(MATRIX_PRESETS[0].a2Name);
-      const [payoffs, setPayoffs] = useState(MATRIX_PRESETS[0].payoffs);
-
-      const handleSelectPreset = (preset) => {
-        setSelectedPresetId(preset.id);
-        setP1Name(preset.p1Name);
-        setP2Name(preset.p2Name);
-        setA1Name(preset.a1Name);
-        setA2Name(preset.a2Name);
-        setPayoffs(preset.payoffs);
-      };
-
-      const handlePayoffChange = (row, col, playerIndex, val) => {
-        const num = parseFloat(val);
-        const updated = [
-          [ [...payoffs[0][0]], [...payoffs[0][1]] ],
-          [ [...payoffs[1][0]], [...payoffs[1][1]] ]
-        ];
-        updated[row][col][playerIndex] = isNaN(num) ? 0 : num;
-        setPayoffs(updated);
-        setSelectedPresetId("custom");
-      };
-
-      // Solver Engine
-      const solution = useMemo(() => {
-        const p = payoffs;
-        // Best responses for Player 1:
-        // Against Col 0:
-        const col0Max = Math.max(p[0][0][0], p[1][0][0]);
-        const p1Br_00 = p[0][0][0] === col0Max;
-        const p1Br_10 = p[1][0][0] === col0Max;
-
-        // Against Col 1:
-        const col1Max = Math.max(p[0][1][0], p[1][1][0]);
-        const p1Br_01 = p[0][1][0] === col1Max;
-        const p1Br_11 = p[1][1][0] === col1Max;
-
-        // Best responses for Player 2:
-        // Against Row 0:
-        const row0Max = Math.max(p[0][0][1], p[0][1][1]);
-        const p2Br_00 = p[0][0][1] === row0Max;
-        const p2Br_01 = p[0][1][1] === row0Max;
-
-        // Against Row 1:
-        const row1Max = Math.max(p[1][0][1], p[1][1][1]);
-        const p2Br_10 = p[1][0][1] === row1Max;
-        const p2Br_11 = p[1][1][1] === row1Max;
-
-        const br1 = [
-          [p1Br_00, p1Br_01],
-          [p1Br_10, p1Br_11]
-        ];
-
-        const br2 = [
-          [p2Br_00, p2Br_01],
-          [p2Br_10, p2Br_11]
-        ];
-
-        const equilibria = [];
-        for (let r = 0; r < 2; r++) {
-          for (let c = 0; c < 2; c++) {
-            if (br1[r][c] && br2[r][c]) {
-              equilibria.push([r, c]);
-            }
-          }
-        }
-
-        // Dominant strategies
-        const p1DominantRow0 = p[0][0][0] > p[1][0][0] && p[0][1][0] > p[1][1][0];
-        const p1DominantRow1 = p[1][0][0] > p[0][0][0] && p[1][1][0] > p[0][1][0];
-
-        const p2DominantCol0 = p[0][0][1] > p[0][1][1] && p[1][0][1] > p[1][1][1];
-        const p2DominantCol1 = p[0][1][1] > p[0][0][1] && p[1][1][1] > p[1][0][1];
-
-        // Pareto optimality
-        const allCells = [[0, 0], [0, 1], [1, 0], [1, 1]];
-        const paretoOptimal = allCells.filter(([r1, c1]) => {
-          const v1 = p[r1][c1];
-          const isDominated = allCells.some(([r2, c2]) => {
-            if (r1 === r2 && c1 === c2) return false;
-            const v2 = p[r2][c2];
-            return (v2[0] >= v1[0] && v2[1] >= v1[1]) && (v2[0] > v1[0] || v2[1] > v1[1]);
-          });
-          return !isDominated;
-        });
-
-        // Dilemma check: is there a Nash eq that is Pareto dominated by another cell?
-        const isSocialDilemma = equilibria.some(([er, ec]) => {
-          const eqVal = p[er][ec];
-          return allCells.some(([or, oc]) => {
-            const oVal = p[or][oc];
-            return oVal[0] > eqVal[0] && oVal[1] > eqVal[1];
-          });
-        });
-
-        // Mixed strategy Nash equilibrium derivation (Week 04 Indifference Principle Engine)
-        // Row plays Action 1 with prob p, Col plays Action 1 with prob q
-        const r11 = p[0][0][0], r12 = p[0][1][0];
-        const r21 = p[1][0][0], r22 = p[1][1][0];
-        const c11 = p[0][0][1], c12 = p[0][1][1];
-        const c21 = p[1][0][1], c22 = p[1][1][1];
-
-        // Col is indifferent when E[Col(Act1)] = E[Col(Act2)]:
-        // p * c11 + (1-p) * c21 = p * c12 + (1-p) * c22
-        // => p * ((c11 + c22) - (c12 + c21)) = c22 - c21
-        const denomP = (c11 + c22) - (c12 + c21);
-        const numerP = c22 - c21;
-        let mixedP = null;
-        if (denomP !== 0) {
-          const val = numerP / denomP;
-          if (val >= 0 && val <= 1) {
-            mixedP = val;
-          }
-        }
-
-        // Row is indifferent when E[Row(Act1)] = E[Row(Act2)]:
-        // q * r11 + (1-q) * r12 = q * r21 + (1-q) * r22
-        // => q * ((r11 + r22) - (r12 + r21)) = r22 - r12
-        const denomQ = (r11 + r22) - (r12 + r21);
-        const numerQ = r22 - r12;
-        let mixedQ = null;
-        if (denomQ !== 0) {
-          const val = numerQ / denomQ;
-          if (val >= 0 && val <= 1) {
-            mixedQ = val;
-          }
-        }
-
-        const hasValidMixed = mixedP !== null && mixedQ !== null;
-        const mixedExpRow = hasValidMixed ? (mixedQ! * r11 + (1 - mixedQ!) * r12) : null;
-        const mixedExpCol = hasValidMixed ? (mixedP! * c11 + (1 - mixedP!) * c21) : null;
-
-        return {
-          br1,
-          br2,
-          equilibria,
-          p1Dominant: p1DominantRow0 ? 0 : p1DominantRow1 ? 1 : null,
-          p2Dominant: p2DominantCol0 ? 0 : p2DominantCol1 ? 1 : null,
-          paretoOptimal,
-          isSocialDilemma,
-          mixedP,
-          mixedQ,
-          hasValidMixed,
-          mixedExpRow,
-          mixedExpCol
-        };
-      }, [payoffs]);
-
-      const currentPreset = MATRIX_PRESETS.find(p => p.id === selectedPresetId);
-
-      return (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[11px] font-bold uppercase tracking-wider border border-indigo-500/30">
-                  Interactive Lab
-                </span>
-                <span className="text-xs text-slate-500 font-mono">Nash Equilibrium & Payoff Solver</span>
-              </div>
-              <h3 className="text-lg sm:text-xl font-black text-white mt-1">
-                2x2 Strategic Normal Form Matrix Simulator
-              </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Simulate strategic interaction, test best response dynamics, and compute pure Nash equilibria in real time.
-              </p>
-            </div>
-          </div>
-
-          {/* Preset Buttons */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Select Strategic Scenario Preset:
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {MATRIX_PRESETS.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => handleSelectPreset(p)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                    selectedPresetId === p.id
-                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                      : "bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/60"
-                  }`}
-                >
-                  {p.name}
-                </button>
-              ))}
-            </div>
-            {currentPreset && (
-              <p className="text-xs text-indigo-300/90 bg-indigo-950/30 border border-indigo-500/20 rounded-lg p-2.5 leading-relaxed">
-                <strong className="text-indigo-200">Scenario Context: </strong>
-                {currentPreset.description}
-              </p>
-            )}
-          </div>
-
-          {/* Interactive Matrix Display & Inputs */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            
-            {/* The 2x2 Matrix Grid */}
-            <div className="lg:col-span-7 bg-slate-950/80 rounded-xl border border-slate-800 p-4 space-y-4">
-              <div className="flex items-center justify-between text-xs text-slate-400">
-                <span className="font-semibold text-slate-300">Payoff Legend:</span>
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1.5 font-mono text-emerald-400">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    {p1Name || "Player 1"} (Row)
-                  </span>
-                  <span className="flex items-center gap-1.5 font-mono text-sky-400">
-                    <span className="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-                    {p2Name || "Player 2"} (Col)
-                  </span>
-                </div>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-center">
-                  <thead>
-                    <tr>
-                      <th className="p-2 border border-slate-800 bg-slate-900 text-xs font-mono text-slate-400 w-1/3">
-                        <div className="text-[10px] text-slate-500">Row \ Col</div>
-                        <span className="text-slate-300">{p1Name}</span> \ <span className="text-slate-300">{p2Name}</span>
-                      </th>
-                      <th className="p-2.5 border border-slate-800 bg-slate-900/90 text-xs font-bold text-sky-300 w-1/3">
-                        {a1Name}
-                      </th>
-                      <th className="p-2.5 border border-slate-800 bg-slate-900/90 text-xs font-bold text-sky-300 w-1/3">
-                        {a2Name}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Row 0 */}
-                    <tr>
-                      <td className="p-2.5 border border-slate-800 bg-slate-900/90 text-xs font-bold text-emerald-300">
-                        {a1Name}
-                      </td>
-
-                      {/* Cell (0, 0) */}
-                      <td className={`p-3 border border-slate-800 transition-all ${
-                        solution.equilibria.some(([r, c]) => r === 0 && c === 0)
-                          ? "bg-indigo-950/50 ring-2 ring-indigo-500/80"
-                          : "bg-slate-900/40 hover:bg-slate-900/80"
-                      }`}>
-                        <div className="flex items-center justify-center gap-2">
-                          <div className="relative">
-                            <input
-                              type="number"
-                              value={payoffs[0][0][0]}
-                              onChange={(e) => handlePayoffChange(0, 0, 0, e.target.value)}
-                              className="w-14 px-1.5 py-1 text-center bg-slate-900 border border-slate-700 rounded text-emerald-400 font-mono font-bold text-sm focus:border-emerald-500 focus:outline-none"
-                            />
-                            {solution.br1[0][0] && (
-                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-emerald-500 text-slate-950 text-[9px] font-black rounded-full shadow" title="Best response for Row Player">
-                                BR
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-slate-500 font-bold">,</span>
-                          <div className="relative">
-                            <input
-                              type="number"
-                              value={payoffs[0][0][1]}
-                              onChange={(e) => handlePayoffChange(0, 0, 1, e.target.value)}
-                              className="w-14 px-1.5 py-1 text-center bg-slate-900 border border-slate-700 rounded text-sky-400 font-mono font-bold text-sm focus:border-sky-500 focus:outline-none"
-                            />
-                            {solution.br2[0][0] && (
-                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-sky-500 text-slate-950 text-[9px] font-black rounded-full shadow" title="Best response for Col Player">
-                                BR
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        {solution.equilibria.some(([r, c]) => r === 0 && c === 0) && (
-                          <div className="mt-1.5 inline-block px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/40">
-                            ★ Nash Eq
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Cell (0, 1) */}
-                      <td className={`p-3 border border-slate-800 transition-all ${
-                        solution.equilibria.some(([r, c]) => r === 0 && c === 1)
-                          ? "bg-indigo-950/50 ring-2 ring-indigo-500/80"
-                          : "bg-slate-900/40 hover:bg-slate-900/80"
-                      }`}>
-                        <div className="flex items-center justify-center gap-2">
-                          <div className="relative">
-                            <input
-                              type="number"
-                              value={payoffs[0][1][0]}
-                              onChange={(e) => handlePayoffChange(0, 1, 0, e.target.value)}
-                              className="w-14 px-1.5 py-1 text-center bg-slate-900 border border-slate-700 rounded text-emerald-400 font-mono font-bold text-sm focus:border-emerald-500 focus:outline-none"
-                            />
-                            {solution.br1[0][1] && (
-                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-emerald-500 text-slate-950 text-[9px] font-black rounded-full shadow" title="Best response for Row Player">
-                                BR
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-slate-500 font-bold">,</span>
-                          <div className="relative">
-                            <input
-                              type="number"
-                              value={payoffs[0][1][1]}
-                              onChange={(e) => handlePayoffChange(0, 1, 1, e.target.value)}
-                              className="w-14 px-1.5 py-1 text-center bg-slate-900 border border-slate-700 rounded text-sky-400 font-mono font-bold text-sm focus:border-sky-500 focus:outline-none"
-                            />
-                            {solution.br2[0][1] && (
-                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-sky-500 text-slate-950 text-[9px] font-black rounded-full shadow" title="Best response for Col Player">
-                                BR
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        {solution.equilibria.some(([r, c]) => r === 0 && c === 1) && (
-                          <div className="mt-1.5 inline-block px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/40">
-                            ★ Nash Eq
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-
-                    {/* Row 1 */}
-                    <tr>
-                      <td className="p-2.5 border border-slate-800 bg-slate-900/90 text-xs font-bold text-emerald-300">
-                        {a2Name}
-                      </td>
-
-                      {/* Cell (1, 0) */}
-                      <td className={`p-3 border border-slate-800 transition-all ${
-                        solution.equilibria.some(([r, c]) => r === 1 && c === 0)
-                          ? "bg-indigo-950/50 ring-2 ring-indigo-500/80"
-                          : "bg-slate-900/40 hover:bg-slate-900/80"
-                      }`}>
-                        <div className="flex items-center justify-center gap-2">
-                          <div className="relative">
-                            <input
-                              type="number"
-                              value={payoffs[1][0][0]}
-                              onChange={(e) => handlePayoffChange(1, 0, 0, e.target.value)}
-                              className="w-14 px-1.5 py-1 text-center bg-slate-900 border border-slate-700 rounded text-emerald-400 font-mono font-bold text-sm focus:border-emerald-500 focus:outline-none"
-                            />
-                            {solution.br1[1][0] && (
-                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-emerald-500 text-slate-950 text-[9px] font-black rounded-full shadow" title="Best response for Row Player">
-                                BR
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-slate-500 font-bold">,</span>
-                          <div className="relative">
-                            <input
-                              type="number"
-                              value={payoffs[1][0][1]}
-                              onChange={(e) => handlePayoffChange(1, 0, 1, e.target.value)}
-                              className="w-14 px-1.5 py-1 text-center bg-slate-900 border border-slate-700 rounded text-sky-400 font-mono font-bold text-sm focus:border-sky-500 focus:outline-none"
-                            />
-                            {solution.br2[1][0] && (
-                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-sky-500 text-slate-950 text-[9px] font-black rounded-full shadow" title="Best response for Col Player">
-                                BR
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        {solution.equilibria.some(([r, c]) => r === 1 && c === 0) && (
-                          <div className="mt-1.5 inline-block px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/40">
-                            ★ Nash Eq
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Cell (1, 1) */}
-                      <td className={`p-3 border border-slate-800 transition-all ${
-                        solution.equilibria.some(([r, c]) => r === 1 && c === 1)
-                          ? "bg-indigo-950/50 ring-2 ring-indigo-500/80"
-                          : "bg-slate-900/40 hover:bg-slate-900/80"
-                      }`}>
-                        <div className="flex items-center justify-center gap-2">
-                          <div className="relative">
-                            <input
-                              type="number"
-                              value={payoffs[1][1][0]}
-                              onChange={(e) => handlePayoffChange(1, 1, 0, e.target.value)}
-                              className="w-14 px-1.5 py-1 text-center bg-slate-900 border border-slate-700 rounded text-emerald-400 font-mono font-bold text-sm focus:border-emerald-500 focus:outline-none"
-                            />
-                            {solution.br1[1][1] && (
-                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-emerald-500 text-slate-950 text-[9px] font-black rounded-full shadow" title="Best response for Row Player">
-                                BR
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-slate-500 font-bold">,</span>
-                          <div className="relative">
-                            <input
-                              type="number"
-                              value={payoffs[1][1][1]}
-                              onChange={(e) => handlePayoffChange(1, 1, 1, e.target.value)}
-                              className="w-14 px-1.5 py-1 text-center bg-slate-900 border border-slate-700 rounded text-sky-400 font-mono font-bold text-sm focus:border-sky-500 focus:outline-none"
-                            />
-                            {solution.br2[1][1] && (
-                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-sky-500 text-slate-950 text-[9px] font-black rounded-full shadow" title="Best response for Col Player">
-                                BR
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        {solution.equilibria.some(([r, c]) => r === 1 && c === 1) && (
-                          <div className="mt-1.5 inline-block px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px] border border-amber-500/40">
-                            ★ Nash Eq
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <p className="text-[11px] text-slate-500 text-center font-mono">
-                Click any numeric value in the cells above to test custom payoff matrices dynamically.
-              </p>
-            </div>
-
-            {/* Strategic Analysis & Solver Results */}
-            <div className="lg:col-span-5 bg-slate-950/80 rounded-xl border border-slate-800 p-4 space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">
-                  Equilibrium Diagnostic
-                </span>
-                <span className="text-[11px] font-mono text-slate-400">
-                  {solution.equilibria.length} Pure Nash Eq
-                </span>
-              </div>
-
-              {/* Nash Equilibrium Outcome */}
-              <div>
-                <h4 className="text-xs font-bold text-slate-300 uppercase">Pure Strategy Nash Equilibria:</h4>
-                {solution.equilibria.length === 0 ? (
-                  <div className="mt-1.5 p-3 rounded-lg bg-amber-950/20 border border-amber-500/30 text-xs text-amber-200 space-y-2.5">
-                    <p>
-                      <strong>No Pure Strategy Nash Equilibrium exists.</strong> The players face cyclical incentives (like Rock-Paper-Scissors or Inspection Game). The game resolves via a mixed-strategy equilibrium where players randomize moves to remain unpredictable.
-                    </p>
-                    {solution.hasValidMixed && solution.mixedP !== null && solution.mixedQ !== null && (
-                      <div className="pt-2 border-t border-amber-500/30 space-y-2">
-                        <div className="flex items-center gap-1.5 text-emerald-300 font-bold font-mono text-[11px]">
-                          <Icon name="target" className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>Mixed Strategy Nash Equilibrium (Week 04 Engine):</span>
-                        </div>
-                        <div className="bg-slate-950/80 p-2.5 rounded-lg border border-slate-800 space-y-1.5 text-[11px] font-mono">
-                          <div className="flex justify-between items-center text-slate-200">
-                            <span>{p1Name} (p*):</span>
-                            <span className="text-emerald-400 font-bold">{(solution.mixedP * 100).toFixed(1)}% {a1Name}</span>
-                          </div>
-                          <div className="flex justify-between items-center text-slate-200">
-                            <span>{p2Name} (q*):</span>
-                            <span className="text-sky-400 font-bold">{(solution.mixedQ * 100).toFixed(1)}% {a1Name}</span>
-                          </div>
-                          {solution.mixedExpRow !== null && solution.mixedExpCol !== null && (
-                            <div className="pt-1.5 border-t border-slate-800 text-[10px] text-slate-400 flex justify-between">
-                              <span>E[u({p1Name})]: <strong className="text-emerald-300">{solution.mixedExpRow.toFixed(2)}</strong></span>
-                              <span>E[u({p2Name})]: <strong className="text-sky-300">{solution.mixedExpCol.toFixed(2)}</strong></span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="mt-1.5 space-y-1.5">
-                    {solution.equilibria.map(([r, c], idx) => {
-                      const rowAction = r === 0 ? a1Name : a2Name;
-                      const colAction = c === 0 ? a1Name : a2Name;
-                      const p1val = payoffs[r][c][0];
-                      const p2val = payoffs[r][c][1];
-                      return (
-                        <div key={idx} className="p-2.5 rounded-lg bg-indigo-950/40 border border-indigo-500/30 text-xs flex items-center justify-between">
-                          <div>
-                            <span className="font-bold text-white">[{rowAction}, {colAction}]</span>
-                            <div className="text-[11px] text-slate-400 mt-0.5">
-                              Payoffs: <span className="text-emerald-400 font-mono font-bold">{p1val}</span> (Row) vs <span className="text-sky-400 font-mono font-bold">{p2val}</span> (Col)
-                            </div>
-                          </div>
-                          <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
-                            Stable
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Dominance Properties */}
-              <div className="text-xs space-y-1.5 pt-2 border-t border-slate-800">
-                <h4 className="font-bold text-slate-300 uppercase">Dominant Strategy Analysis:</h4>
-                <div className="space-y-1 text-slate-300">
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                    <span>
-                      <strong>{p1Name}: </strong>
-                      {solution.p1Dominant !== null ? (
-                        <span className="text-emerald-300">
-                          Strictly dominant strategy is <u>{solution.p1Dominant === 0 ? a1Name : a2Name}</u>.
-                        </span>
-                      ) : (
-                        <span className="text-slate-400">No dominant strategy (optimal choice depends on opponent).</span>
-                      )}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
-                    <span>
-                      <strong>{p2Name}: </strong>
-                      {solution.p2Dominant !== null ? (
-                        <span className="text-sky-300">
-                          Strictly dominant strategy is <u>{solution.p2Dominant === 0 ? a1Name : a2Name}</u>.
-                        </span>
-                      ) : (
-                        <span className="text-slate-400">No dominant strategy (optimal choice depends on opponent).</span>
-                      )}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Social Dilemma / Pareto Efficiency Callout */}
-              <div className="pt-2 border-t border-slate-800 text-xs">
-                {solution.isSocialDilemma ? (
-                  <div className="p-2.5 rounded-lg bg-red-950/30 border border-red-500/30 text-red-200">
-                    <div className="font-bold flex items-center gap-1.5 mb-1">
-                      <Icon name="helpCircle" className="w-3.5 h-3.5 text-red-400" />
-                      Prisoner's Dilemma Trap Detected
-                    </div>
-                    The Nash Equilibrium is Pareto inefficient! Both firms could enjoy higher payoffs by cooperating, but unilateral defection incentives prevent win-win collaboration without binding commitments or repeated interaction.
-                  </div>
-                ) : (
-                  <div className="p-2.5 rounded-lg bg-emerald-950/20 border border-emerald-500/30 text-emerald-200">
-                    <div className="font-bold flex items-center gap-1.5 mb-1">
-                      <Icon name="checkCircle" className="w-3.5 h-3.5 text-emerald-400" />
-                      Pareto Coherent State
-                    </div>
-                    The equilibrium outcome aligns with efficient surplus frontier or requires coordination mechanisms to converge on the optimal joint standard.
-                  </div>
-                )}
-              </div>
-
-            </div>
-
-          </div>
-        </div>
-      );
-    }
-
-    // ==========================================
-    // GAMETIKZSTUDIO INTERACTIVE VIEW COMPONENT
-    // ==========================================
-    function GameTikzStudioView({ onNavigateTab }) {
-      const [iframeKey, setIframeKey] = useState(0);
-      const [copiedId, setCopiedId] = useState(null);
-      const [activeSnippetTab, setActiveSnippetTab] = useState("tree");
-
-      const handleCopy = (id, text) => {
-        try {
-          navigator.clipboard.writeText(text);
-          setCopiedId(id);
-          setTimeout(() => setCopiedId(null), 2500);
-        } catch (e) {
-          console.error("Clipboard copy failed:", e);
-        }
-      };
-
-      const TIKZ_TEMPLATES = {
+    
+const TIKZ_TEMPLATES = {
         tree: {
           title: "Extensive Form Game Tree",
           description: "Subgame perfect equilibrium in an Incumbent vs. Entrant entry game with terminal payoffs.",
@@ -2064,245 +1528,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         }
       };
 
-      return (
-        <div className="space-y-8 animate-fadeIn max-w-6xl mx-auto">
-          {/* Hero Banner */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 border border-purple-700/50 p-6 sm:p-8 shadow-xl">
-            <div className="relative z-10">
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-xs font-semibold">
-                  <Icon name="gitBranch" className="w-3.5 h-3.5 text-purple-400" />
-                  Official Visual Authoring Suite • Created by Prof. Chiu Yu Ko
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setIframeKey((prev) => prev + 1)}
-                    className="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition-colors"
-                    title="Reload Embedded Studio"
-                  >
-                    <Icon name="refresh" className="w-3.5 h-3.5 text-slate-400" />
-                    Reload Canvas
-                  </button>
-                  <a
-                    href="https://kochiuyu.github.io/GameTikzStudio/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3.5 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-md shadow-purple-600/30 flex items-center gap-1.5 transition-all"
-                  >
-                    <span>Fullscreen in New Tab</span>
-                    <Icon name="externalLink" className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              </div>
-
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
-                GameTikzStudio — Game Tree, Payoff Matrix & Timeline Generator
-              </h2>
-              <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
-                Design formal game theoretic diagrams interactively in your browser. Whether you need extensive-form decision trees with imperfect information sets, normal-form strategic bimatrices, or multi-period sequential timelines, GameTikzStudio instantly generates publication-ready TikZ LaTeX code for research papers, executive slides, and Beamer presentations.
-              </p>
-
-              {/* Feature Capabilities Pills */}
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/30">
-                    <Icon name="gitBranch" className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white">Extensive Form Game Trees</h4>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Decision nodes, action branches, information sets, and backward induction payoffs.</p>
-                  </div>
-                </div>
-
-                <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/30">
-                    <Icon name="table" className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white">Normal Form Payoff Matrices</h4>
-                    <p className="text-[11px] text-slate-400 mt-0.5">2x2 and NxM strategic bimatrices, payoff vectors, and Nash equilibrium highlights.</p>
-                  </div>
-                </div>
-
-                <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
-                    <Icon name="clock" className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white">Multi-Stage Timelines</h4>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Sequential stages t=0,1,2..., commitment gates, and information arrival milestones.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-600/15 via-transparent to-transparent pointer-events-none" />
-          </div>
-
-          {/* Embedded Studio Canvas Container */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
-            {/* Top Bar with URL & Controls */}
-            <div className="px-4 py-3 bg-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-xs">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span className="font-mono text-slate-400 text-[11px]">Studio Service:</span>
-                <a
-                  href="https://kochiuyu.github.io/GameTikzStudio/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-mono text-purple-400 hover:text-purple-300 underline font-semibold flex items-center gap-1"
-                >
-                  https://kochiuyu.github.io/GameTikzStudio/
-                  <Icon name="externalLink" className="w-3 h-3 inline" />
-                </a>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] text-slate-500 hidden sm:inline">
-                  Visual Diagramming Canvas • Instant TikZ LaTeX Export
-                </span>
-                <a
-                  href="https://kochiuyu.github.io/GameTikzStudio/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-md text-xs font-medium flex items-center gap-1 transition-colors"
-                >
-                  <Icon name="externalLink" className="w-3 h-3 text-purple-400" />
-                  Open in New Window
-                </a>
-              </div>
-            </div>
-
-            {/* Embedded Iframe */}
-            <div className="relative w-full bg-slate-950 min-h-[750px] sm:min-h-[850px]">
-              <iframe
-                key={iframeKey}
-                src="https://kochiuyu.github.io/GameTikzStudio/"
-                title="GameTikzStudio - Game Tree, Payoff Matrix & Timeline Generator"
-                className="w-full h-[750px] sm:h-[850px] border-0"
-                allow="clipboard-write; clipboard-read"
-              />
-            </div>
-
-            {/* Bottom Footer Note */}
-            <div className="px-4 py-3 bg-slate-950/80 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
-              <div className="flex items-center gap-2">
-                <Icon name="lightbulb" className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>
-                  Tip: Copy the generated TikZ code from GameTikzStudio and paste directly into your Overleaf or LaTeX document with <code className="text-purple-300 font-mono bg-slate-900 px-1 py-0.5 rounded">\usepackage&#123;tikz&#125;</code>.
-                </span>
-              </div>
-              <a
-                href="https://kochiuyu.github.io/GameTikzStudio/"
-                target="_blank"
-                rel="noreferrer"
-                className="text-purple-400 hover:text-purple-300 font-semibold underline shrink-0"
-              >
-                Go to Dedicated Page →
-              </a>
-            </div>
-          </div>
-
-          {/* Quick-Start TikZ LaTeX Templates Gallery */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-slate-800">
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                  <Icon name="code" className="w-5 h-5 text-purple-400" />
-                  Ready-to-Use LaTeX TikZ Starter Code
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Quick reference examples generated with GameTikzStudio. Easily copy and paste into Overleaf or Beamer decks.
-                </p>
-              </div>
-
-              {/* Template Selector Pills */}
-              <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
-                <button
-                  onClick={() => setActiveSnippetTab("tree")}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                    activeSnippetTab === "tree"
-                      ? "bg-purple-600 text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  <Icon name="gitBranch" className="w-3.5 h-3.5" />
-                  Game Tree
-                </button>
-                <button
-                  onClick={() => setActiveSnippetTab("matrix")}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                    activeSnippetTab === "matrix"
-                      ? "bg-purple-600 text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  <Icon name="table" className="w-3.5 h-3.5" />
-                  Payoff Matrix
-                </button>
-                <button
-                  onClick={() => setActiveSnippetTab("timeline")}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                    activeSnippetTab === "timeline"
-                      ? "bg-purple-600 text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  <Icon name="clock" className="w-3.5 h-3.5" />
-                  Timeline
-                </button>
-                <button
-                  onClick={() => setActiveSnippetTab("mixed")}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                    activeSnippetTab === "mixed"
-                      ? "bg-purple-600 text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  <Icon name="target" className="w-3.5 h-3.5" />
-                  Mixed Strategy Matrix
-                </button>
-              </div>
-            </div>
-
-            {/* Active Code Display */}
-            {TIKZ_TEMPLATES[activeSnippetTab] && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-bold text-slate-200">{TIKZ_TEMPLATES[activeSnippetTab].title}</span>
-                    <span className="text-slate-500 mx-1.5">•</span>
-                    <span className="text-slate-400">{TIKZ_TEMPLATES[activeSnippetTab].description}</span>
-                  </div>
-                  <button
-                    onClick={() => handleCopy(activeSnippetTab, TIKZ_TEMPLATES[activeSnippetTab].code)}
-                    className="px-3 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 font-semibold text-xs flex items-center gap-1.5 transition-all shadow-sm"
-                  >
-                    {copiedId === activeSnippetTab ? (
-                      <>
-                        <Icon name="check" className="w-3.5 h-3.5 text-emerald-400" />
-                        <span className="text-emerald-300">Copied to Clipboard!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Icon name="save" className="w-3.5 h-3.5" />
-                        <span>Copy TikZ Code</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                <div className="relative">
-                  <pre className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono text-purple-200 overflow-x-auto leading-relaxed max-h-72">
-                    {TIKZ_TEMPLATES[activeSnippetTab].code}
-                  </pre>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    }
-
-    const MIXED_STRATEGY_PRESETS = [
+const MIXED_STRATEGY_PRESETS = [
       {
         id: 0,
         name: "Coffee Chain Promotion Timing (Prof. Ko's Slide Case)",
@@ -2369,4602 +1595,1400 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
       }
     ];
 
-    function App() {
-      // --- Persistent State Hooks ---
-      const [completedWeeks, setCompletedWeeks] = useState(() => {
-        try {
-          const saved = localStorage.getItem("gt_completed_weeks");
-          return saved ? JSON.parse(saved) : [1]; // Week 1 completed by default as demo
-        } catch (e) {
-          return [1];
-        }
-      });
+    
 
-      const [competencies, setCompetencies] = useState(() => {
-        try {
-          const saved = localStorage.getItem("gt_competencies");
-          return saved ? JSON.parse(saved) : ["comp_1", "comp_2"];
-        } catch (e) {
-          return ["comp_1", "comp_2"];
-        }
-      });
+    function PayoffMatrixSimulator({ initialPresetId = "coffee_chain" }: { initialPresetId?: string }) {
+      const [selectedPresetId, setSelectedPresetId] = useState(initialPresetId);
+      const activePreset = useMemo(() => {
+        return MATRIX_PRESETS.find(p => p.id === selectedPresetId) || MATRIX_PRESETS[0];
+      }, [selectedPresetId]);
 
-      const [caseNotes, setCaseNotes] = useState(() => {
-        try {
-          const saved = localStorage.getItem("gt_case_notes");
-          return saved ? JSON.parse(saved) : {
-            1: "In Coca-Cola vs. Pepsi, both sides are trapped by fear of unilateral market share loss. Advertising doesn't expand the total soda consumption pie; it merely protects defensive boundaries. A rational exit strategy requires steering brand spend into non-carbonated wellness acquisitions where margins are unconstrained.",
-            2: "Blockbuster failed to backward induct because retail franchise store owners generated lucrative local cash flows that corporate headquarters could not easily liquidate. Netflix correctly realized Blockbuster was paralyzed by its own operating cost structure."
-          };
-        } catch (e) {
-          return {};
-        }
-      });
-
-      const [quizAnswers, setQuizAnswers] = useState(() => {
-        try {
-          const saved = localStorage.getItem("gt_quiz_answers");
-          return saved ? JSON.parse(saved) : {};
-        } catch (e) {
-          return {};
-        }
-      });
-
-      const [quizSubmitted, setQuizSubmitted] = useState(() => {
-        try {
-          const saved = localStorage.getItem("gt_quiz_submitted");
-          return saved ? JSON.parse(saved) : {};
-        } catch (e) {
-          return {};
-        }
-      });
-
-      // --- UI Navigation State ---
-      const [activeTab, setActiveTab] = useState("dashboard"); // 'dashboard' | 'modules' | 'quizzes' | 'reference'
-      const [selectedWeekId, setSelectedWeekId] = useState(1);
-      const [weekSubTab, setWeekSubTab] = useState("recap"); // 'recap' | 'case' | 'slides'
-      const [moduleFilter, setModuleFilter] = useState("all"); // 'all' | 'active' | 'upcoming'
-      const [revealedSolutions, setRevealedSolutions] = useState({});
-      const [saveStatus, setSaveStatus] = useState({});
-      const [slideModalWeek, setSlideModalWeek] = useState(null);
-      const [activeBizAppWeek1, setActiveBizAppWeek1] = useState(0);
-      const [activeInductionStep, setActiveInductionStep] = useState(0);
-      const [copiedRecap, setCopiedRecap] = useState(false);
-      const [embeddedSlideMode, setEmbeddedSlideMode] = useState(false);
-      const [caseCellSelected, setCaseCellSelected] = useState([1, 1]);
-      const [activeArchetypeWeek3, setActiveArchetypeWeek3] = useState(0);
-      const [activeCournotTabWeek3, setActiveCournotTabWeek3] = useState(0);
-      const [activeIesdsStep, setActiveIesdsStep] = useState(0);
-      const [activeEquilibriumRegime, setActiveEquilibriumRegime] = useState(0);
-      const [activeMixedPresetWeek4, setActiveMixedPresetWeek4] = useState(0);
-      const [customP1ProbWeek4, setCustomP1ProbWeek4] = useState(0.5);
-      const [customSlideUrls, setCustomSlideUrls] = useState<Record<number, { url: string; name: string; size: number }>>({});
-      const fileInputRef = useRef<HTMLInputElement>(null);
-
-      // IndexedDB storage for authentic uploaded slides
-      const initSlidesDB = (): Promise<IDBDatabase> => {
-        return new Promise<IDBDatabase>((resolve, reject) => {
-          if (typeof window === "undefined" || !window.indexedDB) {
-            return reject(new Error("IndexedDB not supported"));
-          }
-          const request = window.indexedDB.open("strategic_thinking_slides_db", 1);
-          request.onupgradeneeded = () => {
-            const db = request.result;
-            if (!db.objectStoreNames.contains("slides")) {
-              db.createObjectStore("slides", { keyPath: "weekId" });
-            }
-          };
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = () => reject(request.error);
-        });
-      };
-
-      const loadCustomSlides = async () => {
-        try {
-          const db = await initSlidesDB();
-          const tx = db.transaction("slides", "readonly");
-          const store = tx.objectStore("slides");
-          const getAllRequest = store.getAll();
-          getAllRequest.onsuccess = () => {
-            const records = getAllRequest.result || [];
-            const mapping: Record<number, { url: string; name: string; size: number }> = {};
-            records.forEach((rec: any) => {
-              if (rec.blob) {
-                const url = URL.createObjectURL(rec.blob);
-                mapping[rec.weekId] = { url, name: rec.name, size: rec.size };
-              }
-            });
-            setCustomSlideUrls(mapping);
-          };
-        } catch (err) {
-          console.warn("Could not load custom slides from IndexedDB", err);
-        }
-      };
-
-      const saveCustomSlide = async (weekId: number, file: File) => {
-        try {
-          const db = await initSlidesDB();
-          const tx = db.transaction("slides", "readwrite");
-          const store = tx.objectStore("slides");
-          await new Promise<void>((resolve, reject) => {
-            const req = store.put({ weekId, blob: file, name: file.name, size: file.size, updatedAt: Date.now() });
-            req.onsuccess = () => resolve();
-            req.onerror = () => reject(req.error);
-          });
-          const url = URL.createObjectURL(file);
-          setCustomSlideUrls(prev => ({
-            ...prev,
-            [weekId]: { url, name: file.name, size: file.size }
-          }));
-        } catch (err) {
-          console.error("Failed to save custom slide to IndexedDB", err);
-        }
-      };
-
-      const removeCustomSlide = async (weekId: number) => {
-        try {
-          const db = await initSlidesDB();
-          const tx = db.transaction("slides", "readwrite");
-          const store = tx.objectStore("slides");
-          await new Promise<void>((resolve, reject) => {
-            const req = store.delete(weekId);
-            req.onsuccess = () => resolve();
-            req.onerror = () => reject(req.error);
-          });
-          setCustomSlideUrls(prev => {
-            const copy = { ...prev };
-            delete copy[weekId];
-            return copy;
-          });
-        } catch (err) {
-          console.error("Failed to delete custom slide", err);
-        }
-      };
+      const [p1Name, setP1Name] = useState(activePreset.p1Name);
+      const [p2Name, setP2Name] = useState(activePreset.p2Name);
+      const [a1Name, setA1Name] = useState(activePreset.a1Name);
+      const [a2Name, setA2Name] = useState(activePreset.a2Name);
+      const [payoffs, setPayoffs] = useState(activePreset.payoffs);
 
       useEffect(() => {
-        loadCustomSlides();
-      }, []);
-
-      const getActiveSlideUrl = (weekId, defaultPath) => {
-        return customSlideUrls[weekId]?.url || defaultPath;
-      };
-
-      const getActiveSlideDownloadName = (weekId, defaultPath) => {
-        return customSlideUrls[weekId]?.name || (defaultPath ? defaultPath.split('/').pop() : `week0${weekId}.pdf`);
-      };
-
-      const openWeekRecap = (weekId) => {
-        setSelectedWeekId(weekId);
-        setActiveTab("modules");
-        setWeekSubTab("recap");
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      };
-
-      const copyRecapToClipboard = (weekData) => {
-        if (!weekData || !weekData.recap) return;
-        const text = `${weekData.recap.title}\n\nAcademic Takeaway: "${weekData.recap.academicTakeaway}"\n\n${weekData.recap.intro}`;
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(text);
-          setCopiedRecap(true);
-          setTimeout(() => setCopiedRecap(false), 2200);
+        const p = MATRIX_PRESETS.find(item => item.id === selectedPresetId);
+        if (p) {
+          setP1Name(p.p1Name);
+          setP2Name(p.p2Name);
+          setA1Name(p.a1Name);
+          setA2Name(p.a2Name);
+          setPayoffs(p.payoffs);
         }
+      }, [selectedPresetId]);
+
+      const handleSelectPreset = (p: typeof MATRIX_PRESETS[0]) => {
+        setSelectedPresetId(p.id);
       };
 
-      // --- Sync to LocalStorage ---
-      useEffect(() => {
-        try {
-          localStorage.setItem("gt_completed_weeks", JSON.stringify(completedWeeks));
-        } catch (e) {}
-      }, [completedWeeks]);
+      const handlePayoffChange = (row: number, col: number, playerIndex: number, val: string) => {
+        const num = parseFloat(val);
+        const updated = [
+          [ [...payoffs[0][0]], [...payoffs[0][1]] ],
+          [ [...payoffs[1][0]], [...payoffs[1][1]] ]
+        ];
+        updated[row][col][playerIndex] = isNaN(num) ? 0 : num;
+        setPayoffs(updated);
+        setSelectedPresetId("custom");
+      };
 
-      useEffect(() => {
-        try {
-          localStorage.setItem("gt_competencies", JSON.stringify(competencies));
-        } catch (e) {}
-      }, [competencies]);
+      const solution = useMemo(() => {
+        const p = payoffs;
+        const col0Max = Math.max(p[0][0][0], p[1][0][0]);
+        const p1Br_00 = p[0][0][0] === col0Max;
+        const p1Br_10 = p[1][0][0] === col0Max;
 
-      useEffect(() => {
-        try {
-          localStorage.setItem("gt_case_notes", JSON.stringify(caseNotes));
-        } catch (e) {}
-      }, [caseNotes]);
+        const col1Max = Math.max(p[0][1][0], p[1][1][0]);
+        const p1Br_01 = p[0][1][0] === col1Max;
+        const p1Br_11 = p[1][1][0] === col1Max;
 
-      useEffect(() => {
-        try {
-          localStorage.setItem("gt_quiz_answers", JSON.stringify(quizAnswers));
-          localStorage.setItem("gt_quiz_submitted", JSON.stringify(quizSubmitted));
-        } catch (e) {}
-      }, [quizAnswers, quizSubmitted]);
+        const row0Max = Math.max(p[0][0][1], p[0][1][1]);
+        const p2Br_00 = p[0][0][1] === row0Max;
+        const p2Br_01 = p[0][1][1] === row0Max;
 
-      // --- Calculated Metrics ---
-      const activeModulesCompletedCount = useMemo(() => {
-        const activeIds = CURRICULUM_DATA.filter(w => w.status === "active").map(w => w.id);
-        return activeIds.filter(id => completedWeeks.includes(id)).length;
-      }, [completedWeeks]);
+        const row1Max = Math.max(p[1][0][1], p[1][1][1]);
+        const p2Br_10 = p[1][0][1] === row1Max;
+        const p2Br_11 = p[1][1][1] === row1Max;
 
-      const totalModulesCompletedCount = completedWeeks.length;
+        const br1 = [
+          [p1Br_00, p1Br_01],
+          [p1Br_10, p1Br_11]
+        ];
+        const br2 = [
+          [p2Br_00, p2Br_01],
+          [p2Br_10, p2Br_11]
+        ];
 
-      const quizStats = useMemo(() => {
-        let attempted = 0;
-        let correct = 0;
-        QUIZ_QUESTIONS.forEach(q => {
-          if (quizSubmitted[q.id]) {
-            attempted++;
-            if (quizAnswers[q.id] === q.correctIndex) {
-              correct++;
+        const equilibria: [number, number][] = [];
+        for (let r = 0; r < 2; r++) {
+          for (let c = 0; c < 2; c++) {
+            if (br1[r][c] && br2[r][c]) {
+              equilibria.push([r, c]);
             }
           }
-        });
-        const scorePct = attempted > 0 ? Math.round((correct / QUIZ_QUESTIONS.length) * 100) : 0;
-        return { attempted, correct, total: QUIZ_QUESTIONS.length, scorePct };
-      }, [quizAnswers, quizSubmitted]);
-
-      const savedNotesCount = useMemo(() => {
-        return Object.values(caseNotes).filter(n => typeof n === "string" && n.trim().length > 10).length;
-      }, [caseNotes]);
-
-      // --- Handlers ---
-      const toggleWeekCompletion = (weekId) => {
-        setCompletedWeeks(prev => 
-          prev.includes(weekId) ? prev.filter(id => id !== weekId) : [...prev, weekId]
-        );
-      };
-
-      const toggleCompetency = (compId) => {
-        setCompetencies(prev =>
-          prev.includes(compId) ? prev.filter(id => id !== compId) : [...prev, compId]
-        );
-      };
-
-      const handleNoteChange = (weekId, text) => {
-        setCaseNotes(prev => ({ ...prev, [weekId]: text }));
-        setSaveStatus(prev => ({ ...prev, [weekId]: "saving" }));
-        setTimeout(() => {
-          setSaveStatus(prev => ({ ...prev, [weekId]: "saved" }));
-        }, 600);
-      };
-
-      const triggerManualSave = (weekId) => {
-        setSaveStatus(prev => ({ ...prev, [weekId]: "saving" }));
-        setTimeout(() => {
-          setSaveStatus(prev => ({ ...prev, [weekId]: "saved" }));
-        }, 300);
-      };
-
-      const toggleSolution = (weekId) => {
-        setRevealedSolutions(prev => ({ ...prev, [weekId]: !prev[weekId] }));
-      };
-
-      const handleQuizSelect = (qId, optionIdx) => {
-        if (quizSubmitted[qId]) return;
-        setQuizAnswers(prev => ({ ...prev, [qId]: optionIdx }));
-      };
-
-      const handleQuizSubmit = (qId) => {
-        if (quizAnswers[qId] === undefined) return;
-        setQuizSubmitted(prev => ({ ...prev, [qId]: true }));
-      };
-
-      const handleResetQuiz = (qId) => {
-        setQuizSubmitted(prev => {
-          const next = { ...prev };
-          delete next[qId];
-          return next;
-        });
-        setQuizAnswers(prev => {
-          const next = { ...prev };
-          delete next[qId];
-          return next;
-        });
-      };
-
-      const handleResetAllQuizzes = () => {
-        if (confirm("Reset all quiz attempts to test your mastery again?")) {
-          setQuizAnswers({});
-          setQuizSubmitted({});
         }
-      };
 
-      const selectedWeek = useMemo(() => {
-        return CURRICULUM_DATA.find(w => w.id === selectedWeekId) || CURRICULUM_DATA[0];
-      }, [selectedWeekId]);
+        const r11 = p[0][0][0], r12 = p[0][1][0];
+        const r21 = p[1][0][0], r22 = p[1][1][0];
+        const c11 = p[0][0][1], c12 = p[0][1][1];
+        const c21 = p[1][0][1], c22 = p[1][1][1];
 
-      const filteredWeeks = useMemo(() => {
-        if (moduleFilter === "active") return CURRICULUM_DATA.filter(w => w.status === "active");
-        if (moduleFilter === "upcoming") return CURRICULUM_DATA.filter(w => w.status === "upcoming");
-        return CURRICULUM_DATA;
-      }, [moduleFilter]);
+        const denomP = (c11 + c22) - (c12 + c21);
+        const numerP = c22 - c21;
+        let mixedP: number | null = null;
+        if (denomP !== 0) {
+          const val = numerP / denomP;
+          if (val >= 0 && val <= 1) mixedP = val;
+        }
+
+        const denomQ = (r11 + r22) - (r12 + r21);
+        const numerQ = r22 - r12;
+        let mixedQ: number | null = null;
+        if (denomQ !== 0) {
+          const val = numerQ / denomQ;
+          if (val >= 0 && val <= 1) mixedQ = val;
+        }
+
+        const hasValidMixed = mixedP !== null && mixedQ !== null;
+        const mixedExpRow = hasValidMixed ? (mixedQ! * r11 + (1 - mixedQ!) * r12) : null;
+        const mixedExpCol = hasValidMixed ? (mixedP! * c11 + (1 - mixedP!) * c21) : null;
+
+        return {
+          br1,
+          br2,
+          equilibria,
+          mixedP,
+          mixedQ,
+          hasValidMixed,
+          mixedExpRow,
+          mixedExpCol
+        };
+      }, [payoffs]);
 
       return (
-        <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 selection:bg-indigo-600/30">
-          
-          {/* Top Navigation Bar */}
-          <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-6 lg:px-8 py-3.5">
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-              <div className="flex items-center space-x-3.5">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-bold text-lg">
-                  <Icon name="target" className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-base sm:text-lg font-bold text-white tracking-tight leading-none">
-                      Strategic Thinking: Game Theory for Business Strategy
-                    </h1>
-                    <span className="hidden sm:inline-block px-2 py-0.5 text-[11px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full">
-                      MBA / Exec Ed
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 font-medium mt-0.5">
-                    商業策略博弈論 • 12-Week Strategic Decision Architecture
-                  </p>
+        <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-6">
+          <div className="border-b border-slate-100 pb-3">
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Strategic Interaction Lab · 2×2 Normal Form Simulator
+            </div>
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
+              Payoff Matrix & Nash Equilibrium Solver
+            </h3>
+            <p className="text-xs text-slate-600 mt-0.5">
+              Simulate best response dynamics, pure Nash equilibria, and mixed strategy randomization probabilities via the Indifference Principle.
+            </p>
+          </div>
+
+          {/* Preset Buttons */}
+          <div className="space-y-2">
+            <div className="text-xs font-semibold text-slate-700">
+              Lecture Scenarios & Presets:
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {MATRIX_PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  onClick={() => handleSelectPreset(preset)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    selectedPresetId === preset.id
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                  }`}
+                >
+                  {preset.name}
+                </button>
+              ))}
+            </div>
+            {activePreset && (
+              <div className="callout callout-note text-xs mt-2">
+                <strong>Context: </strong> {activePreset.description}
+              </div>
+            )}
+          </div>
+
+          {/* Interactive Matrix Display & Inputs */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div className="lg:col-span-7 bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4">
+              <div className="flex items-center justify-between text-xs text-slate-600">
+                <span className="font-semibold text-slate-700">Payoff Legend:</span>
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center gap-1.5 font-medium text-blue-700">
+                    <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span>
+                    {p1Name || "Row Player"}
+                  </span>
+                  <span className="flex items-center gap-1.5 font-medium text-emerald-700">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block"></span>
+                    {p2Name || "Col Player"}
+                  </span>
                 </div>
               </div>
 
-              {/* Navigation Tabs */}
-              <div className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto pb-1 md:pb-0">
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-center">
+                  <thead>
+                    <tr>
+                      <th className="p-2.5 border border-slate-200 bg-slate-100/80 text-xs font-medium text-slate-500 w-1/3">
+                        {p1Name} \ {p2Name}
+                      </th>
+                      <th className="p-2.5 border border-slate-200 bg-slate-100 text-xs font-bold text-emerald-800 w-1/3">
+                        {a1Name}
+                      </th>
+                      <th className="p-2.5 border border-slate-200 bg-slate-100 text-xs font-bold text-emerald-800 w-1/3">
+                        {a2Name}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="p-2.5 border border-slate-200 bg-slate-100 text-xs font-bold text-blue-800">
+                        {a1Name}
+                      </td>
+                      {/* (0, 0) */}
+                      <td className={`p-3 border border-slate-200 transition-colors ${
+                        solution.equilibria.some(([r, c]) => r === 0 && c === 0)
+                          ? "bg-emerald-50/90 ring-2 ring-emerald-500"
+                          : "bg-white hover:bg-slate-50"
+                      }`}>
+                        <div className="flex items-center justify-center gap-1.5">
+                          <div className="relative">
+                            <input
+                              type="number"
+                              value={payoffs[0][0][0]}
+                              onChange={(e) => handlePayoffChange(0, 0, 0, e.target.value)}
+                              className="w-13 px-1 py-1 text-center bg-white border border-slate-300 rounded text-blue-700 font-mono font-bold text-sm focus:border-blue-500 focus:outline-none"
+                            />
+                            {solution.br1[0][0] && (
+                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-blue-600 text-white text-[9px] font-bold rounded-full">
+                                BR
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-slate-400 font-bold">,</span>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              value={payoffs[0][0][1]}
+                              onChange={(e) => handlePayoffChange(0, 0, 1, e.target.value)}
+                              className="w-13 px-1 py-1 text-center bg-white border border-slate-300 rounded text-emerald-700 font-mono font-bold text-sm focus:border-emerald-500 focus:outline-none"
+                            />
+                            {solution.br2[0][0] && (
+                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-emerald-600 text-white text-[9px] font-bold rounded-full">
+                                BR
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {solution.equilibria.some(([r, c]) => r === 0 && c === 0) && (
+                          <div className="mt-1.5 inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] border border-emerald-300">
+                            ★ Nash Eq
+                          </div>
+                        )}
+                      </td>
+                      {/* (0, 1) */}
+                      <td className={`p-3 border border-slate-200 transition-colors ${
+                        solution.equilibria.some(([r, c]) => r === 0 && c === 1)
+                          ? "bg-emerald-50/90 ring-2 ring-emerald-500"
+                          : "bg-white hover:bg-slate-50"
+                      }`}>
+                        <div className="flex items-center justify-center gap-1.5">
+                          <div className="relative">
+                            <input
+                              type="number"
+                              value={payoffs[0][1][0]}
+                              onChange={(e) => handlePayoffChange(0, 1, 0, e.target.value)}
+                              className="w-13 px-1 py-1 text-center bg-white border border-slate-300 rounded text-blue-700 font-mono font-bold text-sm focus:border-blue-500 focus:outline-none"
+                            />
+                            {solution.br1[0][1] && (
+                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-blue-600 text-white text-[9px] font-bold rounded-full">
+                                BR
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-slate-400 font-bold">,</span>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              value={payoffs[0][1][1]}
+                              onChange={(e) => handlePayoffChange(0, 1, 1, e.target.value)}
+                              className="w-13 px-1 py-1 text-center bg-white border border-slate-300 rounded text-emerald-700 font-mono font-bold text-sm focus:border-emerald-500 focus:outline-none"
+                            />
+                            {solution.br2[0][1] && (
+                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-emerald-600 text-white text-[9px] font-bold rounded-full">
+                                BR
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {solution.equilibria.some(([r, c]) => r === 0 && c === 1) && (
+                          <div className="mt-1.5 inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] border border-emerald-300">
+                            ★ Nash Eq
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td className="p-2.5 border border-slate-200 bg-slate-100 text-xs font-bold text-blue-800">
+                        {a2Name}
+                      </td>
+                      {/* (1, 0) */}
+                      <td className={`p-3 border border-slate-200 transition-colors ${
+                        solution.equilibria.some(([r, c]) => r === 1 && c === 0)
+                          ? "bg-emerald-50/90 ring-2 ring-emerald-500"
+                          : "bg-white hover:bg-slate-50"
+                      }`}>
+                        <div className="flex items-center justify-center gap-1.5">
+                          <div className="relative">
+                            <input
+                              type="number"
+                              value={payoffs[1][0][0]}
+                              onChange={(e) => handlePayoffChange(1, 0, 0, e.target.value)}
+                              className="w-13 px-1 py-1 text-center bg-white border border-slate-300 rounded text-blue-700 font-mono font-bold text-sm focus:border-blue-500 focus:outline-none"
+                            />
+                            {solution.br1[1][0] && (
+                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-blue-600 text-white text-[9px] font-bold rounded-full">
+                                BR
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-slate-400 font-bold">,</span>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              value={payoffs[1][0][1]}
+                              onChange={(e) => handlePayoffChange(1, 0, 1, e.target.value)}
+                              className="w-13 px-1 py-1 text-center bg-white border border-slate-300 rounded text-emerald-700 font-mono font-bold text-sm focus:border-emerald-500 focus:outline-none"
+                            />
+                            {solution.br2[1][0] && (
+                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-emerald-600 text-white text-[9px] font-bold rounded-full">
+                                BR
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {solution.equilibria.some(([r, c]) => r === 1 && c === 0) && (
+                          <div className="mt-1.5 inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] border border-emerald-300">
+                            ★ Nash Eq
+                          </div>
+                        )}
+                      </td>
+                      {/* (1, 1) */}
+                      <td className={`p-3 border border-slate-200 transition-colors ${
+                        solution.equilibria.some(([r, c]) => r === 1 && c === 1)
+                          ? "bg-emerald-50/90 ring-2 ring-emerald-500"
+                          : "bg-white hover:bg-slate-50"
+                      }`}>
+                        <div className="flex items-center justify-center gap-1.5">
+                          <div className="relative">
+                            <input
+                              type="number"
+                              value={payoffs[1][1][0]}
+                              onChange={(e) => handlePayoffChange(1, 1, 0, e.target.value)}
+                              className="w-13 px-1 py-1 text-center bg-white border border-slate-300 rounded text-blue-700 font-mono font-bold text-sm focus:border-blue-500 focus:outline-none"
+                            />
+                            {solution.br1[1][1] && (
+                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-blue-600 text-white text-[9px] font-bold rounded-full">
+                                BR
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-slate-400 font-bold">,</span>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              value={payoffs[1][1][1]}
+                              onChange={(e) => handlePayoffChange(1, 1, 1, e.target.value)}
+                              className="w-13 px-1 py-1 text-center bg-white border border-slate-300 rounded text-emerald-700 font-mono font-bold text-sm focus:border-emerald-500 focus:outline-none"
+                            />
+                            {solution.br2[1][1] && (
+                              <span className="absolute -top-1.5 -right-1.5 px-1 bg-emerald-600 text-white text-[9px] font-bold rounded-full">
+                                BR
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {solution.equilibria.some(([r, c]) => r === 1 && c === 1) && (
+                          <div className="mt-1.5 inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] border border-emerald-300">
+                            ★ Nash Eq
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-[11px] text-slate-500 text-center font-mono">
+                Edit numbers in the cells above to test arbitrary normal-form games.
+              </p>
+            </div>
+
+            {/* Strategic Analysis & Solver Results */}
+            <div className="lg:col-span-5 bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Equilibrium Diagnostic
+                </span>
+                <span className="text-[11px] font-mono text-slate-500">
+                  {solution.equilibria.length} Pure Nash Eq
+                </span>
+              </div>
+
+              <div>
+                <h4 className="text-xs font-semibold text-slate-700 uppercase">
+                  Pure Strategy Nash Equilibria:
+                </h4>
+                {solution.equilibria.length === 0 ? (
+                  <div className="mt-1.5 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2.5">
+                    <p>
+                      <strong>No Pure Strategy Nash Equilibrium exists.</strong> Best responses cycle endlessly. Rational behavior requires deliberate randomization (Mixed Strategy) so the opponent cannot anticipate moves.
+                    </p>
+                    {solution.hasValidMixed && solution.mixedP !== null && solution.mixedQ !== null && (
+                      <div className="pt-2 border-t border-amber-200 space-y-2">
+                        <div className="flex items-center gap-1.5 text-blue-900 font-bold font-mono text-xs">
+                          <Icon name="target" className="w-3.5 h-3.5 text-blue-600" />
+                          <span>Mixed Strategy Nash Equilibrium (MSNE):</span>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1.5 text-xs font-mono">
+                          <div className="flex justify-between items-center text-slate-800">
+                            <span>{p1Name} (p*):</span>
+                            <span className="text-blue-700 font-bold">{(solution.mixedP * 100).toFixed(1)}% {a1Name}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-slate-800">
+                            <span>{p2Name} (q*):</span>
+                            <span className="text-emerald-700 font-bold">{(solution.mixedQ * 100).toFixed(1)}% {a1Name}</span>
+                          </div>
+                          {solution.mixedExpRow !== null && solution.mixedExpCol !== null && (
+                            <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-600 flex justify-between">
+                              <span>E[Payoff({p1Name})]: <strong className="text-blue-800">{solution.mixedExpRow.toFixed(2)}</strong></span>
+                              <span>E[Payoff({p2Name})]: <strong className="text-emerald-800">{solution.mixedExpCol.toFixed(2)}</strong></span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="mt-1.5 space-y-1.5">
+                    {solution.equilibria.map(([r, c], idx) => {
+                      const rowAction = r === 0 ? a1Name : a2Name;
+                      const colAction = c === 0 ? a1Name : a2Name;
+                      const p1val = payoffs[r][c][0];
+                      const p2val = payoffs[r][c][1];
+                      return (
+                        <div key={idx} className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs flex items-center justify-between">
+                          <div>
+                            <span className="font-bold text-emerald-950">[{rowAction}, {colAction}]</span>
+                            <div className="text-[11px] text-slate-600 mt-0.5">
+                              Payoffs: <span className="text-blue-700 font-mono font-bold">{p1val}</span> ({p1Name}) vs <span className="text-emerald-700 font-mono font-bold">{p2val}</span> ({p2Name})
+                            </div>
+                          </div>
+                          <span className="px-2 py-0.5 bg-emerald-200 text-emerald-800 text-[10px] font-bold rounded">
+                            Stable
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function GameTikzStudioView() {
+      const [activeSnippetTab, setActiveSnippetTab] = useState("tree");
+      const [copiedId, setCopiedId] = useState<string | null>(null);
+
+      const handleCopy = (id: string, text: string) => {
+        try {
+          navigator.clipboard.writeText(text);
+          setCopiedId(id);
+          setTimeout(() => setCopiedId(null), 2000);
+        } catch (e) {
+          console.warn("Failed to copy", e);
+        }
+      };
+
+      const currentTemplate = TIKZ_TEMPLATES[activeSnippetTab as keyof typeof TIKZ_TEMPLATES] || TIKZ_TEMPLATES.tree;
+
+      return (
+        <div className="space-y-6">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Publication & Presentation Visuals
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mt-1">
+                  GameTikz Studio — LaTeX TikZ Diagram Generator
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                  Visual generator for extensive-form decision trees, normal-form strategic bimatrices, and mixed-strategy trees.
+                </p>
+              </div>
+              <a
+                href="https://kochiuyu.github.io/GameTikzStudio/"
+                target="_blank"
+                rel="noreferrer"
+                className="px-3.5 py-1.5 text-xs font-medium bg-slate-900 text-white hover:bg-slate-800 rounded-lg flex items-center gap-1.5 self-start sm:self-center transition-colors"
+              >
+                Open Standalone Studio <Icon name="externalLink" className="w-3.5 h-3.5" />
+              </a>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              <button
+                onClick={() => setActiveSnippetTab("tree")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  activeSnippetTab === "tree" ? "bg-slate-900 text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                }`}
+              >
+                Extensive Form Tree
+              </button>
+              <button
+                onClick={() => setActiveSnippetTab("matrix")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  activeSnippetTab === "matrix" ? "bg-slate-900 text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                }`}
+              >
+                Normal Form Matrix
+              </button>
+              <button
+                onClick={() => setActiveSnippetTab("mixed")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  activeSnippetTab === "mixed" ? "bg-slate-900 text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                }`}
+              >
+                Mixed Strategy Matrix
+              </button>
+              <button
+                onClick={() => setActiveSnippetTab("timeline")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  activeSnippetTab === "timeline" ? "bg-slate-900 text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                }`}
+              >
+                Sequential Timeline
+              </button>
+            </div>
+
+            <div className="mt-4 relative bg-slate-900 rounded-lg p-4 font-mono text-xs text-slate-200 overflow-x-auto">
+              <div className="flex justify-between items-center pb-2 mb-2 border-b border-slate-800 text-[11px] text-slate-400">
+                <span>{currentTemplate.title} — {currentTemplate.description}</span>
                 <button
-                  onClick={() => setActiveTab("dashboard")}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                    activeTab === "dashboard"
-                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800"
-                  }`}
+                  onClick={() => handleCopy(activeSnippetTab, currentTemplate.code)}
+                  className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs flex items-center gap-1 transition-colors"
                 >
-                  <Icon name="barChart" className="w-4 h-4" />
-                  Executive Dashboard
+                  {copiedId === activeSnippetTab ? <Icon name="check" className="w-3.5 h-3.5 text-emerald-400" /> : <Icon name="save" className="w-3.5 h-3.5" />}
+                  {copiedId === activeSnippetTab ? "Copied!" : "Copy LaTeX"}
                 </button>
+              </div>
+              <pre className="text-slate-300 text-[11px] leading-relaxed overflow-x-auto">{currentTemplate.code}</pre>
+            </div>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+            <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs text-slate-600">
+              <span className="font-medium">Live Canvas: https://kochiuyu.github.io/GameTikzStudio/</span>
+              <span className="text-[11px] text-slate-500">Visual Editor</span>
+            </div>
+            <iframe
+              src="https://kochiuyu.github.io/GameTikzStudio/"
+              title="GameTikzStudio"
+              className="w-full h-[700px] border-0"
+            />
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [activeTab, setActiveTab] = useState<"overview" | "modules" | "tools" | "quizzes">("modules");
+      const [selectedWeekId, setSelectedWeekId] = useState<number>(4);
+      const [weekSubTab, setWeekSubTab] = useState<"notes" | "slides" | "simulator" | "exercise">("notes");
+      const [toolsSubTab, setToolsSubTab] = useState<"matrix" | "tikz">("matrix");
+      const [slideModalWeek, setSlideModalWeek] = useState<number | null>(null);
+      const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
+      const [showExerciseSolution, setShowExerciseSolution] = useState<boolean>(false);
+
+      const selectedWeek = useMemo(() => {
+        return CURRICULUM_DATA.find(w => w.id === selectedWeekId) || CURRICULUM_DATA[4];
+      }, [selectedWeekId]);
+
+      // When switching week, reset exercise solution reveal
+      useEffect(() => {
+        setShowExerciseSolution(false);
+      }, [selectedWeekId]);
+
+      return (
+        <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-blue-500/20 selection:text-blue-900">
+          {/* Top Academic Navigation Bar */}
+          <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3 shadow-xs">
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => setActiveTab("overview")}
+                  className="flex items-center space-x-3 text-left focus:outline-none"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                    <Icon name="target" className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight leading-snug">
+                      Strategic Thinking: Game Theory for Business Strategy
+                    </h1>
+                    <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                      <span>DOTE 3090</span>
+                      <span aria-hidden="true">·</span>
+                      <span>CUHK Business School</span>
+                      <span aria-hidden="true">·</span>
+                      <span>Prof. Chiu Yu Ko</span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              {/* Navigation Items & Quick Jump */}
+              <div className="flex items-center flex-wrap gap-2">
+                <div className="flex items-center p-0.5 bg-slate-100 rounded-lg text-xs font-medium">
+                  <button
+                    onClick={() => setActiveTab("overview")}
+                    className={`px-3 py-1.5 rounded-md transition-colors ${
+                      activeTab === "overview"
+                        ? "bg-white text-slate-900 shadow-xs font-semibold"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    Overview
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("modules")}
+                    className={`px-3 py-1.5 rounded-md transition-colors ${
+                      activeTab === "modules"
+                        ? "bg-white text-slate-900 shadow-xs font-semibold"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    Weekly Modules
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("tools")}
+                    className={`px-3 py-1.5 rounded-md transition-colors ${
+                      activeTab === "tools"
+                        ? "bg-white text-slate-900 shadow-xs font-semibold"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    Tools & Solvers
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("quizzes")}
+                    className={`px-3 py-1.5 rounded-md transition-colors ${
+                      activeTab === "quizzes"
+                        ? "bg-white text-slate-900 shadow-xs font-semibold"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    Quizzes
+                  </button>
+                </div>
+
+                {/* Direct Week Selector Dropdown */}
+                <select
+                  value={selectedWeekId}
+                  onChange={(e) => {
+                    setSelectedWeekId(Number(e.target.value));
+                    setActiveTab("modules");
+                  }}
+                  className="text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-lg px-2.5 py-1.5 font-medium transition-colors focus:outline-none"
+                  aria-label="Jump to week"
+                >
+                  {CURRICULUM_DATA.map((w) => (
+                    <option key={w.id} value={w.id}>
+                      Week {w.id}: {w.title.slice(0, 28)}...
+                    </option>
+                  ))}
+                </select>
 
                 <button
-                  onClick={() => setActiveTab("modules")}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                    activeTab === "modules"
-                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800"
-                  }`}
+                  onClick={() => setSlideModalWeek(selectedWeekId)}
+                  className="px-3 py-1.5 text-xs font-medium bg-slate-900 text-white hover:bg-slate-800 rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
+                  title="View slide deck PDF"
                 >
-                  <Icon name="book" className="w-4 h-4" />
-                  Weekly Curriculum ({CURRICULUM_DATA.length})
-                </button>
-
-                <button
-                  onClick={() => setActiveTab("quizzes")}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap relative ${
-                    activeTab === "quizzes"
-                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800"
-                  }`}
-                >
-                  <Icon name="helpCircle" className="w-4 h-4" />
-                  Strategy Quizzes
-                  {quizStats.scorePct > 0 && (
-                    <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-emerald-500/30 text-emerald-300 rounded-full font-mono">
-                      {quizStats.scorePct}%
-                    </span>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => setActiveTab("reference")}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                    activeTab === "reference"
-                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800"
-                  }`}
-                >
-                  <Icon name="sparkles" className="w-4 h-4" />
-                  Simulations & Tools
-                </button>
-
-                <button
-                  onClick={() => setActiveTab("gametikz")}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                    activeTab === "gametikz"
-                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30 ring-1 ring-purple-400/40"
-                      : "text-purple-300 hover:text-white hover:bg-purple-950/40 border border-purple-800/40"
-                  }`}
-                >
-                  <Icon name="gitBranch" className="w-4 h-4 text-purple-400" />
-                  GameTikz Studio
-                  <span className="ml-1 px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 text-[10px] font-mono border border-purple-500/30">
-                    TikZ
-                  </span>
+                  <Icon name="book" className="w-3.5 h-3.5" />
+                  Slides (PDF)
                 </button>
               </div>
             </div>
           </header>
 
-          {/* Main Body Content */}
-          <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+          {/* Main Content Area */}
+          <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8">
             
-            {/* VIEW 1: EXECUTIVE DASHBOARD */}
-            {activeTab === "dashboard" && (
+            {/* VIEW 1: COURSE OVERVIEW */}
+            {activeTab === "overview" && (
               <div className="space-y-8 animate-fadeIn">
-                {/* Hero / Executive Welcome Banner */}
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/70 to-slate-900 border border-slate-800 p-6 sm:p-8 shadow-xl">
-                  <div className="relative z-10 max-w-3xl">
-                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-3">
-                      <Icon name="award" className="w-4 h-4 text-indigo-400" />
-                      Executive Strategy Program • Fall Cohort
-                    </div>
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
-                      Master the Strategic Geometry of Competitive Advantage
-                    </h2>
-                    <p className="mt-2.5 text-sm sm:text-base text-slate-300 leading-relaxed">
-                      Move beyond intuitive guesswork to formal mathematical and strategic rigor. Analyze market interdependence, forecast rival terminal decisions via backward induction, and structure credible market commitments.
-                    </p>
-                    <div className="mt-5 flex flex-wrap items-center gap-3">
-                      <button
-                        onClick={() => { setActiveTab("modules"); setSelectedWeekId(0); }}
-                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg text-xs sm:text-sm transition-all shadow-md shadow-indigo-600/30 flex items-center gap-2"
-                      >
-                        Start with Week 0 Overview
-                        <Icon name="chevronRight" className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => { setActiveTab("modules"); setSelectedWeekId(1); }}
-                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold rounded-lg text-xs sm:text-sm transition-all flex items-center gap-2"
-                      >
-                        Enter Week 1: Strategic Interaction
-                        <Icon name="chevronRight" className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => { setActiveTab("modules"); setSelectedWeekId(4); }}
-                        className="px-4 py-2 bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-200 border border-emerald-600/50 font-semibold rounded-lg text-xs sm:text-sm transition-all flex items-center gap-2 shadow-sm"
-                      >
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        Week 4: Mixed Strategies
-                        <Icon name="chevronRight" className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setActiveTab("quizzes")}
-                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold rounded-lg text-xs sm:text-sm transition-all flex items-center gap-2"
-                      >
-                        <Icon name="helpCircle" className="w-4 h-4 text-indigo-400" />
-                        Take Assessment
-                      </button>
-                      <a
-                        href="https://kochiuyu.github.io/dote3090/"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-4 py-2 bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-800/50 font-semibold rounded-lg text-xs sm:text-sm transition-all flex items-center gap-2"
-                      >
-                        <Icon name="externalLink" className="w-4 h-4 text-emerald-400" />
-                        Launch DOTE 3090 Simulator
-                      </a>
-                      <button
-                        onClick={() => setActiveTab("gametikz")}
-                        className="px-4 py-2 bg-gradient-to-r from-purple-950/70 to-indigo-950/70 hover:from-purple-900/90 hover:to-indigo-900/90 text-purple-200 border border-purple-700/60 font-semibold rounded-lg text-xs sm:text-sm transition-all flex items-center gap-2 shadow-sm"
-                      >
-                        <Icon name="gitBranch" className="w-4 h-4 text-purple-400" />
-                        GameTikz Studio (Trees & Matrices)
-                      </button>
-                    </div>
+                {/* Course Header Banner */}
+                <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-xs">
+                  <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
+                    Executive Master & MBA Strategic Decision Sciences
                   </div>
-                  <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none" />
-                </div>
-
-                {/* Self-Paced Progress Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-                  {/* Card 1: Active Modules */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm hover:border-slate-700 transition-all">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Modules</span>
-                      <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-                        <Icon name="book" className="w-4 h-4" />
-                      </div>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 tracking-tight">
+                    DOTE 3090: Strategic Thinking (商業策略博弈論)
+                  </h2>
+                  <p className="text-sm sm:text-base text-slate-600 mt-2 leading-relaxed max-w-3xl">
+                    A rigorous 12-week course on applied game theory in executive strategy, competitive pricing, strategic commitment, mechanism design, and platform competition.
+                  </p>
+                  
+                  <div className="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-y-2 gap-x-6 text-xs text-slate-500">
+                    <div>
+                      <strong className="text-slate-700">Instructor:</strong> Prof. Chiu Yu Ko
                     </div>
-                    <div className="mt-3 flex items-baseline gap-2">
-                      <span className="text-2xl sm:text-3xl font-black text-white font-mono">
-                        {activeModulesCompletedCount} <span className="text-slate-500 text-lg font-normal">/ {CURRICULUM_DATA.filter(w => w.status === "active").length}</span>
-                      </span>
-                      <span className="text-xs text-emerald-400 font-semibold">
-                        ({Math.round((activeModulesCompletedCount / (CURRICULUM_DATA.filter(w => w.status === "active").length || 1)) * 100)}% active)
-                      </span>
+                    <div>
+                      <strong className="text-slate-700">Institution:</strong> CUHK Business School
                     </div>
-                    <p className="mt-1 text-xs text-slate-400">
-                      {totalModulesCompletedCount} of {CURRICULUM_DATA.length} Total Weeks checked off
-                    </p>
-                    <div className="mt-3 w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                      <div
-                        className="bg-emerald-500 h-full rounded-full transition-all duration-500"
-                        style={{ width: `${(activeModulesCompletedCount / (CURRICULUM_DATA.filter(w => w.status === "active").length || 1)) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Card 2: Strategic Mastery % */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm hover:border-slate-700 transition-all">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Strategic Mastery</span>
-                      <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
-                        <Icon name="award" className="w-4 h-4" />
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-baseline gap-2">
-                      <span className="text-2xl sm:text-3xl font-black text-white font-mono">
-                        {quizStats.scorePct}%
-                      </span>
-                      <span className="text-xs text-indigo-300 font-medium">
-                        ({quizStats.correct} of {quizStats.total} correct)
-                      </span>
-                    </div>
-                    <p className="mt-1 text-xs text-slate-400">
-                      {quizStats.attempted} of {quizStats.total} scenarios evaluated
-                    </p>
-                    <div className="mt-3 w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                      <div
-                        className="bg-indigo-500 h-full rounded-full transition-all duration-500"
-                        style={{ width: `${quizStats.scorePct}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Card 3: Saved Case Study Notes */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm hover:border-slate-700 transition-all">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Saved Case Notes</span>
-                      <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center">
-                        <Icon name="fileText" className="w-4 h-4" />
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-baseline gap-2">
-                      <span className="text-2xl sm:text-3xl font-black text-white font-mono">
-                        {savedNotesCount}
-                      </span>
-                      <span className="text-xs text-sky-300 font-medium">Drafts in Vault</span>
-                    </div>
-                    <p className="mt-1 text-xs text-slate-400">
-                      Synchronized locally in browser storage
-                    </p>
-                    <div className="mt-3 flex items-center text-xs text-slate-400 font-medium">
-                      <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse" />
-                      Auto-sync active
-                    </div>
-                  </div>
-
-                  {/* Card 4: Executive Competencies */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm hover:border-slate-700 transition-all">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Competencies Acquired</span>
-                      <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
-                        <Icon name="target" className="w-4 h-4" />
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-baseline gap-2">
-                      <span className="text-2xl sm:text-3xl font-black text-white font-mono">
-                        {competencies.length} <span className="text-slate-500 text-lg font-normal">/ {STRATEGIC_COMPETENCIES.length}</span>
-                      </span>
-                      <span className="text-xs text-amber-300 font-medium">
-                        ({Math.round((competencies.length / STRATEGIC_COMPETENCIES.length) * 100)}%)
-                      </span>
-                    </div>
-                    <p className="mt-1 text-xs text-slate-400">
-                      Self-assessment executive rubric
-                    </p>
-                    <div className="mt-3 w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                      <div
-                        className="bg-amber-500 h-full rounded-full transition-all duration-500"
-                        style={{ width: `${(competencies.length / STRATEGIC_COMPETENCIES.length) * 100}%` }}
-                      />
+                    <div>
+                      <strong className="text-slate-700">Format:</strong> 12 Lecture Modules · Case Analyses · Interactive Solvers
                     </div>
                   </div>
                 </div>
 
-                {/* Main Dashboard Two-Column Grid: Competencies & Curated Shelf */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                  {/* Left (7 cols): Strategic Competencies Tracker */}
-                  <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                    <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                      <div>
-                        <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                          <Icon name="target" className="w-5 h-5 text-indigo-400" />
-                          Strategic Competencies Tracker
-                        </h3>
-                        <p className="text-xs text-slate-400 mt-0.5">
-                          Self-paced mastery checklist based on core MBA decision frameworks
-                        </p>
-                      </div>
-                      <span className="text-xs font-mono font-semibold px-2.5 py-1 bg-slate-800 rounded-lg text-indigo-300 border border-slate-700">
-                        {competencies.length} of {STRATEGIC_COMPETENCIES.length} verified
-                      </span>
+                {/* 3 Pillars Framework */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold text-sm mb-3">
+                      1
                     </div>
+                    <h3 className="font-bold text-slate-900 text-sm">Diagnose the Strategic Game</h3>
+                    <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                      Identify decision-makers, action spaces, timeline of moves (sequential vs simultaneous), information availability, and external payoff consequences.
+                    </p>
+                  </div>
 
-                    <div className="mt-4 space-y-2.5">
-                      {STRATEGIC_COMPETENCIES.map((comp) => {
-                        const isChecked = competencies.includes(comp.id);
-                        return (
-                          <div
-                            key={comp.id}
-                            onClick={() => toggleCompetency(comp.id)}
-                            className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3.5 select-none ${
-                              isChecked
-                                ? "bg-indigo-950/20 border-indigo-800/60 text-slate-200 hover:bg-indigo-950/30"
-                                : "bg-slate-950/40 border-slate-800/80 text-slate-400 hover:border-slate-700 hover:text-slate-300"
+                  <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-sm mb-3">
+                      2
+                    </div>
+                    <h3 className="font-bold text-slate-900 text-sm">Represent the Interactions</h3>
+                    <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                      Map choices into formal game trees with information sets or strategic normal-form bimatrices with explicit payoff valuations.
+                    </p>
+                  </div>
+
+                  <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm mb-3">
+                      3
+                    </div>
+                    <h3 className="font-bold text-slate-900 text-sm">Solve with Game Theory</h3>
+                    <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                      Derive subgame perfect backward induction, eliminate strictly dominated strategies, and calculate pure and mixed Nash equilibria with the Indifference Principle.
+                    </p>
+                  </div>
+                </div>
+
+                {/* 12-Week Curriculum Table */}
+                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+                  <div className="p-4 sm:p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm sm:text-base font-bold text-slate-900">
+                        12-Week Curriculum & Course Syllabus
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Click on any week to read the full lecture notes or view the slides directly.
+                      </p>
+                    </div>
+                    <span className="text-xs font-medium text-slate-500 font-mono">
+                      13 Modules
+                    </span>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-slate-200 bg-slate-50/50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                          <th className="py-3 px-4 w-16">Week</th>
+                          <th className="py-3 px-4">Topic & Module</th>
+                          <th className="py-3 px-4 hidden md:table-cell">Key Strategic Concepts</th>
+                          <th className="py-3 px-4 text-right">Materials</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-xs">
+                        {CURRICULUM_DATA.map((week) => (
+                          <tr
+                            key={week.id}
+                            className={`hover:bg-slate-50/80 transition-colors ${
+                              week.id === selectedWeekId ? "bg-blue-50/30" : ""
                             }`}
                           >
-                            <button
-                              type="button"
-                              className={`mt-0.5 w-5 h-5 rounded flex items-center justify-center transition-all ${
-                                isChecked
-                                  ? "bg-indigo-600 text-white shadow-sm"
-                                  : "border border-slate-600 hover:border-slate-500"
-                              }`}
-                            >
-                              {isChecked && <Icon name="check" className="w-3.5 h-3.5 stroke-[3]" />}
-                            </button>
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between">
-                                <p className={`text-xs sm:text-sm font-medium leading-snug ${isChecked ? "text-slate-100 font-semibold" : "text-slate-300"}`}>
-                                  {comp.label}
-                                </p>
-                                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-slate-800/80 text-slate-400 ml-2 whitespace-nowrap">
-                                  {comp.category}
-                                </span>
+                            <td className="py-3.5 px-4 font-mono font-bold text-slate-600">
+                              W{week.id}
+                            </td>
+                            <td className="py-3.5 px-4">
+                              <button
+                                onClick={() => {
+                                  setSelectedWeekId(week.id);
+                                  setActiveTab("modules");
+                                }}
+                                className="text-left font-semibold text-slate-900 hover:text-blue-700 block transition-colors"
+                              >
+                                {week.title}
+                              </button>
+                              <div className="text-[11px] text-slate-500 mt-0.5">
+                                {week.chineseTitle}
                               </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Right (5 cols): Curated Tools & Reference Shelf */}
-                  <div className="lg:col-span-5 space-y-6">
-                    {/* Simulator Card Highlight */}
-                    <div className="bg-gradient-to-br from-indigo-900/50 via-slate-900 to-slate-900 border border-indigo-700/50 rounded-2xl p-6 shadow-md relative overflow-hidden">
-                      <div className="flex items-center gap-2 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-2">
-                        <Icon name="sparkles" className="w-4 h-4 text-indigo-400" />
-                        Featured Interactive Simulator
-                      </div>
-                      <h4 className="text-base sm:text-lg font-bold text-white leading-snug">
-                        DOTE 3090: Strategic Interactive Lab
-                      </h4>
-                      <p className="mt-1.5 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                        Experiment with live multiplayer bargaining, beauty contests, repeated coordination, and auction simulations designed by Prof. Chiu Yu Ko.
-                      </p>
-                      <div className="mt-4 flex items-center gap-3">
-                        <a
-                          href="https://kochiuyu.github.io/dote3090/"
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg text-xs transition-all shadow-md flex items-center gap-2"
-                        >
-                          Launch DOTE 3090 Lab
-                          <Icon name="externalLink" className="w-3.5 h-3.5" />
-                        </a>
-                        <span className="text-xs text-indigo-300/80 font-mono">
-                          kochiuyu.github.io/dote3090
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Curated Video & Case Links */}
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                      <h3 className="text-base font-bold text-white flex items-center gap-2 mb-3">
-                        <Icon name="play" className="w-4 h-4 text-indigo-400" />
-                        Strategic Dilemmas Video Briefings
-                      </h3>
-                      <div className="space-y-3">
-                        {REFERENCE_TOOLS.slice(1).map((tool, idx) => (
-                          <a
-                            key={idx}
-                            href={tool.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="block p-3 rounded-xl bg-slate-950/50 border border-slate-800/80 hover:border-indigo-500/40 hover:bg-slate-800/40 transition-all group"
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-semibold text-white group-hover:text-indigo-300 transition-colors flex items-center gap-1.5">
-                                <Icon name="play" className="w-3 h-3 text-indigo-400 group-hover:translate-x-0.5 transition-transform" />
-                                {tool.title}
-                              </span>
-                              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
-                                {tool.badge}
-                              </span>
-                            </div>
-                            <p className="mt-1 text-xs text-slate-400 line-clamp-2 leading-relaxed">
-                              {tool.description}
-                            </p>
-                          </a>
+                            </td>
+                            <td className="py-3.5 px-4 text-slate-600 hidden md:table-cell">
+                              <div className="flex flex-wrap gap-1">
+                                {week.coreConcepts.slice(0, 3).map((concept, idx) => (
+                                  <span key={idx} className="text-[11px] text-slate-600">
+                                    {concept}{idx < 2 ? " · " : ""}
+                                  </span>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => {
+                                    setSelectedWeekId(week.id);
+                                    setActiveTab("modules");
+                                    setWeekSubTab("notes");
+                                  }}
+                                  className="px-2.5 py-1 text-[11px] font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded transition-colors"
+                                >
+                                  Read Notes
+                                </button>
+                                <button
+                                  onClick={() => setSlideModalWeek(week.id)}
+                                  className="px-2.5 py-1 text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-white rounded transition-colors"
+                                >
+                                  Slides (PDF)
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
                         ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Featured Course Recaps Showcase (Weeks 0, 1, 2, 3 & 4) */}
-                <div className="bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-6 shadow-sm">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 border-b border-slate-800">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
-                        <span className="text-[11px] font-mono uppercase tracking-wider text-indigo-300 font-bold">
-                          Faculty Synthesis • 課堂精華回顧
-                        </span>
-                      </div>
-                      <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                        <Icon name="book" className="w-5 h-5 text-indigo-400" />
-                        Official Course Recaps & Lecture Summaries
-                      </h3>
-                      <p className="text-xs text-slate-400">
-                        In-depth executive briefs synthesized directly from class lectures, business applications, and game trees
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-400">Available:</span>
-                      <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-mono font-bold">
-                        WEEKS 0, 1, 2, 3 & 4 READY
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-                    {/* Week 0 Recap Card */}
-                    <div className="bg-slate-950/70 border border-slate-800 hover:border-indigo-500/50 rounded-xl p-5 flex flex-col justify-between transition-all group">
-                      <div>
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-600/30 text-indigo-300 border border-indigo-600/40 font-bold">
-                            WEEK 00 OVERVIEW • 6 MIN READ
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-mono">./recaps/week00-recap.md</span>
-                        </div>
-                        <h4 className="text-base font-bold text-white mt-2 group-hover:text-indigo-300 transition-colors">
-                          {WEEK0_RECAP.title}
-                        </h4>
-                        <p className="text-xs text-indigo-300/80 font-medium mt-0.5">
-                          {WEEK0_RECAP.chineseTitle}
-                        </p>
-
-                        {/* Professor Quote */}
-                        <div className="mt-3 p-3 rounded-lg bg-indigo-950/30 border border-indigo-800/40 relative">
-                          <span className="text-indigo-400 text-xs font-mono font-bold uppercase tracking-wider block mb-1">
-                            Academic Takeaway:
-                          </span>
-                          <p className="text-xs text-indigo-100 italic leading-relaxed">
-                            "{WEEK0_RECAP.academicTakeaway}"
-                          </p>
-                        </div>
-
-                        {/* Topics & Cases */}
-                        <div className="mt-3">
-                          <p className="text-[11px] font-semibold text-slate-400 mb-1.5">Foundational Methodologies:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {["5-Step Diagnosis", "Payoff Matrix", "Game Trees", "Simultaneous vs Sequential", "Incentive Architecture", "Assessment Rubric"].map((c, i) => (
-                              <span key={i} className="text-[10px] bg-slate-900 text-slate-300 px-2 py-0.5 rounded border border-slate-800">
-                                {c}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-                        <button
-                          onClick={() => openWeekRecap(0)}
-                          className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
-                        >
-                          <span>Read Full Lecture Recap</span>
-                          <Icon name="chevronRight" className="w-3.5 h-3.5" />
-                        </button>
-                        <a
-                          href="./recaps/week00-recap.md"
-                          download="week00-recap.md"
-                          className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-mono flex items-center gap-1 border border-slate-700 transition-all"
-                          title="Download Markdown summary"
-                        >
-                          <Icon name="download" className="w-3.5 h-3.5" />
-                          .md
-                        </a>
-                      </div>
-                    </div>
-
-                    {/* Week 1 Recap Card */}
-                    <div className="bg-slate-950/70 border border-slate-800 hover:border-indigo-500/50 rounded-xl p-5 flex flex-col justify-between transition-all group">
-                      <div>
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-600/30 text-indigo-300 border border-indigo-600/40 font-bold">
-                            WEEK 01 RECAP • 7 MIN READ
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-mono">./recaps/week01-recap.md</span>
-                        </div>
-                        <h4 className="text-base font-bold text-white mt-2 group-hover:text-indigo-300 transition-colors">
-                          {WEEK1_RECAP.title}
-                        </h4>
-                        <p className="text-xs text-indigo-300/80 font-medium mt-0.5">
-                          {WEEK1_RECAP.chineseTitle}
-                        </p>
-
-                        {/* Professor Quote */}
-                        <div className="mt-3 p-3 rounded-lg bg-indigo-950/30 border border-indigo-800/40 relative">
-                          <span className="text-indigo-400 text-xs font-mono font-bold uppercase tracking-wider block mb-1">
-                            Academic Takeaway:
-                          </span>
-                          <p className="text-xs text-indigo-100 italic leading-relaxed">
-                            "{WEEK1_RECAP.academicTakeaway}"
-                          </p>
-                        </div>
-
-                        {/* Topics & Cases */}
-                        <div className="mt-3">
-                          <p className="text-[11px] font-semibold text-slate-400 mb-1.5">6 Real-World Cases Analyzed:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {["Food-Delivery Coupons", "AI Hardware Capex", "Airline Baggage Fees", "Price Wars", "Advertising Spend", "OPEC Cartel"].map((c, i) => (
-                              <span key={i} className="text-[10px] bg-slate-900 text-slate-300 px-2 py-0.5 rounded border border-slate-800">
-                                {c}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-                        <button
-                          onClick={() => openWeekRecap(1)}
-                          className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
-                        >
-                          <span>Read Full Lecture Recap</span>
-                          <Icon name="chevronRight" className="w-3.5 h-3.5" />
-                        </button>
-                        <a
-                          href="./recaps/week01-recap.md"
-                          download="week01-recap.md"
-                          className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-mono flex items-center gap-1 border border-slate-700 transition-all"
-                          title="Download Markdown summary"
-                        >
-                          <Icon name="download" className="w-3.5 h-3.5" />
-                          .md
-                        </a>
-                      </div>
-                    </div>
-
-                    {/* Week 2 Recap Card */}
-                    <div className="bg-slate-950/70 border border-slate-800 hover:border-indigo-500/50 rounded-xl p-5 flex flex-col justify-between transition-all group">
-                      <div>
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-600/30 text-indigo-300 border border-indigo-600/40 font-bold">
-                            WEEK 02 RECAP • 8 MIN READ
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-mono">./recaps/week02-recap.md</span>
-                        </div>
-                        <h4 className="text-base font-bold text-white mt-2 group-hover:text-indigo-300 transition-colors">
-                          {WEEK2_RECAP.title}
-                        </h4>
-                        <p className="text-xs text-indigo-300/80 font-medium mt-0.5">
-                          {WEEK2_RECAP.chineseTitle}
-                        </p>
-
-                        {/* Professor Quote */}
-                        <div className="mt-3 p-3 rounded-lg bg-indigo-950/30 border border-indigo-800/40 relative">
-                          <span className="text-indigo-400 text-xs font-mono font-bold uppercase tracking-wider block mb-1">
-                            Academic Takeaway:
-                          </span>
-                          <p className="text-xs text-indigo-100 italic leading-relaxed">
-                            "{WEEK2_RECAP.academicTakeaway}"
-                          </p>
-                        </div>
-
-                        {/* Topics & Concepts */}
-                        <div className="mt-3">
-                          <p className="text-[11px] font-semibold text-slate-400 mb-1.5">Key Methodologies & Frameworks:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {["Actions vs Strategies", "Game Trees", "3-Step Backward Induction", "Market Entry (Fight vs Accommodate)", "Credible Threats & Capacity", "Tech Launch Timing"].map((c, i) => (
-                              <span key={i} className="text-[10px] bg-slate-900 text-slate-300 px-2 py-0.5 rounded border border-slate-800">
-                                {c}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-                        <button
-                          onClick={() => openWeekRecap(2)}
-                          className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
-                        >
-                          <span>Read Full Lecture Recap</span>
-                          <Icon name="chevronRight" className="w-3.5 h-3.5" />
-                        </button>
-                        <a
-                          href="./recaps/week02-recap.md"
-                          download="week02-recap.md"
-                          className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-mono flex items-center gap-1 border border-slate-700 transition-all"
-                          title="Download Markdown summary"
-                        >
-                          <Icon name="download" className="w-3.5 h-3.5" />
-                          .md
-                        </a>
-                      </div>
-                    </div>
-
-                    {/* Week 3 Recap Card */}
-                    <div className="bg-slate-950/70 border border-slate-800 hover:border-indigo-500/50 rounded-xl p-5 flex flex-col justify-between transition-all group">
-                      <div>
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-600/30 text-indigo-300 border border-indigo-600/40 font-bold">
-                            WEEK 03 RECAP • 9 MIN READ
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-mono">./recaps/week03-recap.md</span>
-                        </div>
-                        <h4 className="text-base font-bold text-white mt-2 group-hover:text-indigo-300 transition-colors">
-                          {WEEK3_RECAP.title}
-                        </h4>
-                        <p className="text-xs text-indigo-300/80 font-medium mt-0.5">
-                          {WEEK3_RECAP.chineseTitle}
-                        </p>
-
-                        {/* Professor Quote */}
-                        <div className="mt-3 p-3 rounded-lg bg-indigo-950/30 border border-indigo-800/40 relative">
-                          <span className="text-indigo-400 text-xs font-mono font-bold uppercase tracking-wider block mb-1">
-                            Academic Takeaway:
-                          </span>
-                          <p className="text-xs text-indigo-100 italic leading-relaxed">
-                            "{WEEK3_RECAP.academicTakeaway}"
-                          </p>
-                        </div>
-
-                        {/* Topics & Concepts */}
-                        <div className="mt-3">
-                          <p className="text-[11px] font-semibold text-slate-400 mb-1.5">Key Methodologies & Frameworks:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {["Simultaneous Moves", "Payoff Matrix", "Best Responses", "IESDS Elimination", "Nash Equilibrium", "4 Classic Archetypes", "Cournot vs Bertrand", "Bertrand Paradox"].map((c, i) => (
-                              <span key={i} className="text-[10px] bg-slate-900 text-slate-300 px-2 py-0.5 rounded border border-slate-800">
-                                {c}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-                        <button
-                          onClick={() => openWeekRecap(3)}
-                          className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
-                        >
-                          <span>Read Full Lecture Recap</span>
-                          <Icon name="chevronRight" className="w-3.5 h-3.5" />
-                        </button>
-                        <a
-                          href="./recaps/week03-recap.md"
-                          download="week03-recap.md"
-                          className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-mono flex items-center gap-1 border border-slate-700 transition-all"
-                          title="Download Markdown summary"
-                        >
-                          <Icon name="download" className="w-3.5 h-3.5" />
-                          .md
-                        </a>
-                      </div>
-                    </div>
-
-                    {/* Week 4 Recap Card */}
-                    <div className="bg-slate-950/70 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-5 flex flex-col justify-between transition-all group">
-                      <div>
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-600/30 text-emerald-300 border border-emerald-600/40 font-bold">
-                            WEEK 04 RECAP • 10 MIN READ
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-mono">./recaps/week04-recap.md</span>
-                        </div>
-                        <h4 className="text-base font-bold text-white mt-2 group-hover:text-emerald-300 transition-colors">
-                          {WEEK4_RECAP.title}
-                        </h4>
-                        <p className="text-xs text-emerald-300/80 font-medium mt-0.5">
-                          {WEEK4_RECAP.chineseTitle}
-                        </p>
-
-                        {/* Professor Quote */}
-                        <div className="mt-3 p-3 rounded-lg bg-emerald-950/30 border border-emerald-800/40 relative">
-                          <span className="text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider block mb-1">
-                            Academic Takeaway:
-                          </span>
-                          <p className="text-xs text-emerald-100 italic leading-relaxed">
-                            "{WEEK4_RECAP.academicTakeaway}"
-                          </p>
-                        </div>
-
-                        {/* Topics & Concepts */}
-                        <div className="mt-3">
-                          <p className="text-[11px] font-semibold text-slate-400 mb-1.5">Key Methodologies & Frameworks:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {["Indifference Principle", "Mixed Strategy (p*, q*)", "Zero-Sum Conflict", "Matching Pennies", "Varian's Sales Model", "Penalty Kicks & Tennis", "Audit Paradox", "Algorithmic Repricing"].map((c, i) => (
-                              <span key={i} className="text-[10px] bg-slate-900 text-slate-300 px-2 py-0.5 rounded border border-slate-800">
-                                {c}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-                        <button
-                          onClick={() => openWeekRecap(4)}
-                          className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
-                        >
-                          <span>Read Full Lecture Recap</span>
-                          <Icon name="chevronRight" className="w-3.5 h-3.5" />
-                        </button>
-                        <a
-                          href="./recaps/week04-recap.md"
-                          download="week04-recap.md"
-                          className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-mono flex items-center gap-1 border border-slate-700 transition-all"
-                          title="Download Markdown summary"
-                        >
-                          <Icon name="download" className="w-3.5 h-3.5" />
-                          .md
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Faculty Pre-Reading on X Library (Weeks 0-13) */}
-                <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-sky-950/30 border border-slate-800 rounded-2xl p-6 sm:p-7 shadow-sm">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-slate-800">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="px-2.5 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-mono font-bold flex items-center gap-1.5 uppercase">
-                          <Icon name="xLogo" className="w-3 h-3 text-sky-400" />
-                          Faculty Pre-Reading Series • @kochiuyu
-                        </span>
-                        <span className="text-[11px] text-slate-400">14 Weekly Threads</span>
-                      </div>
-                      <h3 className="text-base sm:text-xl font-bold text-white flex items-center gap-2">
-                        Game Theory Weekly Pre-Reading on X (課前預習專題)
-                      </h3>
-                      <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-                        Prof. Chiu Yu Ko has prepared curated pre-reading threads on X for each week to build strategic intuition, outline case dilemmas, and stimulate class debate.
-                      </p>
-                    </div>
-                    <a
-                      href="https://x.com/kochiuyu"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all self-start sm:self-auto shrink-0 shadow-sm"
-                    >
-                      <Icon name="xLogo" className="w-3.5 h-3.5 text-sky-400" />
-                      <span>Follow @kochiuyu on X</span>
-                      <Icon name="externalLink" className="w-3 h-3 text-sky-400" />
-                    </a>
-                  </div>
-
-                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
-                    {CURRICULUM_DATA.map((w) => (
-                      <div
-                        key={w.id}
-                        className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/90 hover:border-sky-500/50 hover:bg-slate-900/80 transition-all flex flex-col justify-between group shadow-sm"
-                      >
-                        <div>
-                          <div className="flex items-center justify-between gap-2 mb-2">
-                            <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
-                              w.status === "active"
-                                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                                : "bg-slate-800 text-slate-400"
-                            }`}>
-                              WEEK {String(w.id).padStart(2, '0')}
-                            </span>
-                            <span className="text-[10px] text-sky-400/80 font-mono font-medium flex items-center gap-1">
-                              <Icon name="xLogo" className="w-2.5 h-2.5" />
-                              Thread
-                            </span>
-                          </div>
-
-                          <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-sky-300 transition-colors line-clamp-2 leading-snug">
-                            {w.title}
-                          </h4>
-                          <p className="text-[11px] text-slate-400 mt-1 line-clamp-1">
-                            {w.chineseTitle}
-                          </p>
-                          
-                          {w.coreConcepts && (
-                            <p className="text-[10px] text-slate-500 mt-2 line-clamp-1">
-                              {w.coreConcepts.slice(0, 2).join(" • ")}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="mt-3.5 pt-2.5 border-t border-slate-800/80 flex items-center justify-between gap-2">
-                          {w.preReadingUrl ? (
-                            <a
-                              href={w.preReadingUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-2.5 py-1.5 bg-sky-500/20 hover:bg-sky-500 hover:text-slate-950 text-sky-300 border border-sky-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm flex-1 justify-center"
-                              title={`Open Week ${w.id} pre-reading on X`}
-                            >
-                              <Icon name="xLogo" className="w-3 h-3" />
-                              <span>Read on X</span>
-                              <Icon name="externalLink" className="w-2.5 h-2.5 opacity-80" />
-                            </a>
-                          ) : null}
-                          <button
-                            onClick={() => {
-                              setSelectedWeekId(w.id);
-                              setActiveTab("modules");
-                            }}
-                            className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium flex items-center gap-1 transition-colors"
-                            title="Open module details"
-                          >
-                            <span>Module</span>
-                            <Icon name="chevronRight" className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Quick Slide Decks Matrix Preview */}
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 border-b border-slate-800">
-                    <div>
-                      <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                        <Icon name="book" className="w-5 h-5 text-indigo-400" />
-                        Executive Course Slide Decks Directory
-                      </h3>
-                      <p className="text-xs text-slate-400">
-                        Relative direct links (./slides/week00.pdf to ./slides/week13.pdf) for offline or GitHub Pages deployment
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => { setActiveTab("modules"); setSelectedWeekId(1); }}
-                      className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 self-start sm:self-auto"
-                    >
-                      Open Module Workspace
-                      <Icon name="chevronRight" className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                  <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                    {CURRICULUM_DATA.map((w) => (
-                      <div
-                        key={w.id}
-                        onClick={() => {
-                          setSelectedWeekId(w.id);
-                          setActiveTab("modules");
-                        }}
-                        className={`p-3 rounded-xl border text-center flex flex-col justify-between transition-all cursor-pointer group hover:scale-[1.02] ${
-                          w.status === "active"
-                            ? "bg-slate-850 border-indigo-700/50 hover:border-indigo-400 hover:bg-slate-800/90 shadow-sm"
-                            : "bg-slate-950/40 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/60 opacity-80"
-                        }`}
-                        title={`Click to open Week ${w.id} curriculum module`}
-                      >
-                        <div>
-                          <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-[10px] font-mono text-slate-400 group-hover:text-indigo-300 font-bold">W{String(w.id).padStart(2, '0')}</span>
-                            {w.status === "active" ? (
-                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Active Module" />
-                            ) : (
-                              <span className="w-2 h-2 rounded-full bg-slate-600" title="Upcoming Module" />
-                            )}
-                          </div>
-                          <p className="text-xs font-bold text-slate-200 line-clamp-2 h-8 leading-tight group-hover:text-white transition-colors">
-                            {w.title}
-                          </p>
-                        </div>
-
-                        <div className="mt-3 pt-2 border-t border-slate-800/60 flex items-center justify-center gap-1.5">
-                          <a
-                            href={getActiveSlideUrl(w.id, w.slidePath)}
-                            download={getActiveSlideDownloadName(w.id, w.slidePath)}
-                            onClick={(e) => e.stopPropagation()}
-                            className="px-2.5 py-1 bg-slate-800 hover:bg-indigo-600 hover:text-white text-slate-300 rounded text-[11px] font-mono flex items-center gap-1 transition-all"
-                            title={`Download ${getActiveSlideDownloadName(w.id, w.slidePath)}`}
-                          >
-                            <Icon name="download" className="w-3 h-3" />
-                            PDF
-                          </a>
-                          {w.status === "active" && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSlideModalWeek(w);
-                              }}
-                              className="px-2.5 py-1 bg-indigo-950 text-indigo-300 hover:bg-indigo-900 rounded text-[11px] font-mono flex items-center gap-1 transition-colors"
-                              title="Inspect Slide Deck"
-                            >
-                              <Icon name="eye" className="w-3 h-3" />
-                              View
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* VIEW 2: WEEKLY MODULES & LECTURE HUB (MASTER-DETAIL) */}
+            {/* VIEW 2: WEEKLY MODULES (TEACH) */}
             {activeTab === "modules" && (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fadeIn">
-                
-                {/* Left Rail: 12-Week Schedule (4 cols on lg) */}
-                <div className="lg:col-span-4 space-y-4">
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm">
-                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-800">
-                      <div>
-                        <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                          <Icon name="layers" className="w-4 h-4 text-indigo-400" />
-                          Curriculum Schedule
-                        </h3>
-                        <p className="text-[11px] text-slate-400">14-Week Curriculum (Weeks 0–13)</p>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => setModuleFilter("all")}
-                          className={`px-2 py-1 text-[11px] font-semibold rounded ${moduleFilter === "all" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"}`}
-                        >
-                          All ({CURRICULUM_DATA.length})
-                        </button>
-                        <button
-                          onClick={() => setModuleFilter("active")}
-                          className={`px-2 py-1 text-[11px] font-semibold rounded ${moduleFilter === "active" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"}`}
-                        >
-                          Active ({CURRICULUM_DATA.filter(w => w.status === "active").length})
-                        </button>
-                        <button
-                          onClick={() => setModuleFilter("upcoming")}
-                          className={`px-2 py-1 text-[11px] font-semibold rounded ${moduleFilter === "upcoming" ? "bg-slate-700 text-white" : "text-slate-400 hover:text-white"}`}
-                        >
-                          Upcoming ({CURRICULUM_DATA.filter(w => w.status === "upcoming").length})
-                        </button>
-                      </div>
+              <div className="space-y-6 animate-fadeIn">
+                {/* Week Header & Breadcrumbs (Modeled directly after lae-companion/week-04.html) */}
+                <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 shadow-xs">
+                  {/* Top Switcher Strip */}
+                  <div className="flex items-center justify-between text-xs text-slate-500 pb-3 mb-3 border-b border-slate-100">
+                    {selectedWeekId > 0 ? (
+                      <button
+                        onClick={() => setSelectedWeekId(selectedWeekId - 1)}
+                        className="hover:text-slate-900 font-medium flex items-center gap-1 transition-colors"
+                      >
+                        ← Week {selectedWeekId - 1}
+                      </button>
+                    ) : (
+                      <span className="text-slate-300">← Start</span>
+                    )}
+
+                    <div className="font-mono text-slate-400">
+                      Week {selectedWeekId} of 12
                     </div>
 
-                    {/* Schedule List */}
-                    <div className="space-y-2 max-h-[750px] overflow-y-auto pr-1">
-                      {filteredWeeks.map((week) => {
-                        const isSelected = selectedWeekId === week.id;
-                        const isCompleted = completedWeeks.includes(week.id);
-                        const isActiveStatus = week.status === "active";
-
-                        return (
-                          <div
-                            key={week.id}
-                            onClick={() => setSelectedWeekId(week.id)}
-                            className={`p-3 rounded-xl border transition-all cursor-pointer relative ${
-                              isSelected
-                                ? "bg-indigo-950/40 border-indigo-500 shadow-md shadow-indigo-950/30 ring-1 ring-indigo-500/50"
-                                : "bg-slate-950/50 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/60"
-                            }`}
-                          >
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex items-center gap-2">
-                                <span className={`text-[11px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                                  isActiveStatus
-                                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                                    : "bg-slate-800 text-slate-400"
-                                }`}>
-                                  W{String(week.id).padStart(2, '0')}
-                                </span>
-                                {isActiveStatus ? (
-                                  <span className="text-[10px] font-semibold text-emerald-400 flex items-center gap-1">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                    Active
-                                  </span>
-                                ) : (
-                                  <span className="text-[10px] font-medium text-slate-500">
-                                    Upcoming
-                                  </span>
-                                )}
-                              </div>
-
-                              {/* Completed checkmark button */}
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleWeekCompletion(week.id);
-                                }}
-                                className={`p-1 rounded transition-colors ${
-                                  isCompleted ? "text-emerald-400" : "text-slate-600 hover:text-slate-400"
-                                }`}
-                                title={isCompleted ? "Completed" : "Mark completed"}
-                              >
-                                <Icon name={isCompleted ? "checkCircle" : "circle"} className="w-4 h-4" />
-                              </button>
-                            </div>
-
-                            <h4 className={`mt-2 text-xs sm:text-sm font-bold leading-snug line-clamp-2 ${isSelected ? "text-white" : "text-slate-300"}`}>
-                              {week.title}
-                            </h4>
-                            <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">
-                              {week.chineseTitle}
-                            </p>
-
-                            <div className="mt-2.5 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-400">
-                              <span>{week.businessCases ? `${week.businessCases.length} Cases` : "Concepts"}</span>
-                              {week.preReadingUrl ? (
-                                <a
-                                  href={week.preReadingUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="text-sky-400 hover:text-sky-200 font-medium flex items-center gap-1 transition-colors group/x"
-                                  title="Read faculty pre-reading thread on X"
-                                >
-                                  <Icon name="xLogo" className="w-2.5 h-2.5 group-hover/x:scale-110 transition-transform" />
-                                  <span>Pre-Reading on X</span>
-                                  <Icon name="externalLink" className="w-2.5 h-2.5 opacity-70" />
-                                </a>
-                              ) : (
-                                <span className="font-mono text-slate-500">{week.slidePath}</span>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                    {selectedWeekId < 12 ? (
+                      <button
+                        onClick={() => setSelectedWeekId(selectedWeekId + 1)}
+                        className="hover:text-slate-900 font-medium flex items-center gap-1 transition-colors"
+                      >
+                        Week {selectedWeekId + 1} →
+                      </button>
+                    ) : (
+                      <span className="text-slate-300">End →</span>
+                    )}
                   </div>
-                </div>
 
-                {/* Right Panel: Detailed Workspace for Selected Week (8 cols on lg) */}
-                <div className="lg:col-span-8 space-y-6">
-                  
-                  {/* Module Header Banner */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-1 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-mono font-bold">
-                          WEEK {String(selectedWeek.id).padStart(2, '0')}
-                        </span>
-                        {selectedWeek.status === "active" ? (
-                          <span className="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                            Active Module • Materials Live
-                          </span>
-                        ) : (
-                          <span className="px-2.5 py-1 rounded-md bg-slate-800 text-slate-400 border border-slate-700 text-xs font-medium">
-                            Upcoming — Materials Release Post-Session
-                          </span>
-                        )}
+                  {/* Module Title */}
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <div>
+                      <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
+                        Week {selectedWeek.id} · {selectedWeek.duration}
                       </div>
-
-                      <div className="flex items-center gap-2">
-                        {selectedWeek.preReadingUrl && (
-                          <a
-                            href={selectedWeek.preReadingUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-950/70 hover:bg-sky-900 text-sky-200 border border-sky-600/40 flex items-center gap-1.5 transition-all shadow-sm group"
-                            title="Read professor's weekly pre-reading thread on X"
-                          >
-                            <Icon name="xLogo" className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
-                            <span>Pre-Reading on X</span>
-                            <Icon name="externalLink" className="w-3 h-3 text-sky-400" />
-                          </a>
-                        )}
-                        <button
-                          onClick={() => toggleWeekCompletion(selectedWeek.id)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                            completedWeeks.includes(selectedWeek.id)
-                              ? "bg-emerald-950/60 text-emerald-300 border border-emerald-700"
-                              : "bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700"
-                          }`}
-                        >
-                          <Icon name={completedWeeks.includes(selectedWeek.id) ? "checkCircle" : "circle"} className="w-4 h-4 text-emerald-400" />
-                          {completedWeeks.includes(selectedWeek.id) ? "Module Completed" : "Mark as Completed"}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="mt-4">
-                      <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                      <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1 tracking-tight">
                         {selectedWeek.title}
                       </h2>
-                      <p className="text-sm font-medium text-indigo-300 mt-1">
-                        {selectedWeek.chineseTitle} • <span className="text-slate-400">{selectedWeek.duration}</span>
-                      </p>
+                      <div className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
+                        {selectedWeek.chineseTitle} · CUHK Business School · Prof. Chiu Yu Ko
+                      </div>
                     </div>
 
-                    {/* Core Concepts Pill Shelf */}
-                    <div className="mt-4 pt-4 border-t border-slate-800">
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-                        Core Concepts Covered:
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {selectedWeek.coreConcepts.map((concept, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2.5 py-1 rounded-lg text-xs bg-slate-950 text-slate-300 border border-slate-800 font-medium"
-                          >
-                            {concept}
-                          </span>
-                        ))}
-                      </div>
+                    {/* Primary Slides PDF Button */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => setSlideModalWeek(selectedWeek.id)}
+                        className="px-3.5 py-1.5 text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
+                      >
+                        <Icon name="book" className="w-3.5 h-3.5" />
+                        Slides: {selectedWeek.slidePath.split("/").pop()} ({selectedWeek.pageCount} Slides)
+                      </button>
+                      <a
+                        href={selectedWeek.slidePath}
+                        download
+                        className="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg flex items-center gap-1 transition-colors"
+                        title="Download PDF"
+                      >
+                        <Icon name="download" className="w-3.5 h-3.5" />
+                      </a>
                     </div>
                   </div>
 
-                  {/* ACTIVE MODULE WORKSPACE (Weeks 1 & 2) */}
-                  {selectedWeek.status === "active" ? (
-                    <div className="space-y-6">
-
-                      {/* Sub-Tabs Navigation for Active Modules */}
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-900 border border-slate-800 rounded-2xl p-2.5 shadow-sm">
-                        <div className="flex items-center gap-1.5 p-1 bg-slate-950/70 rounded-xl border border-slate-800/80 overflow-x-auto">
-                          <button
-                            onClick={() => setWeekSubTab("recap")}
-                            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
-                              weekSubTab === "recap"
-                                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30 ring-1 ring-indigo-400/40"
-                                : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
-                            }`}
-                          >
-                            <Icon name="book" className="w-3.5 h-3.5" />
-                            <span>Lecture Recap (課堂精華)</span>
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-200 font-mono border border-indigo-700/50">
-                              Full Text
-                            </span>
-                          </button>
-
-                          <button
-                            onClick={() => setWeekSubTab("case")}
-                            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
-                              weekSubTab === "case"
-                                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30 ring-1 ring-indigo-400/40"
-                                : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
-                            }`}
-                          >
-                            <Icon name="target" className="w-3.5 h-3.5" />
-                            <span>Case & Payoff Model (案例)</span>
-                          </button>
-
-                          <button
-                            onClick={() => setWeekSubTab("slides")}
-                            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
-                              weekSubTab === "slides"
-                                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30 ring-1 ring-indigo-400/40"
-                                : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
-                            }`}
-                          >
-                            <Icon name="fileText" className="w-3.5 h-3.5" />
-                            <span>Slide Deck & Brief (簡報)</span>
-                          </button>
-                        </div>
-
-                        {selectedWeek.recap && (
-                          <div className="flex items-center gap-2 px-2 self-end sm:self-auto">
-                            <a
-                              href={selectedWeek.recap.markdownPath}
-                              download={`${selectedWeek.recap.markdownPath.split('/').pop()}`}
-                              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-mono flex items-center gap-1.5 border border-slate-700 transition-colors"
-                              title="Download raw Markdown recap file"
-                            >
-                              <Icon name="download" className="w-3.5 h-3.5 text-indigo-400" />
-                              <span>Download .md</span>
-                            </a>
-                            <button
-                              onClick={() => copyRecapToClipboard(selectedWeek)}
-                              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition-colors"
-                              title="Copy core takeaway to clipboard"
-                            >
-                              <Icon name={copiedRecap ? "check" : "fileText"} className="w-3.5 h-3.5 text-emerald-400" />
-                              <span>{copiedRecap ? "Copied!" : "Copy Summary"}</span>
-                            </button>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Faculty Pre-Reading on X Callout Banner */}
-                      {selectedWeek.preReadingUrl && (
-                        <div className="bg-sky-950/40 border border-sky-600/40 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-                          <div className="flex items-center gap-3.5">
-                            <div className="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center justify-center shrink-0">
-                              <Icon name="xLogo" className="w-5 h-5" />
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-900/70 text-sky-300 border border-sky-700 font-bold uppercase">
-                                  Faculty Pre-Reading
-                                </span>
-                                <span className="text-xs text-sky-400 font-medium">@kochiuyu on X</span>
-                              </div>
-                              <h4 className="text-sm font-bold text-white mt-1">
-                                Week {selectedWeek.id} Recommended Reading & Case Primer
-                              </h4>
-                              <p className="text-xs text-slate-300 mt-0.5">
-                                Prof. Chiu Yu Ko published the pedagogical notes and discussion questions for this session on X.
-                              </p>
-                            </div>
-                          </div>
-                          <a
-                            href={selectedWeek.preReadingUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 transition-all shadow-md shrink-0 hover:scale-[1.02]"
-                          >
-                            <Icon name="xLogo" className="w-3.5 h-3.5 text-slate-950" />
-                            <span>Read on X</span>
-                            <Icon name="externalLink" className="w-3 h-3" />
-                          </a>
-                        </div>
-                      )}
-
-                      {/* SUB-TAB 1: LECTURE RECAP (課堂精華摘要) */}
-                      {weekSubTab === "recap" && selectedWeek.recap && (
-                        <div className="space-y-6 animate-fadeIn">
-                          
-                          {/* Academic Takeaway Quote Hero */}
-                          <div className="relative overflow-hidden bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-900 border border-indigo-600/40 rounded-2xl p-6 sm:p-7 shadow-lg">
-                            <div className="flex items-center gap-2 mb-2.5">
-                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                              <span className="text-[11px] font-mono uppercase tracking-widest text-indigo-300 font-bold">
-                                Core Academic Takeaway • 教授核心總結
-                              </span>
-                            </div>
-
-                            <blockquote className="text-base sm:text-xl font-bold text-white leading-relaxed italic">
-                              "{selectedWeek.recap.academicTakeaway}"
-                            </blockquote>
-
-                            {selectedWeek.recap.chineseTakeaway && (
-                              <p className="mt-2 text-xs sm:text-sm text-indigo-200/90 font-medium">
-                                {selectedWeek.recap.chineseTakeaway}
-                              </p>
-                            )}
-
-                            <div className="mt-4 pt-3 border-t border-indigo-800/40 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
-                              <span className="flex items-center gap-1.5">
-                                <Icon name="clock" className="w-3.5 h-3.5 text-indigo-400" />
-                                {selectedWeek.recap.readTime}
-                              </span>
-                              <span className="font-mono text-indigo-300">
-                                Source: {selectedWeek.recap.markdownPath}
-                              </span>
-                            </div>
-
-                            <div className="absolute right-0 top-0 -mt-8 -mr-8 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
-                          </div>
-
-                          {/* Introduction Narrative */}
-                          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                            <h3 className="text-base font-bold text-white flex items-center gap-2 mb-2">
-                              <Icon name="sparkles" className="w-4 h-4 text-indigo-400" />
-                              Lecture Overview & Conceptual Foundations
-                            </h3>
-                            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                              {selectedWeek.recap.intro}
-                            </p>
-                          </div>
-
-                          {/* WEEK 0 RECAP SECTIONS */}
-                          {selectedWeek.id === 0 && (
-                            <div className="space-y-6">
-                              {/* 1. Core Philosophy */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 01</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    What Game Theory Is (and Is NOT) • 博弈論的科學定位
-                                  </h3>
-                                  <p className="text-xs text-slate-400">
-                                    Distinguishing disciplined interactive decision-making from common executive misconceptions.
-                                  </p>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-800/40">
-                                    <div className="flex items-center gap-2 mb-2">
-                                      <span className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold flex items-center justify-center text-xs">✓</span>
-                                      <h4 className="text-xs sm:text-sm font-bold text-emerald-200">What Game Theory IS:</h4>
-                                    </div>
-                                    <ul className="space-y-1.5 text-xs text-slate-300">
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-emerald-400 font-bold">•</span>
-                                        <span><strong>Formal Anticipation:</strong> Systematically reasoning through how competitors will respond before committing capital.</span>
-                                      </li>
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-emerald-400 font-bold">•</span>
-                                        <span><strong>Equilibrium Detection:</strong> Identifying stable market states and anticipating mutual defection traps (e.g. price wars).</span>
-                                      </li>
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-emerald-400 font-bold">•</span>
-                                        <span><strong>Incentive Architecture:</strong> Restructuring rules, commitments, and payoffs to steer collective behavior.</span>
-                                      </li>
-                                    </ul>
-                                  </div>
-
-                                  <div className="p-4 rounded-xl bg-red-950/20 border border-red-800/40">
-                                    <div className="flex items-center gap-2 mb-2">
-                                      <span className="w-6 h-6 rounded-lg bg-red-500/20 text-red-300 font-bold flex items-center justify-center text-xs">✕</span>
-                                      <h4 className="text-xs sm:text-sm font-bold text-red-200">What Game Theory is NOT:</h4>
-                                    </div>
-                                    <ul className="space-y-1.5 text-xs text-slate-300">
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-red-400 font-bold">•</span>
-                                        <span><strong>Not a bag of tricks:</strong> It is not manipulative propaganda or psychological games to "crush" rivals.</span>
-                                      </li>
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-red-400 font-bold">•</span>
-                                        <span><strong>No single magic bullet:</strong> It does not promise one dominant action works regardless of context.</span>
-                                      </li>
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-red-400 font-bold">•</span>
-                                        <span><strong>Not detached math:</strong> Every symbol translates directly to prices, costs, market share, and enterprise value.</span>
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* 2. 5-Step Strategic Diagnosis Framework */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 02</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    The 5-Step Strategic Diagnosis Framework (五步驟策略診斷框架)
-                                  </h3>
-                                  <p className="text-xs text-slate-400">
-                                    The disciplined roadmap applied to every case study, business war game, and market entry decision.
-                                  </p>
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                                  {[
-                                    { num: "01", step: "Decision", tag: "定決策", desc: "Who must decide what? Formulate the focal strategic choice facing the firm." },
-                                    { num: "02", step: "Game", tag: "辨博弈", desc: "Who are the competing players, and what actions are realistically accessible to each?" },
-                                    { num: "03", step: "Structure", tag: "剖結構", desc: "Is timing simultaneous or sequential? What is the information transparency and payoff vectors?" },
-                                    { num: "04", step: "Analysis", tag: "求均衡", desc: "Identify best responses, dominant strategies, and backward induction equilibria." },
-                                    { num: "05", step: "Action", tag: "出建議", desc: "Formulate the executive recommendation and pinpoint critical assumptions that could alter it." }
-                                  ].map((st, i) => (
-                                    <div key={i} className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-indigo-500/40 transition-all flex flex-col justify-between">
-                                      <div>
-                                        <div className="flex items-center justify-between mb-2">
-                                          <span className="text-xs font-mono font-bold text-indigo-400">{st.num}</span>
-                                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">{st.tag}</span>
-                                        </div>
-                                        <h4 className="text-sm font-bold text-white mb-1">{st.step}</h4>
-                                        <p className="text-xs text-slate-300 leading-relaxed">{st.desc}</p>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-
-                              {/* 3. Representation Match: Matrix vs. Tree */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 03</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    Normal Form vs. Extensive Form • 選擇匹配真實時序的博弈表象
-                                  </h3>
-                                  <p className="text-xs text-slate-400">
-                                    The golden modeling rule: Match the representation to the real timing and information structure of the market.
-                                  </p>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500/50 transition-all">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <h4 className="text-sm font-bold text-indigo-300 flex items-center gap-1.5">
-                                        <Icon name="grid" className="w-4 h-4 text-indigo-400" />
-                                        Payoff Matrix (Normal Form)
-                                      </h4>
-                                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300">Weeks 1 & 3</span>
-                                    </div>
-                                    <p className="text-xs text-slate-300 mb-2">
-                                      <strong>When to Use:</strong> Simultaneous choices where firms act without observing rivals' current actions.
-                                    </p>
-                                    <ul className="text-xs text-slate-400 space-y-1">
-                                      <li>• Retail daily price promotions & couponing</li>
-                                      <li>• Sealed-bid procurement & spectrum auctions</li>
-                                      <li>• Hyperscaler AI hardware capex allocation</li>
-                                    </ul>
-                                  </div>
-
-                                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500/50 transition-all">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <h4 className="text-sm font-bold text-emerald-300 flex items-center gap-1.5">
-                                        <Icon name="gitBranch" className="w-4 h-4 text-emerald-400" />
-                                        Game Tree (Extensive Form)
-                                      </h4>
-                                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300">Weeks 2 & 5</span>
-                                    </div>
-                                    <p className="text-xs text-slate-300 mb-2">
-                                      <strong>When to Use:</strong> Sequential decisions where later players observe earlier irreversible commitments.
-                                    </p>
-                                    <ul className="text-xs text-slate-400 space-y-1">
-                                      <li>• New market entry vs. incumbent capacity deterrence</li>
-                                      <li>• Technology platform pioneer vs. fast-follower timing</li>
-                                      <li>• Multi-round M&A acquisition bargaining & regulatory review</li>
-                                    </ul>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* WEEK 1 RECAP SECTIONS */}
-                          {selectedWeek.id === 1 && (
-                            <div className="space-y-6">
-                              {/* 1. Basic Elements of a Game */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 01</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    Basic Elements of a Game (博弈的三大基本要素)
-                                  </h3>
-                                  <p className="text-xs text-slate-400">
-                                    Every interactive strategic dilemma reduces to three foundational building blocks.
-                                  </p>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-4 hover:border-indigo-500/40 transition-all">
-                                    <span className="w-7 h-7 rounded-lg bg-indigo-600/30 text-indigo-300 font-mono font-bold flex items-center justify-center text-xs mb-2">
-                                      P
-                                    </span>
-                                    <h4 className="text-sm font-bold text-white">Players (參與者)</h4>
-                                    <p className="mt-1 text-xs text-slate-300 leading-relaxed">
-                                      The individuals, competing firms, government regulators, or institutions making autonomous strategic decisions.
-                                    </p>
-                                  </div>
-
-                                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-4 hover:border-indigo-500/40 transition-all">
-                                    <span className="w-7 h-7 rounded-lg bg-indigo-600/30 text-indigo-300 font-mono font-bold flex items-center justify-center text-xs mb-2">
-                                      S
-                                    </span>
-                                    <h4 className="text-sm font-bold text-white">Strategies (策略集)</h4>
-                                    <p className="mt-1 text-xs text-slate-300 leading-relaxed">
-                                      The comprehensive actions and contingent plans available to each player under every possible market situation.
-                                    </p>
-                                  </div>
-
-                                  <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-4 hover:border-indigo-500/40 transition-all">
-                                    <span className="w-7 h-7 rounded-lg bg-indigo-600/30 text-indigo-300 font-mono font-bold flex items-center justify-center text-xs mb-2">
-                                      π
-                                    </span>
-                                    <h4 className="text-sm font-bold text-white">Payoffs (支付與回報)</h4>
-                                    <p className="mt-1 text-xs text-slate-300 leading-relaxed">
-                                      The multi-dimensional outcomes resulting from combinations of actions: profits, market share, reputation, and competitive survival.
-                                    </p>
-                                  </div>
-                                </div>
-
-                                <div className="mt-4 p-3.5 bg-indigo-950/30 border border-indigo-800/50 rounded-xl text-xs text-indigo-200">
-                                  <span className="font-bold text-white">Executive Insight: </span>
-                                  In corporate boardrooms, strategic disagreements often occur not because leaders disagree on mathematics, but because different stakeholders weight payoffs differently (e.g., immediate quarterly EPS vs. multi-year customer lifetime retention).
-                                </div>
-                              </div>
-
-                              {/* 2. Simultaneous vs Sequential Decisions */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 02</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    Simultaneous and Sequential Decisions (決策時機結構)
-                                  </h3>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="bg-slate-950/70 border border-slate-800 p-4 rounded-xl">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wide">
-                                        Simultaneous-Move Games (同時決策)
-                                      </h4>
-                                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">Normal Form (Matrix)</span>
-                                    </div>
-                                    <p className="text-xs text-slate-300 leading-relaxed">
-                                      Each player selects their move without knowing what the other players have chosen. They do not have to occur at the exact same physical second; the defining feature is imperfect information regarding rivals' concurrent choices.
-                                    </p>
-                                  </div>
-
-                                  <div className="bg-slate-950/70 border border-slate-800 p-4 rounded-xl">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wide">
-                                        Sequential-Move Games (序貫決策)
-                                      </h4>
-                                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">Extensive Form (Tree)</span>
-                                    </div>
-                                    <p className="text-xs text-slate-300 leading-relaxed">
-                                      One player acts first, and subsequent players observe earlier actions before committing their responses. The sequence of moves introduces the power of strategic commitment and the risk of competitor preemption.
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* 3. The Prisoner's Dilemma & Dominant Strategies */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 03</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    The Prisoner's Dilemma & Dominant Strategies (囚徒困境)
-                                  </h3>
-                                </div>
-
-                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                  A <span className="text-white font-semibold">dominant strategy</span> is an action that yields the highest payoff regardless of what the competitor selects. When both players follow strictly dominant individual incentives, they land in the prisoner's dilemma: an outcome strictly worse for both parties than mutual cooperation.
-                                </p>
-
-                                <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-red-950/40 via-slate-950 to-slate-950 border border-red-800/40">
-                                  <span className="text-red-400 font-mono text-xs font-bold uppercase tracking-wide">
-                                    The Fundamental Strategic Law:
-                                  </span>
-                                  <p className="mt-1 text-sm sm:text-base font-bold text-red-100">
-                                    "Individually rational decisions can produce a collectively undesirable outcome."
-                                  </p>
-                                  <p className="mt-1 text-xs text-slate-400">
-                                    The dilemma is not caused by lack of intelligence or poor communication, but by the unilateral incentive to defect in the absence of binding enforcement.
-                                  </p>
-                                </div>
-                              </div>
-
-                              {/* 4. Interactive Real-World Business Applications Showcase */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 04</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    6 Real-World Business Applications (六大商業實戰應用場景)
-                                  </h3>
-                                  <p className="text-xs text-slate-400">
-                                    Explore how strategic interdependence shapes corporate decisions across industries.
-                                  </p>
-                                </div>
-
-                                {/* Interactive Case Tabs */}
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 mb-4">
-                                  {[
-                                    { name: "Price Wars", tag: "Duopoly Pricing" },
-                                    { name: "Coupons", tag: "Food Delivery" },
-                                    { name: "Advertising", tag: "Ad Spend Race" },
-                                    { name: "Baggage Fees", tag: "Aviation" },
-                                    { name: "Free Shipping", tag: "E-Commerce" },
-                                    { name: "AI Capex", tag: "Tech Hardware" }
-                                  ].map((tab, idx) => (
-                                    <button
-                                      key={idx}
-                                      onClick={() => setActiveBizAppWeek1(idx)}
-                                      className={`p-2.5 rounded-xl border text-left transition-all ${
-                                        activeBizAppWeek1 === idx
-                                          ? "bg-indigo-600 border-indigo-400 text-white shadow-md"
-                                          : "bg-slate-950 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700"
-                                      }`}
-                                    >
-                                      <span className="block text-[10px] font-mono opacity-80">{tab.tag}</span>
-                                      <span className="block text-xs font-bold mt-0.5 truncate">{tab.name}</span>
-                                    </button>
-                                  ))}
-                                </div>
-
-                                {/* Active Case Content Card */}
-                                <div className="p-5 rounded-xl bg-slate-950 border border-slate-800">
-                                  {activeBizAppWeek1 === 0 && (
-                                    <div className="space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-300 text-[10px] font-mono font-bold border border-red-500/30">
-                                          Application 01
-                                        </span>
-                                        <h4 className="text-sm font-bold text-white">Price Competition in Concentrated Markets</h4>
-                                      </div>
-                                      <p className="text-xs text-slate-300 leading-relaxed">
-                                        Two firms may both benefit from maintaining relatively high prices, but each firm faces an individual temptation to discount to steal price-sensitive customers. When both cut prices, neither wins market share, and both destroy operating margin.
-                                      </p>
-                                    </div>
-                                  )}
-
-                                  {activeBizAppWeek1 === 1 && (
-                                    <div className="space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold border border-indigo-500/30">
-                                          Application 02
-                                        </span>
-                                        <h4 className="text-sm font-bold text-white">Food-Delivery Coupon Warfare & Capital Depletion</h4>
-                                      </div>
-                                      <p className="text-xs text-slate-300 leading-relaxed">
-                                        Aggressive couponing is each delivery platform's dominant strategy: if the competitor abstains, you capture massive volume; if they discount, failing to match costs you your active user base. Both burn capital on subsidizing identical meals.
-                                      </p>
-                                    </div>
-                                  )}
-
-                                  {activeBizAppWeek1 === 2 && (
-                                    <div className="space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold border border-indigo-500/30">
-                                          Application 03
-                                        </span>
-                                        <h4 className="text-sm font-bold text-white">Advertising Spending Wars (Coke vs. Pepsi)</h4>
-                                      </div>
-                                      <p className="text-xs text-slate-300 leading-relaxed">
-                                        Competing firms advertise heavily because reducing ad budgets unilaterally results in lost brand salience. If both spend $500M annually, market share remains 50-50, and ad agencies capture the surplus.
-                                      </p>
-                                    </div>
-                                  )}
-
-                                  {activeBizAppWeek1 === 3 && (
-                                    <div className="space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold border border-indigo-500/30">
-                                          Application 04
-                                        </span>
-                                        <h4 className="text-sm font-bold text-white">Airline Baggage Fees & Unbundling</h4>
-                                      </div>
-                                      <p className="text-xs text-slate-300 leading-relaxed">
-                                        Whether unbundling check-in baggage is profitable depends on whether rivals follow. If American Airlines institutes a fee and Delta/United match, the entire industry captures billions in ancillary revenue. If rivals maintain free bags to market customer goodwill, the first mover suffers customer revolt.
-                                      </p>
-                                    </div>
-                                  )}
-
-                                  {activeBizAppWeek1 === 4 && (
-                                    <div className="space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold border border-indigo-500/30">
-                                          Application 05
-                                        </span>
-                                        <h4 className="text-sm font-bold text-white">Free Shipping & Promotional Thresholds in E-Commerce</h4>
-                                      </div>
-                                      <p className="text-xs text-slate-300 leading-relaxed">
-                                        Free shipping or threshold discounts temporarily expand cart sizes when pioneered by one platform. But once competitors imitate the policy, free shipping becomes an expected baseline cost of doing business rather than a differentiator.
-                                      </p>
-                                    </div>
-                                  )}
-
-                                  {activeBizAppWeek1 === 5 && (
-                                    <div className="space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold border border-indigo-500/30">
-                                          Application 06
-                                        </span>
-                                        <h4 className="text-sm font-bold text-white">Strategic Investment in AI Hardware Capex</h4>
-                                      </div>
-                                      <p className="text-xs text-slate-300 leading-relaxed">
-                                        Hyperscalers (Microsoft, Google, Meta, Amazon) deploy tens of billions into GPU clusters not solely for immediate software revenue, but because failing to build computing capacity risks permanent obsolescence if rivals achieve generational model breakthroughs.
-                                      </p>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-
-                              {/* 5. Repeated Games & Cartel Cooperation (OPEC) */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 05</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    Cooperation, Repeated Interaction & OPEC Enforcement
-                                  </h3>
-                                </div>
-
-                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                  In a one-shot dilemma, defection is unavoidable. However, business competition is rarely one-shot. When firms interact repeatedly, the <span className="text-white font-semibold">shadow of the future</span> creates possibilities for sustainable cooperation:
-                                </p>
-
-                                <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                  <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                                    <span className="text-indigo-400 font-bold text-xs block mb-1">1. Monitoring Systems</span>
-                                    <p className="text-[11px] text-slate-400">
-                                      Firms must detect cheating quickly. OPEC uses satellite tanker tracking to observe member quota violations.
-                                    </p>
-                                  </div>
-                                  <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                                    <span className="text-indigo-400 font-bold text-xs block mb-1">2. Punitive Threats</span>
-                                    <p className="text-[11px] text-slate-400">
-                                      Credible retaliatory price cuts (e.g., Saudi Arabia flooding markets) punish defectors into compliance.
-                                    </p>
-                                  </div>
-                                  <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                                    <span className="text-indigo-400 font-bold text-xs block mb-1">3. Future Horizon</span>
-                                    <p className="text-[11px] text-slate-400">
-                                      If the interaction has no known definite end date, long-term cooperation value outweighs one-time cheat gains.
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* WEEK 2 RECAP SECTIONS */}
-                          {selectedWeek.id === 2 && (
-                            <div className="space-y-6">
-                              {/* 1. Actions vs Strategies */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 01</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    Actions vs. Strategies (行動與策略的本質差異)
-                                  </h3>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800">
-                                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-indigo-400 block mb-1">
-                                      Action (行動)
-                                    </span>
-                                    <h4 className="text-sm font-bold text-white">A Single Decision at One Node</h4>
-                                    <p className="mt-1.5 text-xs text-slate-300 leading-relaxed">
-                                      An isolated choice executed at a specific decision point (e.g., choosing to "Enter" or "Stay Out").
-                                    </p>
-                                  </div>
-
-                                  <div className="p-4 bg-indigo-950/30 rounded-xl border border-indigo-700/50">
-                                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 block mb-1">
-                                      Strategy (策略)
-                                    </span>
-                                    <h4 className="text-sm font-bold text-white">A Complete Contingent Plan</h4>
-                                    <p className="mt-1.5 text-xs text-slate-300 leading-relaxed">
-                                      A comprehensive blueprint detailing exactly what action the firm will execute at every conceivable decision point throughout the entire game tree.
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* 2. Interactive Backward Induction Solver */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-800 pb-3 mb-4">
-                                  <div>
-                                    <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 02</span>
-                                    <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                      Interactive Backward Induction Algorithm (向後歸納法解析器)
-                                    </h3>
-                                    <p className="text-xs text-slate-400">
-                                      Step through the market entry game tree to identify the subgame-perfect equilibrium.
-                                    </p>
-                                  </div>
-                                  <button
-                                    onClick={() => setActiveTab("gametikz")}
-                                    className="self-start sm:self-auto px-3 py-1.5 rounded-lg bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 border border-purple-800/60 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
-                                    title="Open GameTikzStudio to draw custom extensive form game trees"
-                                  >
-                                    <Icon name="gitBranch" className="w-3.5 h-3.5 text-purple-400" />
-                                    <span>Draw Trees in GameTikzStudio</span>
-                                  </button>
-                                </div>
-
-                                {/* Step Selector Pills */}
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                  {[
-                                    { step: 0, title: "Step 0: Game Tree Overview" },
-                                    { step: 1, title: "Step 1: Incumbent's Terminal Choice" },
-                                    { step: 2, title: "Step 2: Entrant's Root Decision" },
-                                    { step: 3, title: "Step 3: Subgame-Perfect Equilibrium" }
-                                  ].map((item) => (
-                                    <button
-                                      key={item.step}
-                                      onClick={() => setActiveInductionStep(item.step)}
-                                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                                        activeInductionStep === item.step
-                                          ? "bg-indigo-600 text-white shadow-md ring-1 ring-indigo-400"
-                                          : "bg-slate-950 border border-slate-800 text-slate-400 hover:text-white"
-                                      }`}
-                                    >
-                                      {item.title}
-                                    </button>
-                                  ))}
-                                </div>
-
-                                {/* Visual Game Tree Display */}
-                                <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs">
-                                  {activeInductionStep === 0 && (
-                                    <div className="space-y-3">
-                                      <p className="text-slate-300 font-sans text-xs sm:text-sm">
-                                        <span className="font-bold text-white">Full Game Tree:</span> Entrant moves first (Enter or Stay Out). If Entrant Enters, Incumbent chooses to Accommodate or Fight.
-                                      </p>
-                                      <div className="p-4 bg-slate-900 rounded-lg border border-slate-800 text-slate-300 space-y-1">
-                                        <div>[Root: Entrant]</div>
-                                        <div>├── Stay Out ─────────► Payoffs: (Entrant: $0M, Incumbent: $10M)</div>
-                                        <div>└── Enter ────────────► [Node: Incumbent]</div>
-                                        <div>                        ├── Accommodate ──► Payoffs: (Entrant: $4M, Incumbent: $5M)</div>
-                                        <div>                        └── Fight ────────► Payoffs: (Entrant: -$2M, Incumbent: -$1M)</div>
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {activeInductionStep === 1 && (
-                                    <div className="space-y-3">
-                                      <p className="text-slate-300 font-sans text-xs sm:text-sm">
-                                        <span className="font-bold text-indigo-400">Step 1 (Terminal Subgame):</span> Look at the Incumbent after Entry has occurred. Incumbent compares $5M (Accommodate) vs -$1M (Fight). Rational Incumbent strictly chooses Accommodate!
-                                      </p>
-                                      <div className="p-4 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                        <div className="text-slate-500">[Root: Entrant]</div>
-                                        <div className="text-slate-500">└── Enter ──► [Node: Incumbent]</div>
-                                        <div className="text-emerald-400 font-bold">              ├── Accommodate ──► ($4M, $5M)  ✓ OPTIMAL TERMINAL CHOICE (5 &gt; -1)</div>
-                                        <div className="text-red-500/70 line-through">              └── Fight ────────► (-$2M, -$1M)  ✗ PRUNED (Dominated at this node)</div>
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {activeInductionStep === 2 && (
-                                    <div className="space-y-3">
-                                      <p className="text-slate-300 font-sans text-xs sm:text-sm">
-                                        <span className="font-bold text-indigo-400">Step 2 (Root Node):</span> Roll back to Entrant. Knowing Incumbent will Accommodate if Entry occurs, Entrant compares entering ($4M) vs staying out ($0M). 4 &gt; 0, so Entrant Enters!
-                                      </p>
-                                      <div className="p-4 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                        <div className="text-white font-bold">[Root: Entrant]</div>
-                                        <div className="text-emerald-400 font-bold">├── Enter ────────► (Entrant receives $4M)  ✓ OPTIMAL ROOT CHOICE (4 &gt; 0)</div>
-                                        <div className="text-red-500/70 line-through">└── Stay Out ─────► ($0M, $10M)  ✗ PRUNED</div>
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {activeInductionStep === 3 && (
-                                    <div className="space-y-3">
-                                      <p className="text-slate-300 font-sans text-xs sm:text-sm">
-                                        <span className="font-bold text-emerald-400">Subgame-Perfect Equilibrium Reached:</span> (Enter, Accommodate). The Incumbent's prior threat to fight was non-credible cheap talk!
-                                      </p>
-                                      <div className="p-4 bg-emerald-950/40 rounded-lg border border-emerald-700/60 text-emerald-200">
-                                        <div>Equilibrium Path: Entrant Enters ──► Incumbent Accommodates</div>
-                                        <div>Final Payouts: Entrant: $4M | Incumbent: $5M</div>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-
-                              {/* 3. First-Mover vs Second-Mover Advantages Matrix */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 03</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    First-Mover vs. Second-Mover Timing Tradeoffs
-                                  </h3>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider">
-                                        First-Mover Advantage (先行者優勢)
-                                      </h4>
-                                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300">Commitment Power</span>
-                                    </div>
-                                    <ul className="space-y-1.5 text-xs text-slate-300">
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-indigo-400 font-bold">•</span>
-                                        <span>Locking in distribution channels and prime geographic real estate</span>
-                                      </li>
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-indigo-400 font-bold">•</span>
-                                        <span>Setting proprietary technical standards (e.g. EV charging protocol)</span>
-                                      </li>
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-indigo-400 font-bold">•</span>
-                                        <span>Preempting rival scale and achieving early learning curve cost reductions</span>
-                                      </li>
-                                    </ul>
-                                  </div>
-
-                                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider">
-                                        Second-Mover Advantage (後發者優勢)
-                                      </h4>
-                                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300">Informational Option</span>
-                                    </div>
-                                    <ul className="space-y-1.5 text-xs text-slate-300">
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-emerald-400 font-bold">•</span>
-                                        <span>Observing pioneer's technological errors and customer feedback</span>
-                                      </li>
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-emerald-400 font-bold">•</span>
-                                        <span>Avoiding massive exploratory R&D and regulatory pioneer friction</span>
-                                      </li>
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-emerald-400 font-bold">•</span>
-                                        <span>Entering with superior, second-generation lower-cost product architecture</span>
-                                      </li>
-                                    </ul>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* 4. Practical Role of Economic Models */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 04</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    The Practical Role of Economic Models in Corporate Strategy
-                                  </h3>
-                                </div>
-
-                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                  Game theoretic models are not designed to capture every detail of reality. Instead, like an architectural blueprint or transit map, they isolate key variables (timing, payoff asymmetry, informational transparency) to reveal counter-intuitive strategic realities that intuition alone would miss.
-                                </p>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* WEEK 3 RECAP SECTIONS */}
-                          {selectedWeek.id === 3 && (
-                            <div className="space-y-6">
-                              {/* 1. Simultaneous Timing & Best Response Functions */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                  <div>
-                                    <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 01</span>
-                                    <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                      Simultaneous Decision Timing & Best Response Functions (最佳回應函數)
-                                    </h3>
-                                    <p className="text-xs text-slate-400">
-                                      Formulating rational beliefs when actions are chosen without observing competitor choices.
-                                    </p>
-                                  </div>
-                                  <button
-                                    onClick={() => setActiveTab("gametikz")}
-                                    className="self-start sm:self-auto px-3 py-1.5 rounded-lg bg-indigo-950/60 hover:bg-indigo-900/80 text-indigo-300 border border-indigo-700/50 text-xs font-semibold flex items-center gap-1.5 transition-colors"
-                                  >
-                                    <Icon name="table" className="w-3.5 h-3.5 text-indigo-400" />
-                                    <span>Draw Matrix in GameTikzStudio</span>
-                                  </button>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-                                    <div className="flex items-center gap-2">
-                                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                                      <h4 className="text-xs sm:text-sm font-bold text-white">What 'Simultaneous' Means in Business:</h4>
-                                    </div>
-                                    <p className="text-xs text-slate-300 leading-relaxed">
-                                      It does not mean clocks tick simultaneously. It means <strong className="text-white">neither firm can observe the rival's decision prior to committing its own capital</strong>.
-                                    </p>
-                                    <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-400 font-mono">
-                                      Examples: Sealed-bid procurement, annual holiday pricing, chip foundry node commitments, platform hardware pricing.
-                                    </div>
-                                  </div>
-
-                                  <div className="p-4 bg-indigo-950/30 rounded-xl border border-indigo-700/50 space-y-2">
-                                    <div className="flex items-center gap-2">
-                                      <span className="w-2 h-2 rounded-full bg-indigo-400" />
-                                      <h4 className="text-xs sm:text-sm font-bold text-indigo-200">The Best Response Condition:</h4>
-                                    </div>
-                                    <div className="p-2 rounded-lg bg-slate-950/80 border border-indigo-500/30 font-mono text-xs text-indigo-300">
-                                      u_i(s_i*, s_&#123;-i&#125;) &ge; u_i(s_i, s_&#123;-i&#125;) &forall; s_i &isin; S_i
-                                    </div>
-                                    <p className="text-xs text-slate-300 leading-relaxed">
-                                      An action <code className="text-emerald-300 font-mono">s_i*</code> is a Best Response if it gives player i the highest payoff against the competitor's chosen action. Rationality demands that you only select best responses.
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* 2. IESDS & Dominance Solvability */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 02</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    Iterated Elimination of Strictly Dominated Strategies (IESDS)
-                                  </h3>
-                                  <p className="text-xs text-slate-400">
-                                    Pruning non-rational strategic noise to find unique dominance-solvable market equilibria.
-                                  </p>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-                                  <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-                                    <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase block mb-1">Axiom 1</span>
-                                    <h4 className="text-xs font-bold text-white">Never Play Dominated</h4>
-                                    <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
-                                      A rational player will never choose an action that is strictly dominated by another move under every rival scenario.
-                                    </p>
-                                  </div>
-
-                                  <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-                                    <span className="text-[10px] font-mono text-sky-400 font-bold uppercase block mb-1">Axiom 2</span>
-                                    <h4 className="text-xs font-bold text-white">Anticipate Rival Pruning</h4>
-                                    <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
-                                      Knowing rivals are rational, you delete their dominated moves. In round 2, previously viable actions may now become dominated.
-                                    </p>
-                                  </div>
-
-                                  <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-                                    <span className="text-[10px] font-mono text-amber-400 font-bold uppercase block mb-1">Guarantee</span>
-                                    <h4 className="text-xs font-bold text-white">Equilibrium Preservation</h4>
-                                    <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
-                                      Theorem: IESDS never eliminates any Nash Equilibrium. Dominance-solvable games yield unique, robust predictions.
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* 3. Nash Equilibrium Analysis & Iterated Elimination */}
-                              <div className="bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950/20 border-2 border-indigo-500/50 rounded-2xl p-6 shadow-xl shadow-indigo-950/25 space-y-6 ring-1 ring-indigo-500/30">
-                                <div className="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-300 font-bold px-2 py-0.5 rounded bg-indigo-950/80 border border-indigo-500/50">
-                                        Section 03 • Core Theory
-                                      </span>
-                                      <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
-                                        <Icon name="checkCircle" className="w-3.5 h-3.5" />
-                                        Chapter 3 Lecture Core
-                                      </span>
-                                      <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 border border-indigo-500/30 px-2 py-0.5 rounded font-semibold">
-                                        Nash Equilibrium & IESDS
-                                      </span>
-                                    </div>
-                                    <h3 className="text-base sm:text-xl font-black text-white mt-1.5 flex items-center gap-2">
-                                      <Icon name="target" className="w-5 h-5 text-indigo-400" />
-                                      Nash Equilibrium & Iterated Elimination of Dominated Strategies
-                                    </h3>
-                                    <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-3xl leading-relaxed bg-indigo-950/40 border border-indigo-500/30 rounded-xl p-3 shadow-inner">
-                                      <strong className="text-white block mb-1">
-                                        Yes — This is the primary section where Chapter 3's core analytical frameworks are detailed:
-                                      </strong>
-                                      <span>
-                                        It integrates <strong className="text-emerald-300">Nash Equilibrium</strong> (formal definition <code className="font-mono text-indigo-300 text-[11px]">u_i(s_i*, s_-i*) &ge; u_i(s_i, s_-i*)</code>, the Underline Method, Dominant Strategy contrast, and the 3 Canonical Regimes) alongside <strong className="text-sky-300">Iterated Elimination of Strictly Dominated Strategies (IESDS)</strong> with an interactive 4-step 3&times;3 matrix pruning walkthrough below.
-                                      </span>
-                                    </p>
-                                  </div>
-
-                                  <button
-                                    onClick={() => setActiveTab("gametikz")}
-                                    className="self-start sm:self-auto px-3.5 py-2 rounded-xl bg-purple-950/70 hover:bg-purple-900 text-purple-200 border border-purple-700/60 text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all shrink-0"
-                                  >
-                                    <Icon name="gitBranch" className="w-3.5 h-3.5 text-purple-400" />
-                                    <span>Matrix Builder in GameTikzStudio</span>
-                                  </button>
-                                </div>
-
-                                {/* Mathematical Definition & Underline Method Banner */}
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                                  <div className="md:col-span-7 p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                                        <Icon name="award" className="w-4 h-4 text-indigo-400" />
-                                        Formal Definition of Nash Equilibrium (Slide 6 & 21)
-                                      </span>
-                                      <span className="text-[10px] font-mono text-indigo-300 bg-indigo-950/80 px-2 py-0.5 rounded border border-indigo-700/40">
-                                        John Nash (1950)
-                                      </span>
-                                    </div>
-                                    <p className="text-xs text-slate-300 leading-relaxed">
-                                      A strategy profile <code className="text-emerald-300 font-mono">s* = (s_1*, ..., s_n*)</code> is a <strong className="text-white">Nash Equilibrium</strong> if, for every player <code className="font-mono text-indigo-300">i</code>:
-                                    </p>
-                                    <div className="p-2.5 rounded-lg bg-slate-900 border border-indigo-500/30 font-mono text-xs text-emerald-300 text-center tracking-wide font-semibold">
-                                      u_i(s_i*, s_&#123;-i&#125;*) &ge; u_i(s_i, s_&#123;-i&#125;*) &nbsp;&nbsp;&forall; s_i &isin; S_i
-                                    </div>
-                                    <ul className="space-y-1 text-[11px] text-slate-400 pt-1">
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-indigo-400 font-bold">•</span>
-                                        <span><strong>No Unilateral Profitable Deviation:</strong> Holding all other players' strategies fixed, player <em>i</em> cannot gain by changing strategy alone.</span>
-                                      </li>
-                                      <li className="flex items-start gap-1.5">
-                                        <span className="text-indigo-400 font-bold">•</span>
-                                        <span><strong>Strategic Stability &ne; Efficiency:</strong> An equilibrium means strategically stable, not necessarily socially optimal or profit-maximizing.</span>
-                                      </li>
-                                    </ul>
-                                  </div>
-
-                                  {/* Mechanical Best Response Underline Rule */}
-                                  <div className="md:col-span-5 p-4 bg-indigo-950/30 rounded-xl border border-indigo-700/50 space-y-2">
-                                    <span className="text-xs font-bold text-indigo-200 flex items-center gap-1.5">
-                                      <Icon name="table" className="w-4 h-4 text-indigo-400" />
-                                      The Underline Method (Slide 5)
-                                    </span>
-                                    <div className="space-y-2 text-xs">
-                                      <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                                        <span className="font-bold text-blue-400 block mb-0.5">Row Player (Blue Payoff):</span>
-                                        <span className="text-slate-300 text-[11px]">Hold each column fixed. Compare first numbers <strong className="text-white">vertically</strong>. Underline the highest payoff.</span>
-                                      </div>
-                                      <div className="p-2 rounded-lg bg-slate-950 border border-slate-800">
-                                        <span className="font-bold text-rose-400 block mb-0.5">Column Player (Red Payoff):</span>
-                                        <span className="text-slate-300 text-[11px]">Hold each row fixed. Compare second numbers <strong className="text-white">horizontally</strong>. Underline the highest payoff.</span>
-                                      </div>
-                                      <div className="p-1.5 rounded bg-emerald-950/40 border border-emerald-500/40 text-[11px] text-emerald-300 font-semibold text-center">
-                                        &star; Overlapping Underlines in a cell = Pure Nash Equilibrium!
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Comparison: Dominant Strategy vs. Nash Equilibrium (Slide 8) */}
-                                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                                  <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-800">
-                                    <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
-                                      <Icon name="layers" className="w-4 h-4 text-indigo-400" />
-                                      Dominant Strategy vs. Nash Equilibrium (Slide 8 Distinction)
-                                    </h4>
-                                    <span className="text-[10px] font-mono text-slate-400">Core Conceptual Contrast</span>
-                                  </div>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                                    <div className="p-3.5 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5">
-                                      <div className="flex items-center justify-between">
-                                        <span className="font-bold text-emerald-400 uppercase tracking-wider text-[11px]">Dominant Strategy</span>
-                                        <span className="text-[10px] font-mono text-slate-400">1 Player's Property</span>
-                                      </div>
-                                      <p className="text-slate-300 leading-relaxed">
-                                        A strategy is best against <strong className="text-white">every conceivable strategy</strong> the rival might choose. The executive does not even need to predict what the rival will do.
-                                      </p>
-                                    </div>
-                                    <div className="p-3.5 bg-slate-900 rounded-lg border border-slate-800 space-y-1.5">
-                                      <div className="flex items-center justify-between">
-                                        <span className="font-bold text-indigo-400 uppercase tracking-wider text-[11px]">Nash Equilibrium</span>
-                                        <span className="text-[10px] font-mono text-slate-400">Full Profile Property</span>
-                                      </div>
-                                      <p className="text-slate-300 leading-relaxed">
-                                        Each player's selected strategy is best against the strategy <strong className="text-white">actually selected by the rival</strong>. Requires strategic beliefs to be mutually fulfilled.
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="mt-3 p-2.5 rounded-lg bg-indigo-950/40 border border-indigo-700/40 text-xs text-indigo-200">
-                                    <strong className="text-white">Golden Rule:</strong> Every dominant-strategy equilibrium is a Nash equilibrium, but <span className="underline decoration-indigo-400 font-semibold">many Nash equilibria do not use dominant strategies</span>.
-                                  </div>
-                                </div>
-
-                                {/* THE 3 CANONICAL EQUILIBRIUM REGIMES (Slides 9, 10, 11) */}
-                                <div className="space-y-3">
-                                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                    <div>
-                                      <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                        <Icon name="barChart" className="w-4 h-4 text-indigo-400" />
-                                        The 3 Canonical Equilibrium Regimes in Chapter 3
-                                      </h4>
-                                      <p className="text-xs text-slate-400">
-                                        A simultaneous game may have <strong>one, several, or zero</strong> pure-strategy Nash equilibria (Slides 9–11).
-                                      </p>
-                                    </div>
-                                    <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0">
-                                      {[
-                                        { label: "1 Pure Eq (Price War)", id: 0 },
-                                        { label: "2 Pure Eq (Standards)", id: 1 },
-                                        { label: "0 Pure Eq (Positioning)", id: 2 }
-                                      ].map((reg) => (
-                                        <button
-                                          key={reg.id}
-                                          onClick={() => setActiveEquilibriumRegime(reg.id)}
-                                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                                            activeEquilibriumRegime === reg.id
-                                              ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                                              : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
-                                          }`}
-                                        >
-                                          {reg.label}
-                                        </button>
-                                      ))}
-                                    </div>
-                                  </div>
-
-                                  {/* Regime 1: One Pure Equilibrium (Price Competition, Slide 9) */}
-                                  {activeEquilibriumRegime === 0 && (
-                                    <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4 animate-fadeIn">
-                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
-                                        <div>
-                                          <div className="flex items-center gap-2">
-                                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
-                                              Slide 09
-                                            </span>
-                                            <h5 className="text-sm font-bold text-white">One Pure Equilibrium: Price Competition</h5>
-                                          </div>
-                                          <p className="text-xs text-slate-400 mt-0.5">Strictly dominant price-cutting drives unique stable outcome [Cut, Cut].</p>
-                                        </div>
-                                        <span className="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold border border-emerald-500/30 self-start sm:self-auto">
-                                          Unique Nash Eq
-                                        </span>
-                                      </div>
-
-                                      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-                                        {/* Matrix Table */}
-                                        <div className="md:col-span-6 overflow-x-auto">
-                                          <table className="w-full text-center border-collapse">
-                                            <thead>
-                                              <tr>
-                                                <th className="p-2 text-xs text-slate-500 font-mono">You \ Rival</th>
-                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">Rival: Cut</th>
-                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">Rival: Maintain</th>
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              <tr>
-                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">You: Cut</td>
-                                                <td className="p-3 border-2 border-emerald-500 bg-emerald-950/30 rounded-lg shadow-inner">
-                                                  <div className="font-mono text-sm font-bold">
-                                                    <span className="text-blue-400 underline decoration-blue-400 font-extrabold">2</span>,{" "}
-                                                    <span className="text-rose-400 underline decoration-rose-400 font-extrabold">2</span>
-                                                  </div>
-                                                  <span className="text-[10px] text-emerald-400 font-bold block mt-0.5">&star; Unique Nash Eq</span>
-                                                </td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-400 underline decoration-blue-400 font-bold">4</span>, <span className="text-rose-300">1</span>
-                                                  </div>
-                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Row Exploits</span>
-                                                </td>
-                                              </tr>
-                                              <tr>
-                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">You: Maintain</td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-300">1</span>, <span className="text-rose-400 underline decoration-rose-400 font-bold">4</span>
-                                                  </div>
-                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Col Exploits</span>
-                                                </td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/30">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-300">3</span>, <span className="text-rose-300">3</span>
-                                                  </div>
-                                                  <span className="text-[10px] text-amber-400 block mt-0.5">Collective Best (Unstable)</span>
-                                                </td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                        </div>
-
-                                        {/* Strategic Takeaway */}
-                                        <div className="md:col-span-6 space-y-2 text-xs">
-                                          <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                            <span className="font-bold text-emerald-400 block">Analysis:</span>
-                                            <p className="text-slate-300 leading-relaxed">
-                                              <strong>Cut</strong> is strictly dominant for both firms. Regardless of whether the rival cuts (2 &gt; 1) or maintains (4 &gt; 3), cutting yields higher payoffs. The best-response marks overlap exclusively at <strong className="text-white">[Cut, Cut]</strong>.
-                                            </p>
-                                          </div>
-                                          <div className="p-3 bg-amber-950/30 rounded-lg border border-amber-800/40 space-y-1">
-                                            <span className="font-bold text-amber-300 block">Professor's Core Lesson:</span>
-                                            <p className="text-amber-100 leading-relaxed italic">
-                                              "Strategic stability and collective desirability are completely different ideas. [Maintain, Maintain] gives (3,3), but either firm gains by switching alone to Cut and receiving 4."
-                                            </p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {/* Regime 2: Two Pure Equilibria (Product Standards, Slide 10) */}
-                                  {activeEquilibriumRegime === 1 && (
-                                    <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4 animate-fadeIn">
-                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
-                                        <div>
-                                          <div className="flex items-center gap-2">
-                                            <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono text-[10px] font-bold border border-indigo-500/30">
-                                              Slide 10
-                                            </span>
-                                            <h5 className="text-sm font-bold text-white">Two Pure Equilibria: Product Standards Coordination</h5>
-                                          </div>
-                                          <p className="text-xs text-slate-400 mt-0.5">Both coordinated standards are stable Nash equilibria along the diagonal.</p>
-                                        </div>
-                                        <span className="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 text-xs font-mono font-bold border border-indigo-500/30 self-start sm:self-auto">
-                                          2 Pure Nash Eq
-                                        </span>
-                                      </div>
-
-                                      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-                                        {/* Matrix Table */}
-                                        <div className="md:col-span-6 overflow-x-auto">
-                                          <table className="w-full text-center border-collapse">
-                                            <thead>
-                                              <tr>
-                                                <th className="p-2 text-xs text-slate-500 font-mono">You \ Partner</th>
-                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">Partner: Standard A</th>
-                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">Partner: Standard B</th>
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              <tr>
-                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">You: Standard A</td>
-                                                <td className="p-3 border-2 border-indigo-500 bg-indigo-950/40 rounded-lg shadow-inner">
-                                                  <div className="font-mono text-sm font-bold">
-                                                    <span className="text-blue-400 underline decoration-blue-400 font-extrabold">4</span>,{" "}
-                                                    <span className="text-rose-400 underline decoration-rose-400 font-extrabold">3</span>
-                                                  </div>
-                                                  <span className="text-[10px] text-indigo-300 font-bold block mt-0.5">&star; Nash Eq 1 (Pref A)</span>
-                                                </td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-300">1</span>, <span className="text-rose-300">1</span>
-                                                  </div>
-                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Miscoordination</span>
-                                                </td>
-                                              </tr>
-                                              <tr>
-                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">You: Standard B</td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-300">1</span>, <span className="text-rose-300">1</span>
-                                                  </div>
-                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Miscoordination</span>
-                                                </td>
-                                                <td className="p-3 border-2 border-indigo-500 bg-indigo-950/40 rounded-lg shadow-inner">
-                                                  <div className="font-mono text-sm font-bold">
-                                                    <span className="text-blue-400 underline decoration-blue-400 font-extrabold">3</span>,{" "}
-                                                    <span className="text-rose-400 underline decoration-rose-400 font-extrabold">4</span>
-                                                  </div>
-                                                  <span className="text-[10px] text-indigo-300 font-bold block mt-0.5">&star; Nash Eq 2 (Pref B)</span>
-                                                </td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                        </div>
-
-                                        {/* Strategic Takeaway */}
-                                        <div className="md:col-span-6 space-y-2 text-xs">
-                                          <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                            <span className="font-bold text-indigo-300 block">Analysis:</span>
-                                            <p className="text-slate-300 leading-relaxed">
-                                              Neither player has a dominant strategy. Both prefer compatibility (4,3 or 3,4 &gt; 1,1), but they disagree about which standard to adopt (You favor A; Partner favors B). Both <strong className="text-white">[A, A]</strong> and <strong className="text-white">[B, B]</strong> are self-enforcing Nash equilibria!
-                                            </p>
-                                          </div>
-                                          <div className="p-3 bg-indigo-950/40 rounded-lg border border-indigo-700/50 space-y-1">
-                                            <span className="font-bold text-indigo-300 block">The Prediction Problem:</span>
-                                            <p className="text-slate-300 leading-relaxed">
-                                              Equilibrium analysis identifies all stable states, but cannot determine by itself which equilibrium will occur without <strong className="text-white">Focal Points (Schelling Points)</strong>, history, or pre-play communication.
-                                            </p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {/* Regime 3: No Pure Equilibrium (Competitive Positioning, Slide 11) */}
-                                  {activeEquilibriumRegime === 2 && (
-                                    <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4 animate-fadeIn">
-                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
-                                        <div>
-                                          <div className="flex items-center gap-2">
-                                            <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[10px] font-bold border border-purple-500/30">
-                                              Slide 11
-                                            </span>
-                                            <h5 className="text-sm font-bold text-white">No Pure Equilibrium: Competitive Positioning</h5>
-                                          </div>
-                                          <p className="text-xs text-slate-400 mt-0.5">Continuous cycle of strategic deviation; no stable pure profile exists.</p>
-                                        </div>
-                                        <span className="px-2.5 py-1 rounded bg-purple-500/20 text-purple-300 text-xs font-mono font-bold border border-purple-500/30 self-start sm:self-auto">
-                                          0 Pure Nash Eq
-                                        </span>
-                                      </div>
-
-                                      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-                                        {/* Matrix Table */}
-                                        <div className="md:col-span-6 overflow-x-auto">
-                                          <table className="w-full text-center border-collapse">
-                                            <thead>
-                                              <tr>
-                                                <th className="p-2 text-xs text-slate-500 font-mono">You \ Rival</th>
-                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">Rival: Segment A</th>
-                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">Rival: Segment B</th>
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              <tr>
-                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">You: Segment A</td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-300">1</span>, <span className="text-rose-400 underline decoration-rose-400 font-bold">3</span>
-                                                  </div>
-                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Col matches (Happy)</span>
-                                                </td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-400 underline decoration-blue-400 font-bold">3</span>, <span className="text-rose-300">1</span>
-                                                  </div>
-                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Row differentiates (Happy)</span>
-                                                </td>
-                                              </tr>
-                                              <tr>
-                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">You: Segment B</td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-400 underline decoration-blue-400 font-bold">3</span>, <span className="text-rose-300">1</span>
-                                                  </div>
-                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Row differentiates (Happy)</span>
-                                                </td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/50">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-300">1</span>, <span className="text-rose-400 underline decoration-rose-400 font-bold">3</span>
-                                                  </div>
-                                                  <span className="text-[10px] text-slate-500 block mt-0.5">Col matches (Happy)</span>
-                                                </td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                        </div>
-
-                                        {/* Strategic Takeaway */}
-                                        <div className="md:col-span-6 space-y-2 text-xs">
-                                          <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                            <span className="font-bold text-purple-300 block">Analysis:</span>
-                                            <p className="text-slate-300 leading-relaxed">
-                                              You prefer to target a <strong className="text-white">different segment</strong> from the rival. The rival prefers to target the <strong className="text-white">same segment</strong> as you. Every cell gives at least one player an incentive to change. No cell has overlapping underlines!
-                                            </p>
-                                          </div>
-                                          <div className="p-3 bg-purple-950/40 rounded-lg border border-purple-700/50 space-y-1">
-                                            <span className="font-bold text-purple-300 block">Week 4 Preview: Mixed Strategies</span>
-                                            <p className="text-slate-300 leading-relaxed">
-                                              When being predictable makes a firm exploitable, managers must deliberately randomize their actions with calculated probabilities.
-                                            </p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* INTERACTIVE WORKED EXAMPLE: ITERATED ELIMINATION (Slide 13) */}
-                                <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
-                                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
-                                    <div>
-                                      <div className="flex items-center gap-2">
-                                        <span className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-mono text-[10px] font-bold border border-sky-500/30">
-                                          Slide 13 Worked Example
-                                        </span>
-                                        <h4 className="text-sm font-bold text-white">
-                                          Interactive IESDS: Eliminate and Reconsider (The 3&times;3 Game)
-                                        </h4>
-                                      </div>
-                                      <p className="text-xs text-slate-400 mt-0.5">
-                                        Step through Prof. Chiu Yu Ko's 4-step pruning sequence to solve the 3&times;3 matrix down to its unique equilibrium.
-                                      </p>
-                                    </div>
-
-                                    {/* Stepper Controls */}
-                                    <div className="flex items-center gap-1.5 self-start sm:self-auto">
-                                      <button
-                                        onClick={() => setActiveIesdsStep(Math.max(0, activeIesdsStep - 1))}
-                                        disabled={activeIesdsStep === 0}
-                                        className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs font-semibold border border-slate-700 transition-all"
-                                      >
-                                        &larr; Prev
-                                      </button>
-                                      <span className="px-2 py-1 font-mono text-xs text-indigo-300 bg-slate-900 rounded border border-slate-800 font-bold">
-                                        Step {activeIesdsStep} / 4
-                                      </span>
-                                      <button
-                                        onClick={() => setActiveIesdsStep(Math.min(4, activeIesdsStep + 1))}
-                                        disabled={activeIesdsStep === 4}
-                                        className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-semibold shadow-sm transition-all"
-                                      >
-                                        Next Step &rarr;
-                                      </button>
-                                      <button
-                                        onClick={() => setActiveIesdsStep(0)}
-                                        className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs transition-colors"
-                                        title="Reset to original 3x3 matrix"
-                                      >
-                                        <Icon name="refresh" className="w-3.5 h-3.5" />
-                                      </button>
-                                    </div>
-                                  </div>
-
-                                  <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-                                    {/* 3x3 Pruning Table */}
-                                    <div className="md:col-span-7 overflow-x-auto">
-                                      <table className="w-full text-center border-collapse">
-                                        <thead>
-                                          <tr>
-                                            <th className="p-2 text-xs text-slate-500 font-mono">Row \ Col</th>
-                                            <th className="p-2 text-xs font-bold text-slate-300 bg-slate-900/80 border border-slate-800 rounded-t">Left</th>
-                                            <th className="p-2 text-xs font-bold text-slate-300 bg-slate-900/80 border border-slate-800 rounded-t">Centre</th>
-                                            <th className={`p-2 text-xs font-bold border border-slate-800 rounded-t transition-colors ${
-                                              activeIesdsStep >= 2 ? "text-red-400/60 line-through bg-red-950/20" : "text-slate-300 bg-slate-900/80"
-                                            }`}>
-                                              Right {activeIesdsStep >= 2 && <span className="text-[10px] text-red-400 block no-underline font-normal">Pruned</span>}
-                                            </th>
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          {/* Up Row */}
-                                          <tr className={activeIesdsStep === 4 ? "bg-emerald-950/20 ring-1 ring-emerald-500/50" : ""}>
-                                            <td className="p-2.5 text-xs font-bold text-slate-300 bg-slate-900/80 border border-slate-800 text-right pr-3">Up</td>
-                                            <td className={`p-3 border transition-all ${
-                                              activeIesdsStep === 4
-                                                ? "border-2 border-emerald-400 bg-emerald-950/60 shadow-lg ring-2 ring-emerald-500"
-                                                : "border-slate-800 bg-slate-900/50"
-                                            }`}>
-                                              <span className="font-mono text-sm font-bold text-white">(4, 3)</span>
-                                              {activeIesdsStep === 4 && (
-                                                <span className="text-[10px] text-emerald-300 font-bold block mt-0.5">&star; Unique Surviving Eq!</span>
-                                              )}
-                                            </td>
-                                            <td className="p-3 border border-slate-800 bg-slate-900/50">
-                                              <span className="font-mono text-sm text-slate-300">(3, 2)</span>
-                                            </td>
-                                            <td className={`p-3 border transition-all ${
-                                              activeIesdsStep >= 2
-                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
-                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
-                                            }`}>
-                                              <span className="font-mono text-sm">(2, 1)</span>
-                                            </td>
-                                          </tr>
-
-                                          {/* Middle Row */}
-                                          <tr className={activeIesdsStep >= 3 ? "opacity-40" : ""}>
-                                            <td className={`p-2.5 text-xs font-bold border border-slate-800 text-right pr-3 transition-colors ${
-                                              activeIesdsStep >= 3 ? "text-red-400/60 line-through bg-red-950/20" : "text-slate-300 bg-slate-900/80"
-                                            }`}>
-                                              Middle {activeIesdsStep >= 3 && <span className="text-[9px] text-red-400 block no-underline font-normal">Pruned</span>}
-                                            </td>
-                                            <td className={`p-3 border transition-all ${
-                                              activeIesdsStep >= 3
-                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
-                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
-                                            }`}>
-                                              <span className="font-mono text-sm">(3, 1)</span>
-                                            </td>
-                                            <td className={`p-3 border transition-all ${
-                                              activeIesdsStep >= 3
-                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
-                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
-                                            }`}>
-                                              <span className="font-mono text-sm">(2, 4)</span>
-                                            </td>
-                                            <td className={`p-3 border transition-all ${
-                                              activeIesdsStep >= 2
-                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
-                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
-                                            }`}>
-                                              <span className="font-mono text-sm">(1, 3)</span>
-                                            </td>
-                                          </tr>
-
-                                          {/* Down Row */}
-                                          <tr className={activeIesdsStep >= 1 ? "opacity-40" : ""}>
-                                            <td className={`p-2.5 text-xs font-bold border border-slate-800 text-right pr-3 transition-colors ${
-                                              activeIesdsStep >= 1 ? "text-red-400/60 line-through bg-red-950/20" : "text-slate-300 bg-slate-900/80"
-                                            }`}>
-                                              Down {activeIesdsStep >= 1 && <span className="text-[9px] text-red-400 block no-underline font-normal">Pruned</span>}
-                                            </td>
-                                            <td className={`p-3 border transition-all ${
-                                              activeIesdsStep >= 1
-                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
-                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
-                                            }`}>
-                                              <span className="font-mono text-sm">(1, 2)</span>
-                                            </td>
-                                            <td className={`p-3 border transition-all ${
-                                              activeIesdsStep >= 1
-                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
-                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
-                                            }`}>
-                                              <span className="font-mono text-sm">(1, 1)</span>
-                                            </td>
-                                            <td className={`p-3 border transition-all ${
-                                              activeIesdsStep >= 1
-                                                ? "border-slate-900 bg-red-950/10 text-slate-600 line-through"
-                                                : "border-slate-800 bg-slate-900/50 text-slate-300"
-                                            }`}>
-                                              <span className="font-mono text-sm">(0, 0)</span>
-                                            </td>
-                                          </tr>
-                                        </tbody>
-                                      </table>
-                                    </div>
-
-                                    {/* Step Explanation Card */}
-                                    <div className="md:col-span-5 space-y-2 text-xs">
-                                      {activeIesdsStep === 0 && (
-                                        <div className="p-3.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1.5 animate-fadeIn">
-                                          <span className="text-[10px] font-mono text-indigo-400 font-bold uppercase block">Round 0: Full Matrix</span>
-                                          <h5 className="font-bold text-white">Compare Row Strategies Across Columns</h5>
-                                          <p className="text-slate-300 leading-relaxed text-[11px]">
-                                            Look at Row player's payoffs for <code className="text-indigo-300 font-mono">Up (4, 3, 2)</code> versus <code className="text-indigo-300 font-mono">Down (1, 1, 0)</code>.
-                                          </p>
-                                          <div className="p-2 rounded bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-400">
-                                            Left: 4 &gt; 1 &bull; Centre: 3 &gt; 1 &bull; Right: 2 &gt; 0
-                                          </div>
-                                          <p className="text-emerald-300 font-semibold text-[11px]">
-                                            &rarr; Down is strictly dominated by Up! Click Next Step.
-                                          </p>
-                                        </div>
-                                      )}
-
-                                      {activeIesdsStep === 1 && (
-                                        <div className="p-3.5 bg-slate-900 rounded-xl border border-indigo-700/50 space-y-1.5 animate-fadeIn">
-                                          <span className="text-[10px] font-mono text-sky-400 font-bold uppercase block">Step 1 Completed</span>
-                                          <h5 className="font-bold text-white">Down Is Eliminated</h5>
-                                          <p className="text-slate-300 leading-relaxed text-[11px]">
-                                            Rational Column knows Row will never play Down. In the reduced game (Up &amp; Middle only):
-                                          </p>
-                                          <div className="p-2 rounded bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300">
-                                            Centre vs Right for Column:<br/>
-                                            If Up: Centre (2) &gt; Right (1)<br/>
-                                            If Middle: Centre (4) &gt; Right (3)
-                                          </div>
-                                          <p className="text-sky-300 font-semibold text-[11px]">
-                                            &rarr; Right is now strictly dominated by Centre!
-                                          </p>
-                                        </div>
-                                      )}
-
-                                      {activeIesdsStep === 2 && (
-                                        <div className="p-3.5 bg-slate-900 rounded-xl border border-indigo-700/50 space-y-1.5 animate-fadeIn">
-                                          <span className="text-[10px] font-mono text-sky-400 font-bold uppercase block">Step 2 Completed</span>
-                                          <h5 className="font-bold text-white">Right Is Eliminated</h5>
-                                          <p className="text-slate-300 leading-relaxed text-[11px]">
-                                            With Right removed, we have a 2&times;2 game (Up &amp; Middle vs. Left &amp; Centre):
-                                          </p>
-                                          <div className="p-2 rounded bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300">
-                                            Up vs Middle for Row:<br/>
-                                            Against Left: Up (4) &gt; Middle (3)<br/>
-                                            Against Centre: Up (3) &gt; Middle (2)
-                                          </div>
-                                          <p className="text-amber-300 font-semibold text-[11px]">
-                                            &rarr; Middle is now strictly dominated by Up!
-                                          </p>
-                                        </div>
-                                      )}
-
-                                      {activeIesdsStep === 3 && (
-                                        <div className="p-3.5 bg-slate-900 rounded-xl border border-indigo-700/50 space-y-1.5 animate-fadeIn">
-                                          <span className="text-[10px] font-mono text-amber-400 font-bold uppercase block">Step 3 Completed</span>
-                                          <h5 className="font-bold text-white">Middle Is Eliminated</h5>
-                                          <p className="text-slate-300 leading-relaxed text-[11px]">
-                                            Now Row only has <strong className="text-white">Up</strong> remaining.
-                                          </p>
-                                          <div className="p-2 rounded bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-300">
-                                            Column faces Up only:<br/>
-                                            Chooses between Left (3) and Centre (2).<br/>
-                                            Since 3 &gt; 2, Column chooses Left!
-                                          </div>
-                                          <p className="text-emerald-300 font-semibold text-[11px]">
-                                            &rarr; Pruning collapses to single surviving cell!
-                                          </p>
-                                        </div>
-                                      )}
-
-                                      {activeIesdsStep === 4 && (
-                                        <div className="p-3.5 bg-emerald-950/40 rounded-xl border border-emerald-500/50 space-y-1.5 animate-fadeIn">
-                                          <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs uppercase tracking-wider">
-                                            <Icon name="checkCircle" className="w-4 h-4" />
-                                            Surviving Prediction (Slide 13)
-                                          </div>
-                                          <h5 className="font-extrabold text-white text-sm">Unique Dominance-Solvable Outcome</h5>
-                                          <p className="text-emerald-100 leading-relaxed text-[11px]">
-                                            <strong>Up – Left</strong> with payoffs <strong>(4, 3)</strong> is the unique surviving prediction and the unique Nash equilibrium of this game!
-                                          </p>
-                                          <div className="p-2 rounded bg-slate-950/80 border border-emerald-500/30 text-[11px] text-slate-300">
-                                            Theorem confirmed: IESDS preserves all Nash equilibria and simplifies complex multi-action interactions.
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* 5 Common Errors in Matrix Analysis (Slide 24) */}
-                                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                                  <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                                    <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
-                                      <Icon name="shield" className="w-4 h-4 text-rose-400" />
-                                      Common Errors in Matrix Analysis &amp; Corrections (Slide 24)
-                                    </h4>
-                                    <span className="text-[10px] font-mono text-slate-400">Executive Exam Rubric</span>
-                                  </div>
-
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
-                                    <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                      <span className="text-[10px] font-mono text-rose-400 font-bold uppercase block">&times; Error 1</span>
-                                      <p className="font-semibold text-white text-[11px]">Comparing two numbers inside one cell</p>
-                                      <p className="text-slate-400 text-[10px] leading-relaxed">
-                                        <strong className="text-emerald-300">Correction:</strong> Follow one player's payoff position/color across strategies while holding rival fixed.
-                                      </p>
-                                    </div>
-
-                                    <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                      <span className="text-[10px] font-mono text-rose-400 font-bold uppercase block">&times; Error 2</span>
-                                      <p className="font-semibold text-white text-[11px]">Finding largest number and calling it dominant</p>
-                                      <p className="text-slate-400 text-[10px] leading-relaxed">
-                                        <strong className="text-emerald-300">Correction:</strong> Dominance requires comparison against <em>every</em> rival strategy.
-                                      </p>
-                                    </div>
-
-                                    <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                      <span className="text-[10px] font-mono text-rose-400 font-bold uppercase block">&times; Error 3</span>
-                                      <p className="font-semibold text-white text-[11px]">Stopping after finding one equilibrium</p>
-                                      <p className="text-slate-400 text-[10px] leading-relaxed">
-                                        <strong className="text-emerald-300">Correction:</strong> Check every cell for overlapping best-response marks.
-                                      </p>
-                                    </div>
-
-                                    <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                      <span className="text-[10px] font-mono text-rose-400 font-bold uppercase block">&times; Error 4</span>
-                                      <p className="font-semibold text-white text-[11px]">Assuming equilibrium is efficient</p>
-                                      <p className="text-slate-400 text-[10px] leading-relaxed">
-                                        <strong className="text-emerald-300">Correction:</strong> Equilibrium means no profitable unilateral deviation, not maximum joint payoff.
-                                      </p>
-                                    </div>
-
-                                    <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1">
-                                      <span className="text-[10px] font-mono text-rose-400 font-bold uppercase block">&times; Error 5</span>
-                                      <p className="font-semibold text-white text-[11px]">Eliminating an unattractive cell</p>
-                                      <p className="text-slate-400 text-[10px] leading-relaxed">
-                                        <strong className="text-emerald-300">Correction:</strong> Eliminate an entire dominated strategy (a complete row or column).
-                                      </p>
-                                    </div>
-
-                                    <div className="p-3 bg-indigo-950/40 rounded-lg border border-indigo-700/50 space-y-1 flex flex-col justify-center">
-                                      <span className="text-[10px] font-mono text-indigo-300 font-bold uppercase block">Professor's Rule</span>
-                                      <p className="text-indigo-100 font-semibold text-[11px]">
-                                        "Best-response marking is mechanical; constructing and defending the model is the demanding part."
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* 4. Cournot vs Bertrand Oligopoly Models */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                  <div>
-                                    <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-400 font-bold">Section 04</span>
-                                    <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                      Oligopolistic Competition: Cournot (Quantity) vs. Bertrand (Price)
-                                    </h3>
-                                    <p className="text-xs text-slate-400">
-                                      How the dimension of market competition determines operating margins and the Bertrand Paradox.
-                                    </p>
-                                  </div>
-                                  <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-lg border border-slate-800">
-                                    <button
-                                      onClick={() => setActiveCournotTabWeek3(0)}
-                                      className={`px-2.5 py-1 rounded text-xs font-bold transition-all ${
-                                        activeCournotTabWeek3 === 0
-                                          ? "bg-indigo-600 text-white shadow-sm"
-                                          : "text-slate-400 hover:text-white"
-                                      }`}
-                                    >
-                                      Cournot (Quantity)
-                                    </button>
-                                    <button
-                                      onClick={() => setActiveCournotTabWeek3(1)}
-                                      className={`px-2.5 py-1 rounded text-xs font-bold transition-all ${
-                                        activeCournotTabWeek3 === 1
-                                          ? "bg-indigo-600 text-white shadow-sm"
-                                          : "text-slate-400 hover:text-white"
-                                      }`}
-                                    >
-                                      Bertrand (Price)
-                                    </button>
-                                  </div>
-                                </div>
-
-                                {activeCournotTabWeek3 === 0 ? (
-                                  <div className="space-y-3">
-                                    <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                                      <div className="space-y-2">
-                                        <span className="text-[10px] font-mono uppercase text-emerald-400 font-bold block">The Cournot Model</span>
-                                        <h4 className="text-sm font-bold text-white">Simultaneous Output & Capacity Choice</h4>
-                                        <p className="text-slate-300 leading-relaxed">
-                                          Dual firms choose quantities <code className="text-emerald-300 font-mono">q_1, q_2</code> simultaneously. Market price clears total supply <code className="text-indigo-300 font-mono">P(Q) = a - b(q_1 + q_2)</code>.
-                                        </p>
-                                        <p className="text-slate-300 leading-relaxed">
-                                          Quantities are <strong className="text-white">strategic substitutes</strong>: when your rival expands production, your residual demand contracts, leading to a downward-sloping best response curve.
-                                        </p>
-                                      </div>
-                                      <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-2 font-mono text-[11px]">
-                                        <div className="text-indigo-300 font-bold">Equilibrium Price Hierarchy:</div>
-                                        <div className="p-2 bg-slate-950 rounded border border-indigo-500/30 text-emerald-300">
-                                          P_Monopoly &gt; P_Cournot &gt; P_Competitive (MC)
-                                        </div>
-                                        <p className="font-sans text-xs text-slate-300">
-                                          Applicable to heavy capital industries: commercial aircraft assembly (Airbus vs. Boeing), semiconductor fab allocation (TSMC vs. Samsung), and petrochemical capacity.
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="space-y-3">
-                                    <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                                      <div className="space-y-2">
-                                        <span className="text-[10px] font-mono uppercase text-red-400 font-bold block">The Bertrand Trap</span>
-                                        <h4 className="text-sm font-bold text-white">The Paradox of Pure Price Competition</h4>
-                                        <p className="text-slate-300 leading-relaxed">
-                                          Dual firms choose prices <code className="text-red-300 font-mono">p_1, p_2</code> simultaneously for homogeneous products. Undercutting rival by $0.01 captures 100% market demand.
-                                        </p>
-                                        <p className="text-red-200 bg-red-950/30 p-2.5 rounded-lg border border-red-800/40 leading-relaxed">
-                                          <strong>Bertrand Paradox:</strong> With just TWO firms, equilibrium price collapses to Marginal Cost (<code className="font-mono">P* = MC</code>), destroying all economic profit!
-                                        </p>
-                                      </div>
-                                      <div className="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-2">
-                                        <div className="text-emerald-400 font-bold text-xs uppercase">How Executives Escape the Trap:</div>
-                                        <ul className="space-y-1.5 text-xs text-slate-300">
-                                          <li className="flex items-start gap-1.5">
-                                            <span className="text-emerald-400 font-bold">&bull;</span>
-                                            <span><strong>Product Differentiation:</strong> Brand moats, proprietary UI, ecosystem lock-in.</span>
-                                          </li>
-                                          <li className="flex items-start gap-1.5">
-                                            <span className="text-emerald-400 font-bold">&bull;</span>
-                                            <span><strong>Capacity Caps:</strong> If competitor cannot serve all demand, price stays above MC.</span>
-                                          </li>
-                                          <li className="flex items-start gap-1.5">
-                                            <span className="text-emerald-400 font-bold">&bull;</span>
-                                            <span><strong>Customer Switching Costs:</strong> Contractual lock-in, data integration, APIs.</span>
-                                          </li>
-                                        </ul>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* WEEK 4 RECAP SECTIONS */}
-                          {selectedWeek.id === 4 && (
-                            <div className="space-y-6">
-                              {/* Week 4 Slides Updated Status Banner */}
-                              <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900 to-indigo-950/40 border border-emerald-500/40 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <div className="flex items-start gap-3">
-                                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40 mt-0.5">
-                                    <Icon name="checkCircle" className="w-5 h-5" />
-                                  </div>
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
-                                        SLIDES & LECTURE UPDATED
-                                      </span>
-                                      <span className="text-xs text-slate-300 font-semibold">
-                                        Week 04 Materials Synchronized
-                                      </span>
-                                    </div>
-                                    <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                                      Week 04 materials covering <strong>Mixed Strategies & Randomization</strong> are active. Explore the 5 core modules below or open the slide reader.
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
-                                  <button
-                                    onClick={() => {
-                                      setWeekSubTab("slides");
-                                      setEmbeddedSlideMode(true);
-                                    }}
-                                    className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
-                                  >
-                                    <Icon name="eye" className="w-3.5 h-3.5" />
-                                    <span>View Slides</span>
-                                  </button>
-                                  <a
-                                    href={getActiveSlideUrl(4, "./slides/week04.pdf")}
-                                    download={getActiveSlideDownloadName(4, "./slides/week04.pdf")}
-                                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all"
-                                  >
-                                    <Icon name="download" className="w-3.5 h-3.5 text-indigo-400" />
-                                    <span>PDF</span>
-                                  </a>
-                                </div>
-                              </div>
-                              {/* 1. Unpredictability & Zero-Sum Conflict */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                  <div>
-                                    <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">Section 01</span>
-                                    <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                      The Failure of Pure Strategies & The Value of Unpredictability (零純策略困境)
-                                    </h3>
-                                    <p className="text-xs text-slate-400">
-                                      When predictability makes you an easy target, pure rationality demands calculated strategic randomization.
-                                    </p>
-                                  </div>
-                                  <button
-                                    onClick={() => setActiveTab("gametikz")}
-                                    className="self-start sm:self-auto px-3 py-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-700/50 text-xs font-semibold flex items-center gap-1.5 transition-colors"
-                                  >
-                                    <Icon name="table" className="w-3.5 h-3.5 text-emerald-400" />
-                                    <span>Model in GameTikzStudio</span>
-                                  </button>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-                                    <div className="flex items-center gap-2">
-                                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                                      <h4 className="text-xs sm:text-sm font-bold text-white">The Cyclic Deviation Trap:</h4>
-                                    </div>
-                                    <p className="text-xs text-slate-300 leading-relaxed">
-                                      In games like Matching Pennies, Penalty Kicks, and Retail Sales Battles, <strong className="text-white">no cell has overlapping underlines</strong>. If you commit to an action, the competitor immediately switches to counter you. If you anticipate that counter, you want to switch again.
-                                    </p>
-                                    <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-400 font-mono">
-                                      Key Takeaway: A pure strategy can NEVER be an equilibrium when having your move known beforehand guarantees defeat.
-                                    </div>
-                                  </div>
-
-                                  <div className="p-4 bg-emerald-950/30 rounded-xl border border-emerald-700/50 space-y-2">
-                                    <div className="flex items-center gap-2">
-                                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                                      <h4 className="text-xs sm:text-sm font-bold text-emerald-200">The Mixed Strategy Concept:</h4>
-                                    </div>
-                                    <div className="p-2 rounded-lg bg-slate-950/80 border border-emerald-500/30 font-mono text-xs text-emerald-300">
-                                      &sigma;_i = (p, 1-p) &isin; &Delta;(S_i) &nbsp;|&nbsp; p &ge; 0, sum = 1
-                                    </div>
-                                    <p className="text-xs text-slate-300 leading-relaxed">
-                                      A mixed strategy is a <strong className="text-white">probability distribution</strong> over available pure moves. Randomization is not chaotic gambling; it is a calculated equilibrium commitment to prevent rivals from exploiting predictable behavior.
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* 2. The Indifference Principle */}
-                              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                                <div className="border-b border-slate-800 pb-3 mb-4">
-                                  <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">Section 02</span>
-                                  <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">
-                                    The Indifference Principle: Mathematical Foundation (無差異原則)
-                                  </h3>
-                                  <p className="text-xs text-slate-400">
-                                    Why players randomize and how equilibrium probabilities are determined.
-                                  </p>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                                  <div className="md:col-span-7 p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
-                                    <h4 className="text-xs font-bold text-white uppercase tracking-wider text-emerald-400">
-                                      The Core Mathematical Condition
-                                    </h4>
-                                    <p className="text-xs text-slate-300 leading-relaxed">
-                                      A rational player will only randomize between Action 1 and Action 2 if <strong className="text-white">both actions yield the exact same expected payoff</strong>:
-                                    </p>
-                                    <div className="p-3 rounded-lg bg-slate-900 border border-emerald-500/30 font-mono text-xs text-emerald-300 text-center font-bold">
-                                      E[u_i(Action 1)] = E[u_i(Action 2)] = E[u_i(&sigma;_i*)]
-                                    </div>
-                                    <p className="text-xs text-slate-400 leading-relaxed">
-                                      If Action 1 gave an expected payoff of $10M and Action 2 gave $9.9M, a rational executive would choose Action 1 with 100% probability! Randomization is only stable when the alternatives are equally lucrative in expectation.
-                                    </p>
-                                  </div>
-
-                                  <div className="md:col-span-5 p-4 bg-indigo-950/40 rounded-xl border border-indigo-700/50 space-y-2">
-                                    <h4 className="text-xs font-bold text-indigo-200">
-                                      The Fundamental Paradox
-                                    </h4>
-                                    <p className="text-xs text-slate-300 leading-relaxed">
-                                      <strong className="text-white">You do NOT mix to maximize your own immediate score.</strong> You mix with probability <code className="text-emerald-300 font-mono">p*</code> to make the <strong className="text-indigo-200">RIVAL indifferent</strong> between their pure options!
-                                    </p>
-                                    <div className="p-2 rounded bg-slate-950/80 border border-indigo-500/30 text-[11px] text-indigo-300 font-mono">
-                                      Row sets p* &rarr; Column is Indifferent<br />
-                                      Column sets q* &rarr; Row is Indifferent
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* 3. Interactive Mixed Strategy Engine & Simulator */}
-                              <div className="bg-gradient-to-b from-slate-900 via-slate-900 to-emerald-950/20 border-2 border-emerald-500/50 rounded-2xl p-6 shadow-xl shadow-emerald-950/25 space-y-6 ring-1 ring-emerald-500/30">
-                                <div className="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-300 font-bold px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/50">
-                                        Section 03 • Interactive Simulator
-                                      </span>
-                                      <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
-                                        <Icon name="checkCircle" className="w-3.5 h-3.5" />
-                                        Probability Engine Live
-                                      </span>
-                                    </div>
-                                    <h3 className="text-base sm:text-xl font-black text-white mt-1.5 flex items-center gap-2">
-                                      <Icon name="target" className="w-5 h-5 text-emerald-400" />
-                                      2&times;2 Mixed Strategy Equilibrium Calculator & Matrix Simulator
-                                    </h3>
-                                    <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
-                                      Select an archetypal business scenario below to compute the equilibrium probabilities (p*, q*) and test how deviations break rival indifference.
-                                    </p>
-                                  </div>
-
-                                  {/* Preset Selector */}
-                                  <div className="flex flex-wrap items-center gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
-                                    {MIXED_STRATEGY_PRESETS.map((preset) => (
-                                      <button
-                                        key={preset.id}
-                                        onClick={() => {
-                                          setActiveMixedPresetWeek4(preset.id);
-                                          setCustomP1ProbWeek4(preset.pStar);
-                                        }}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                                          activeMixedPresetWeek4 === preset.id
-                                            ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
-                                            : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
-                                        }`}
-                                      >
-                                        {preset.name.split(" ")[0]}
-                                      </button>
-                                    ))}
-                                  </div>
-                                </div>
-
-                                {(() => {
-                                  const p = MIXED_STRATEGY_PRESETS[activeMixedPresetWeek4];
-                                  const curP = customP1ProbWeek4;
-                                  const expCol1 = curP * p.c11 + (1 - curP) * p.c21;
-                                  const expCol2 = curP * p.c12 + (1 - curP) * p.c22;
-                                  const isIndifferent = Math.abs(expCol1 - expCol2) < 0.05;
-
-                                  return (
-                                    <div className="space-y-5 animate-fadeIn">
-                                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-                                        <div>
-                                          <div className="flex items-center gap-2">
-                                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
-                                              {p.tag}
-                                            </span>
-                                            <h4 className="text-sm font-bold text-white">{p.name}</h4>
-                                          </div>
-                                          <p className="text-xs text-slate-400 mt-0.5">{p.description}</p>
-                                        </div>
-                                        <div className="flex items-center gap-2 shrink-0">
-                                          <div className="px-3 py-1.5 rounded-lg bg-emerald-950/50 border border-emerald-700/50 text-right">
-                                            <span className="text-[10px] text-slate-400 uppercase font-mono block">Equilibrium p*</span>
-                                            <span className="font-mono text-sm font-bold text-emerald-300">{(p.pStar * 100).toFixed(0)}% {p.act1}</span>
-                                          </div>
-                                          <div className="px-3 py-1.5 rounded-lg bg-indigo-950/50 border border-indigo-700/50 text-right">
-                                            <span className="text-[10px] text-slate-400 uppercase font-mono block">Equilibrium q*</span>
-                                            <span className="font-mono text-sm font-bold text-indigo-300">{(p.qStar * 100).toFixed(0)}% {p.act1}</span>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-                                        {/* Payoff Matrix Table */}
-                                        <div className="md:col-span-6 overflow-x-auto">
-                                          <table className="w-full text-center border-collapse">
-                                            <thead>
-                                              <tr>
-                                                <th className="p-2 text-xs text-slate-500 font-mono">{p.rowPlayer} \ {p.colPlayer}</th>
-                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">
-                                                  {p.act1} (q)
-                                                </th>
-                                                <th className="p-2 text-xs font-bold text-rose-400 bg-slate-900/80 border border-slate-800 rounded-t-lg">
-                                                  {p.act2} (1-q)
-                                                </th>
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              <tr>
-                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">
-                                                  {p.act1} (p)
-                                                </td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/40">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-400 font-bold">{p.r11}</span>, <span className="text-rose-400 font-bold">{p.c11}</span>
-                                                  </div>
-                                                </td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/40">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-400 font-bold">{p.r12}</span>, <span className="text-rose-400 font-bold">{p.c12}</span>
-                                                  </div>
-                                                </td>
-                                              </tr>
-                                              <tr>
-                                                <td className="p-2 text-xs font-bold text-blue-400 bg-slate-900/80 border border-slate-800 text-right pr-3">
-                                                  {p.act2} (1-p)
-                                                </td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/40">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-400 font-bold">{p.r21}</span>, <span className="text-rose-400 font-bold">{p.c21}</span>
-                                                  </div>
-                                                </td>
-                                                <td className="p-3 border border-slate-800 bg-slate-900/40">
-                                                  <div className="font-mono text-sm">
-                                                    <span className="text-blue-400 font-bold">{p.r22}</span>, <span className="text-rose-400 font-bold">{p.c22}</span>
-                                                  </div>
-                                                </td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                          <div className="mt-2 text-[11px] text-slate-500 text-center font-mono">
-                                            Row Payoff (Blue) • Column Payoff (Red)
-                                          </div>
-                                        </div>
-
-                                        {/* Real-Time Interactive Probability Slider */}
-                                        <div className="md:col-span-6 p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                                          <div className="flex items-center justify-between">
-                                            <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                                              <Icon name="sliders" className="w-4 h-4 text-emerald-400" />
-                                              Simulate {p.rowPlayer}'s Mixing Probability (p):
-                                            </span>
-                                            <span className="font-mono text-xs font-bold text-emerald-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
-                                              p = {(curP * 100).toFixed(0)}%
-                                            </span>
-                                          </div>
-
-                                          <input
-                                            type="range"
-                                            min="0"
-                                            max="1"
-                                            step="0.01"
-                                            value={curP}
-                                            onChange={(e) => setCustomP1ProbWeek4(parseFloat(e.target.value))}
-                                            className="w-full accent-emerald-500 cursor-pointer h-2 bg-slate-800 rounded-lg"
-                                          />
-
-                                          <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-                                            <span>0% (100% {p.act2})</span>
-                                            <button
-                                              onClick={() => setCustomP1ProbWeek4(p.pStar)}
-                                              className="text-emerald-400 hover:underline font-bold"
-                                            >
-                                              Reset to Equilibrium p* ({(p.pStar * 100).toFixed(0)}%)
-                                            </button>
-                                            <span>100% ({p.act1})</span>
-                                          </div>
-
-                                          {/* Rival's Response Feedback */}
-                                          <div className="pt-2 border-t border-slate-800 space-y-2 text-xs">
-                                            <div className="flex items-center justify-between text-slate-300">
-                                              <span>{p.colPlayer}'s E[{p.act1}]:</span>
-                                              <span className="font-mono font-bold text-rose-300">{expCol1.toFixed(2)}</span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-slate-300">
-                                              <span>{p.colPlayer}'s E[{p.act2}]:</span>
-                                              <span className="font-mono font-bold text-rose-300">{expCol2.toFixed(2)}</span>
-                                            </div>
-
-                                            <div className={`p-2.5 rounded-lg border text-xs font-semibold text-center transition-all ${
-                                              isIndifferent
-                                                ? "bg-emerald-950/50 border-emerald-500 text-emerald-300"
-                                                : "bg-amber-950/40 border-amber-600/50 text-amber-200"
-                                            }`}>
-                                              {isIndifferent ? (
-                                                <span>★ Opponent is Indifferent! E[{p.act1}] &approx; E[{p.act2}]. Stable Nash Equilibrium!</span>
-                                              ) : expCol1 > expCol2 ? (
-                                                <span>Warning: {p.colPlayer} strictly prefers {p.act1}! (E[{p.act1}] &gt; E[{p.act2}])</span>
-                                              ) : (
-                                                <span>Warning: {p.colPlayer} strictly prefers {p.act2}! (E[{p.act2}] &gt; E[{p.act1}])</span>
-                                              )}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-                                })()}
-                              </div>
-
-                              {/* 4. Corporate Applications: Varian's Model & The Inspection Paradox */}
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-                                  <div className="flex items-center gap-2">
-                                    <span className="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-mono text-[10px] font-bold border border-sky-500/30">
-                                      Retail Application
-                                    </span>
-                                    <h4 className="text-sm font-bold text-white">Varian's Model of Sales (Randomized Markdowns)</h4>
-                                  </div>
-                                  <p className="text-xs text-slate-300 leading-relaxed">
-                                    Why do department stores and e-commerce platforms hold unpredictable flash sales rather than permanent everyday price cuts?
-                                  </p>
-                                  <ul className="space-y-1.5 text-xs text-slate-400">
-                                    <li className="flex items-start gap-1.5">
-                                      <span className="text-sky-400 font-bold">&bull;</span>
-                                      <span><strong>Customer Segmentation:</strong> Informed bargain hunters search for deals; uninformed loyalists buy at convenience.</span>
-                                    </li>
-                                    <li className="flex items-start gap-1.5">
-                                      <span className="text-sky-400 font-bold">&bull;</span>
-                                      <span><strong>The Predictability Trap:</strong> If sales are scheduled (e.g. 1st Saturday of the month), buyers defer purchases and rivals discount on Friday.</span>
-                                    </li>
-                                    <li className="flex items-start gap-1.5">
-                                      <span className="text-sky-400 font-bold">&bull;</span>
-                                      <span><strong>Equilibrium Mixing:</strong> Randomizing promotional timing price-discriminates perfectly, extracting full margins from loyalists while retaining deal hunters.</span>
-                                    </li>
-                                  </ul>
-                                </div>
-
-                                <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-                                  <div className="flex items-center gap-2">
-                                    <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[10px] font-bold border border-purple-500/30">
-                                      Governance Application
-                                    </span>
-                                    <h4 className="text-sm font-bold text-white">The Deterrence Paradox in Regulatory Auditing</h4>
-                                  </div>
-                                  <p className="text-xs text-slate-300 leading-relaxed">
-                                    When the government or board audits corporate compliance (e.g., tax evasion, securities reporting, safety inspections):
-                                  </p>
-                                  <ul className="space-y-1.5 text-xs text-slate-400">
-                                    <li className="flex items-start gap-1.5">
-                                      <span className="text-purple-400 font-bold">&bull;</span>
-                                      <span><strong>Intuition vs. Reality:</strong> Common belief holds that increasing fines will directly force more taxpayers to comply.</span>
-                                    </li>
-                                    <li className="flex items-start gap-1.5">
-                                      <span className="text-purple-400 font-bold">&bull;</span>
-                                      <span><strong>The Indifference Proof:</strong> Evasion rate (p*) is determined by the auditor's inspection cost! Higher penalties instead allow the regulator to audit <em>less often</em> while keeping evasion constant.</span>
-                                    </li>
-                                    <li className="flex items-start gap-1.5">
-                                      <span className="text-purple-400 font-bold">&bull;</span>
-                                      <span><strong>Stackelberg Security:</strong> Modern TSA airport screening and cyber-defense patrols implement randomized routing algorithms.</span>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-
-                              {/* 5. Empirical Evidence & Human Cognitive Biases */}
-                              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                  <div className="flex items-center gap-2">
-                                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
-                                      Empirical Testing
-                                    </span>
-                                    <h4 className="text-sm font-bold text-white">Sports Econometrics & The Alternation Bias</h4>
-                                  </div>
-                                  <span className="text-[11px] font-mono text-slate-400">Levitt & Chiappori (2002)</span>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                                  <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5">
-                                    <span className="font-bold text-emerald-400 uppercase tracking-wider text-[10px] block">Empirical Proof</span>
-                                    <h5 className="font-bold text-white text-xs">Penalty Kick Indifference</h5>
-                                    <p className="text-slate-300 leading-relaxed text-[11px]">
-                                      Analysis of 1,417 professional European penalty kicks showed scoring rates across Left (80.1%) and Right (79.8%) shots were statistically identical, proving players converge to minimax mixed equilibria.
-                                    </p>
-                                  </div>
-
-                                  <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5">
-                                    <span className="font-bold text-amber-400 uppercase tracking-wider text-[10px] block">Human Cognitive Trap</span>
-                                    <h5 className="font-bold text-white text-xs">The Alternation Bias</h5>
-                                    <p className="text-slate-300 leading-relaxed text-[11px]">
-                                      Human executives fail at true randomness because they switch options too frequently (believing streaks are non-random). True randomness exhibits streaks that human intuition mistakenly rejects.
-                                    </p>
-                                  </div>
-
-                                  <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5">
-                                    <span className="font-bold text-indigo-400 uppercase tracking-wider text-[10px] block">Managerial Rule</span>
-                                    <h5 className="font-bold text-white text-xs">Automate with Algorithms</h5>
-                                    <p className="text-slate-300 leading-relaxed text-[11px]">
-                                      Never allow human managers to randomize promotions or audits manually. Calibrate payoff matrices, compute p* and q*, and delegate execution to automated algorithmic engines.
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Quick Jump Buttons to Case Study & Quiz */}
-                          <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-                            <div>
-                              <p className="text-xs font-bold text-white">Ready to apply these frameworks?</p>
-                              <p className="text-[11px] text-slate-400">Solve the Harvard/Stanford business case or test your analytical precision.</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => setWeekSubTab("case")}
-                                className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
-                              >
-                                <span>Solve Case Analysis</span>
-                                <Icon name="chevronRight" className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={() => setActiveTab("quizzes")}
-                                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition-all"
-                              >
-                                <Icon name="checkCircle" className="w-3.5 h-3.5 text-emerald-400" />
-                                <span>Take Strategic Quiz</span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* SUB-TAB 3: SLIDE DECK & EXECUTIVE SUMMARY */}
-                      {weekSubTab === "slides" && (
-                        <div className="space-y-6 animate-fadeIn">
-                          {/* 1. Executive Summary: 3 Concise Managerial Takeaways */}
-                          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                        <div className="flex items-center gap-2 mb-4">
-                          <div className="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
-                            <Icon name="sparkles" className="w-4 h-4" />
-                          </div>
-                          <div>
-                            <h3 className="text-base font-bold text-white">Executive Summary</h3>
-                            <p className="text-xs text-slate-400">3 Strategic Takeaways for Senior Business Leadership</p>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          {selectedWeek.executiveSummary.map((item, idx) => {
-                            const [heading, ...rest] = item.split(":");
-                            return (
-                              <div
-                                key={idx}
-                                className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-all"
-                              >
-                                <div>
-                                  <span className="w-6 h-6 rounded-full bg-indigo-600/30 text-indigo-300 text-xs font-mono font-bold flex items-center justify-center mb-2">
-                                    0{idx + 1}
-                                  </span>
-                                  <h4 className="text-xs font-bold text-indigo-200 uppercase tracking-wide">
-                                    {heading}
-                                  </h4>
-                                  <p className="mt-1.5 text-xs text-slate-300 leading-relaxed">
-                                    {rest.join(":")}
-                                  </p>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* 2. Lecture Deck Card: Relative Link & Embedded Preview Mockup */}
-                      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-slate-800">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                                <Icon name="fileText" className="w-5 h-5 text-indigo-400" />
-                                Official Slide Deck & Lecture Materials
-                              </h3>
-                              {customSlideUrls[selectedWeek.id] && (
-                                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono font-bold flex items-center gap-1">
-                                  <Icon name="check" className="w-3 h-3 text-emerald-400 stroke-[3]" />
-                                  Original Upload Active
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-xs text-slate-400 mt-0.5">
-                              {customSlideUrls[selectedWeek.id] ? (
-                                <span className="text-emerald-300">
-                                  Using user-uploaded authentic slide deck: <span className="font-mono font-bold">{customSlideUrls[selectedWeek.id].name}</span> ({(customSlideUrls[selectedWeek.id].size / 1024).toFixed(1)} KB)
-                                </span>
-                              ) : (
-                                <>Configured with relative path <code className="text-indigo-300 font-mono">{selectedWeek.slidePath}</code></>
-                              )}
-                            </p>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            {/* Upload / Replace Original PDF */}
-                            <input
-                              type="file"
-                              ref={fileInputRef}
-                              accept=".pdf,application/pdf"
-                              className="hidden"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  saveCustomSlide(selectedWeek.id, file);
-                                  setEmbeddedSlideMode(true);
-                                }
-                              }}
-                            />
-                            <button
-                              onClick={() => fileInputRef.current?.click()}
-                              className="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-md transition-all"
-                              title="Upload or replace with your original slide PDF"
-                            >
-                              <Icon name="upload" className="w-3.5 h-3.5" />
-                              <span>{customSlideUrls[selectedWeek.id] ? "Replace Original PDF" : "Upload Original PDF"}</span>
-                            </button>
-
-                            {customSlideUrls[selectedWeek.id] && (
-                              <button
-                                onClick={() => removeCustomSlide(selectedWeek.id)}
-                                className="px-2.5 py-2 bg-slate-800 hover:bg-red-950/60 hover:text-red-300 text-slate-300 rounded-lg text-xs font-semibold border border-slate-700 transition-all"
-                                title="Reset to default repository slides"
-                              >
-                                Reset to Default
-                              </button>
-                            )}
-
-                            <a
-                              href={getActiveSlideUrl(selectedWeek.id, selectedWeek.slidePath)}
-                              download={getActiveSlideDownloadName(selectedWeek.id, selectedWeek.slidePath)}
-                              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
-                            >
-                              <Icon name="download" className="w-3.5 h-3.5 text-indigo-400" />
-                              Download PDF
-                            </a>
-                            <button
-                              onClick={() => setEmbeddedSlideMode(!embeddedSlideMode)}
-                              className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-all ${
-                                embeddedSlideMode
-                                  ? "bg-indigo-950/70 text-indigo-300 border-indigo-700 shadow-sm"
-                                  : "bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700"
-                              }`}
-                            >
-                              <Icon name="eye" className="w-4 h-4 text-indigo-300" />
-                              {embeddedSlideMode ? "Show Slide Card" : "Live Slide Viewer"}
-                            </button>
-                            <button
-                              onClick={() => setSlideModalWeek(selectedWeek)}
-                              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-slate-700"
-                              title="Inspect in full modal"
-                            >
-                              <Icon name="externalLink" className="w-4 h-4 text-indigo-400" />
-                              Full Modal
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Callout if no custom upload for Week 3 or Week 4 */}
-                        {(selectedWeek.id === 3 || selectedWeek.id === 4) && !customSlideUrls[selectedWeek.id] && (
-                          <div className={`mt-4 p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                            selectedWeek.id === 4
-                              ? "bg-emerald-950/30 border border-emerald-500/30"
-                              : "bg-indigo-950/30 border border-indigo-500/30"
-                          }`}>
-                            <div className="flex items-start gap-2.5">
-                              <Icon
-                                name={selectedWeek.id === 4 ? "checkCircle" : "upload"}
-                                className={`w-4 h-4 shrink-0 mt-0.5 ${
-                                  selectedWeek.id === 4 ? "text-emerald-400" : "text-indigo-400"
-                                }`}
-                              />
-                              <div>
-                                <p className="text-xs font-semibold text-white">
-                                  {selectedWeek.id === 4
-                                    ? "Week 04 Slides Active"
-                                    : `Use Your Original Week ${selectedWeek.id} Slide Deck`}
-                                </p>
-                                <p className="text-[11px] text-slate-300 mt-0.5 leading-relaxed">
-                                  {selectedWeek.id === 4
-                                    ? <>Click to select your original <span className="font-mono text-emerald-300 font-semibold">{selectedWeek.slidePath.split('/').pop()}</span> file from your computer to load it into the live viewer and persist in browser storage.</>
-                                    : <>Click to select your original <span className="font-mono text-indigo-300 font-semibold">{selectedWeek.slidePath.split('/').pop()}</span> file from your computer. It will load immediately into the live viewer and persist in your browser.</>}
-                                </p>
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => fileInputRef.current?.click()}
-                              className={`px-3.5 py-1.5 rounded-lg text-white text-xs font-semibold shrink-0 flex items-center gap-1.5 shadow-sm transition-all ${
-                                selectedWeek.id === 4
-                                  ? "bg-emerald-600 hover:bg-emerald-500"
-                                  : "bg-indigo-600 hover:bg-indigo-500"
-                              }`}
-                            >
-                              <Icon name="upload" className="w-3.5 h-3.5" />
-                              {selectedWeek.id === 4 ? "Upload Custom Revision" : `Upload ${selectedWeek.slidePath.split('/').pop()}`}
-                            </button>
-                          </div>
-                        )}
-
-                        {/* Presentation View: Either Live Iframe or Executive Card */}
-                        {embeddedSlideMode ? (
-                          <div className="mt-5 rounded-xl border border-slate-800 bg-slate-950 p-2 sm:p-3 space-y-2">
-                            <div className="flex items-center justify-between px-2 text-xs text-slate-400 font-mono">
-                              <span>Live Presentation Reader: {getActiveSlideDownloadName(selectedWeek.id, selectedWeek.slidePath)}</span>
-                              <a
-                                href={getActiveSlideUrl(selectedWeek.id, selectedWeek.slidePath)}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
-                              >
-                                Pop out in browser
-                                <Icon name="externalLink" className="w-3 h-3" />
-                              </a>
-                            </div>
-                            <div className="w-full h-[520px] sm:h-[640px] rounded-lg overflow-hidden border border-slate-800 bg-slate-900">
-                              <iframe
-                                src={getActiveSlideUrl(selectedWeek.id, selectedWeek.slidePath)}
-                                className="w-full h-full border-0"
-                                title={`Live Deck for ${selectedWeek.title}`}
-                              />
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="mt-5 rounded-xl border border-slate-800 bg-slate-950 p-4 sm:p-5">
-                            <div className="aspect-[16/9] w-full rounded-lg bg-gradient-to-br from-slate-900 via-slate-850 to-indigo-950/60 border border-slate-800 p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden shadow-inner">
-                              <div className="flex items-center justify-between z-10">
-                                <span className="text-xs font-mono text-indigo-400 font-bold tracking-widest uppercase">
-                                  STRATEGIC THINKING • EXECUTIVE SLIDE DECK
-                                </span>
-                                <span className="text-xs font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
-                                  {customSlideUrls[selectedWeek.id] ? "ORIGINAL UPLOAD" : `${selectedWeek.pageCount} SLIDES`} • 16:9 HD
-                                </span>
-                              </div>
-
-                              <div className="z-10 my-auto">
-                                <span className="text-xs text-emerald-400 font-semibold uppercase tracking-wider">
-                                  WEEK {selectedWeek.id} CORE LECTURE
-                                </span>
-                                <h4 className="text-lg sm:text-2xl font-black text-white mt-1 max-w-xl">
-                                  {selectedWeek.title}
-                                </h4>
-                                <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-lg">
-                                  {selectedWeek.chineseTitle}
-                                </p>
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                  {selectedWeek.businessCases.map((bCase, i) => (
-                                    <span key={i} className="text-[10px] bg-slate-900/80 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
-                                      {bCase}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400 z-10 pt-4 border-t border-slate-800/80">
-                                <span className="font-mono">
-                                  {customSlideUrls[selectedWeek.id]
-                                    ? `Loaded: ${customSlideUrls[selectedWeek.id].name} (Authentic Upload)`
-                                    : `Path: ${selectedWeek.slidePath}`}
-                                </span>
-                                <button
-                                  onClick={() => setEmbeddedSlideMode(true)}
-                                  className="text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 self-start sm:self-auto"
-                                >
-                                  Switch to Live Slide Viewer inside this page
-                                  <Icon name="chevronRight" className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                              
-                              <div className="absolute right-0 bottom-0 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* SUB-TAB 2: CASE STUDY & PAYOFF MATRIX / TREE */}
-                  {weekSubTab === "case" && selectedWeek.caseAnalysis && (
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-5 animate-fadeIn">
-                          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                            <div>
-                              <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">
-                                Harvard / Stanford MBA Case Method
-                              </span>
-                              <h3 className="text-lg font-bold text-white mt-0.5">
-                                {selectedWeek.caseAnalysis.title}
-                              </h3>
-                              <p className="text-xs text-slate-400">{selectedWeek.caseAnalysis.subtitle}</p>
-                            </div>
-                            <span className="px-2 py-1 bg-indigo-500/10 text-indigo-300 text-xs font-semibold rounded border border-indigo-500/30">
-                              Interactive Case
-                            </span>
-                          </div>
-
-                          {/* Scenario Narrative */}
-                          <div className="bg-slate-950/70 rounded-xl p-4 border border-slate-800/80 text-sm text-slate-300 leading-relaxed">
-                            <p>{selectedWeek.caseAnalysis.scenario}</p>
-                            {selectedWeek.caseAnalysis.treeDescription && (
-                              <div className="mt-3 p-3 bg-slate-900 rounded-lg border border-slate-800 font-mono text-xs text-indigo-300">
-                                <span className="font-bold text-slate-200">Extensive Decision Tree:</span> {selectedWeek.caseAnalysis.treeDescription}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Payoff Matrix Table if present */}
-                          {selectedWeek.caseAnalysis.matrix && (
-                            <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950 p-4 space-y-3">
-                              <div className="flex items-center justify-between">
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                                  Strategic Payoff Matrix (Profits in Billions)
-                                </p>
-                                <span className="text-[11px] text-indigo-400 font-mono">
-                                  Click any cell to inspect incentives
-                                </span>
-                              </div>
-                              <table className="w-full text-xs text-center border-collapse">
-                                <thead>
-                                  <tr>
-                                    <th className="p-2 border border-slate-800 bg-slate-900 text-slate-400 font-mono">
-                                      {selectedWeek.caseAnalysis.matrix.player1} \ {selectedWeek.caseAnalysis.matrix.player2}
-                                    </th>
-                                    <th className="p-2 border border-slate-800 bg-slate-900 text-indigo-300 font-bold">
-                                      {selectedWeek.caseAnalysis.matrix.actions[0]}
-                                    </th>
-                                    <th className="p-2 border border-slate-800 bg-slate-900 text-indigo-300 font-bold">
-                                      {selectedWeek.caseAnalysis.matrix.actions[1]}
-                                    </th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {/* Row 0: Normal */}
-                                  <tr>
-                                    <td className="p-2 border border-slate-800 bg-slate-900 font-bold text-indigo-300">
-                                      {selectedWeek.caseAnalysis.matrix.actions[0]}
-                                    </td>
-                                    {/* Cell (0, 0) */}
-                                    <td
-                                      onClick={() => setCaseCellSelected([0, 0])}
-                                      className={`p-3 border border-slate-800 font-mono cursor-pointer transition-all ${
-                                        caseCellSelected[0] === 0 && caseCellSelected[1] === 0
-                                          ? "bg-indigo-950/80 ring-2 ring-indigo-400"
-                                          : "bg-slate-950/80 hover:bg-slate-900"
-                                      }`}
-                                    >
-                                      <span className="text-emerald-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[0][0][0]}</span>
-                                      <span className="text-slate-500"> , </span>
-                                      <span className="text-sky-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[0][0][1]}</span>
-                                      <div className="text-[10px] text-slate-400 font-sans mt-0.5">
-                                        {selectedWeek.caseAnalysis.cellLabels ? selectedWeek.caseAnalysis.cellLabels[0][0] : "Joint Welfare Max"}
-                                      </div>
-                                    </td>
-                                    {/* Cell (0, 1) */}
-                                    <td
-                                      onClick={() => setCaseCellSelected([0, 1])}
-                                      className={`p-3 border border-slate-800 font-mono cursor-pointer transition-all ${
-                                        caseCellSelected[0] === 0 && caseCellSelected[1] === 1
-                                          ? "bg-indigo-950/80 ring-2 ring-indigo-400"
-                                          : "bg-slate-950/80 hover:bg-slate-900"
-                                      }`}
-                                    >
-                                      <span className="text-red-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[0][1][0]}</span>
-                                      <span className="text-slate-500"> , </span>
-                                      <span className="text-emerald-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[0][1][1]}</span>
-                                      <div className="text-[10px] text-slate-500 font-sans mt-0.5">
-                                        {selectedWeek.caseAnalysis.cellLabels ? selectedWeek.caseAnalysis.cellLabels[0][1] : `${selectedWeek.caseAnalysis.matrix.player2} Preempts`}
-                                      </div>
-                                    </td>
-                                  </tr>
-                                  {/* Row 1: Aggressive */}
-                                  <tr>
-                                    <td className="p-2 border border-slate-800 bg-slate-900 font-bold text-indigo-300">
-                                      {selectedWeek.caseAnalysis.matrix.actions[1]}
-                                    </td>
-                                    {/* Cell (1, 0) */}
-                                    <td
-                                      onClick={() => setCaseCellSelected([1, 0])}
-                                      className={`p-3 border border-slate-800 font-mono cursor-pointer transition-all ${
-                                        caseCellSelected[0] === 1 && caseCellSelected[1] === 0
-                                          ? "bg-indigo-950/80 ring-2 ring-indigo-400"
-                                          : "bg-slate-950/80 hover:bg-slate-900"
-                                      }`}
-                                    >
-                                      <span className="text-emerald-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[1][0][0]}</span>
-                                      <span className="text-slate-500"> , </span>
-                                      <span className="text-red-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[1][0][1]}</span>
-                                      <div className="text-[10px] text-slate-500 font-sans mt-0.5">
-                                        {selectedWeek.caseAnalysis.cellLabels ? selectedWeek.caseAnalysis.cellLabels[1][0] : `${selectedWeek.caseAnalysis.matrix.player1} Preempts`}
-                                      </div>
-                                    </td>
-                                    {/* Cell (1, 1) */}
-                                    <td
-                                      onClick={() => setCaseCellSelected([1, 1])}
-                                      className={`p-3 border border-slate-800 font-mono cursor-pointer transition-all ${
-                                        caseCellSelected[0] === 1 && caseCellSelected[1] === 1
-                                          ? "bg-indigo-950/90 ring-2 ring-amber-400"
-                                          : "bg-indigo-950/30 ring-1 ring-indigo-500/40 hover:bg-indigo-950/60"
-                                      }`}
-                                    >
-                                      <span className="text-amber-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[1][1][0]}</span>
-                                      <span className="text-slate-500"> , </span>
-                                      <span className="text-amber-400 font-bold">{selectedWeek.caseAnalysis.matrix.payoffs[1][1][1]}</span>
-                                      <div className="text-[10px] text-amber-300 font-bold font-sans mt-0.5">
-                                        {selectedWeek.caseAnalysis.cellLabels ? selectedWeek.caseAnalysis.cellLabels[1][1] : "★ Nash Equilibrium"}
-                                      </div>
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-
-                              {/* Interactive Cell Inspector Box */}
-                              <div className="p-3 rounded-lg bg-slate-900/90 border border-slate-800 text-xs leading-relaxed">
-                                {selectedWeek.caseAnalysis.cellDescriptions ? (
-                                  <div>
-                                    <span className="text-slate-300">
-                                      {selectedWeek.caseAnalysis.cellDescriptions[caseCellSelected[0]][caseCellSelected[1]]}
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <>
-                                    {caseCellSelected[0] === 0 && caseCellSelected[1] === 0 && (
-                                      <div>
-                                        <span className="font-bold text-emerald-300">[Normal, Normal] — Collusive Maximum ($4.0B, $4.0B): </span>
-                                        <span className="text-slate-300">
-                                          Joint industry profits are maximized at $8.0B total. However, this is NOT a Nash equilibrium; either firm can defect by going Aggressive to steal market share and boost profits to $4.5B. Without a binding cartel or anti-trust exemption, defection is inevitable.
-                                        </span>
-                                      </div>
-                                    )}
-                                    {caseCellSelected[0] === 0 && caseCellSelected[1] === 1 && (
-                                      <div>
-                                        <span className="font-bold text-amber-300">[Normal, Aggressive] — Asymmetric Defection ($2.0B, $4.5B): </span>
-                                        <span className="text-slate-300">
-                                          Pepsi captures decisive market share ($4.5B) while Coca-Cola is caught flat-footed ($2.0B). Coca-Cola's immediate best response is to counter with Aggressive ad spend, shifting the outcome to [Aggressive, Aggressive] ($2.5B).
-                                        </span>
-                                      </div>
-                                    )}
-                                    {caseCellSelected[0] === 1 && caseCellSelected[1] === 0 && (
-                                      <div>
-                                        <span className="font-bold text-amber-300">[Aggressive, Normal] — Asymmetric Defection ($4.5B, $2.0B): </span>
-                                        <span className="text-slate-300">
-                                          Coca-Cola aggressively promotes and earns $4.5B, taking market share from passive Pepsi ($2.0B). Pepsi's rational response is to retaliate with Aggressive ad spend, shifting the outcome to [Aggressive, Aggressive] ($2.5B).
-                                        </span>
-                                      </div>
-                                    )}
-                                    {caseCellSelected[0] === 1 && caseCellSelected[1] === 1 && (
-                                      <div>
-                                        <span className="font-bold text-amber-300">[Aggressive, Aggressive] — Nash Equilibrium ($2.5B, $2.5B): </span>
-                                        <span className="text-slate-300">
-                                          The unique pure Nash equilibrium. Aggressive advertising is a strictly dominant strategy for both firms. Neither firm can unilaterally switch to Normal without sacrificing profit ($2.0B &lt; $2.5B). The duopoly collectively burns $3.0B in defensive marketing.
-                                        </span>
-                                      </div>
-                                    )}
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Student Editable Response Box with LocalStorage Persistence */}
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                                <Icon name="fileText" className="w-4 h-4 text-indigo-400" />
-                                Your Executive Case Note & Strategic Solution:
-                              </label>
-                              <div className="flex items-center gap-2">
-                                {saveStatus[selectedWeek.id] === "saving" && (
-                                  <span className="text-xs text-amber-400 flex items-center gap-1 font-mono">
-                                    <Icon name="refresh" className="w-3 h-3 animate-spin" /> Saving...
-                                  </span>
-                                )}
-                                {saveStatus[selectedWeek.id] === "saved" && (
-                                  <span className="text-xs text-emerald-400 flex items-center gap-1 font-mono">
-                                    <Icon name="check" className="w-3 h-3" /> Saved to Vault
-                                  </span>
-                                )}
-                                <button
-                                  onClick={() => triggerManualSave(selectedWeek.id)}
-                                  className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded border border-slate-700 flex items-center gap-1 transition-all"
-                                >
-                                  <Icon name="save" className="w-3.5 h-3.5" />
-                                  Save Draft
-                                </button>
-                              </div>
-                            </div>
-
-                            <textarea
-                              rows={5}
-                              value={caseNotes[selectedWeek.id] || ""}
-                              onChange={(e) => handleNoteChange(selectedWeek.id, e.target.value)}
-                              placeholder="Draft your executive response. How does backward induction or dominant strategy logic predict the rival's move? How can your company escape destructive competition?"
-                              className="w-full rounded-xl bg-slate-950 border border-slate-800 p-3.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-sans leading-relaxed"
-                            />
-                            <div className="flex items-center justify-between text-[11px] text-slate-500">
-                              <span>Auto-saves to browser storage as you type</span>
-                              <span className="font-mono">
-                                {(caseNotes[selectedWeek.id] || "").length} characters
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Collapsible Solution Toggle */}
-                          <div className="pt-2 border-t border-slate-800">
-                            <button
-                              onClick={() => toggleSolution(selectedWeek.id)}
-                              className="w-full py-2.5 px-4 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-indigo-300 font-semibold text-xs sm:text-sm flex items-center justify-between transition-all border border-slate-700"
-                            >
-                              <span className="flex items-center gap-2">
-                                <Icon name={revealedSolutions[selectedWeek.id] ? "eyeOff" : "eye"} className="w-4 h-4 text-indigo-400" />
-                                {revealedSolutions[selectedWeek.id]
-                                  ? "Hide Strategic Solution & Equilibrium Logic"
-                                  : "Reveal Strategic Solution & Equilibrium (Faculty Benchmark)"}
-                              </span>
-                              <Icon
-                                name="chevronDown"
-                                className={`w-4 h-4 transition-transform ${revealedSolutions[selectedWeek.id] ? "rotate-180" : ""}`}
-                              />
-                            </button>
-
-                            {revealedSolutions[selectedWeek.id] && (
-                              <div className="mt-3 p-4 sm:p-5 rounded-xl bg-indigo-950/30 border border-indigo-700/50 text-xs sm:text-sm space-y-3 animate-fadeIn">
-                                <div>
-                                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400">
-                                    Equilibrium Result
-                                  </span>
-                                  <h5 className="font-bold text-white text-sm sm:text-base mt-0.5">
-                                    {selectedWeek.caseAnalysis.solution.equilibrium}
-                                  </h5>
-                                </div>
-                                <p className="text-slate-300 leading-relaxed">
-                                  {selectedWeek.caseAnalysis.solution.breakdown}
-                                </p>
-                                <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-xs text-indigo-200">
-                                  <span className="font-bold text-white">Executive Action Rule: </span>
-                                  {selectedWeek.caseAnalysis.solution.managerialTakeaway}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    /* UPCOMING MODULE PREVIEW (Weeks 3-13) */
-                    <div className="space-y-6">
-                      
-                      {/* Pre-Reading Announcement on X Banner */}
-                      {selectedWeek.preReadingUrl && (
-                        <div className="bg-gradient-to-r from-sky-950/70 via-slate-900 to-indigo-950/50 border border-sky-600/50 rounded-2xl p-6 shadow-lg">
-                          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-                            <div className="flex items-start gap-4">
-                              <div className="w-12 h-12 rounded-2xl bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center justify-center shrink-0 mt-0.5">
-                                <Icon name="xLogo" className="w-6 h-6" />
-                              </div>
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-900/80 text-sky-300 border border-sky-700 font-bold uppercase">
-                                    Official Pre-Reading Released
-                                  </span>
-                                  <span className="text-xs text-sky-400 font-medium">@kochiuyu on X</span>
-                                </div>
-                                <h3 className="text-base sm:text-lg font-bold text-white mt-1.5">
-                                  Week {selectedWeek.id} Strategic Reading & Analytical Framework
-                                </h3>
-                                <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed max-w-2xl">
-                                  Prof. Chiu Yu Ko has uploaded the dedicated pre-reading briefing for this module on X. Read through the core dilemmas and real-world market cases before attending class.
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 w-full md:w-auto shrink-0">
-                              <a
-                                href={selectedWeek.preReadingUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex-1 sm:flex-initial px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-sky-950/40 transition-all hover:scale-[1.02]"
-                              >
-                                <Icon name="xLogo" className="w-4 h-4 text-slate-950" />
-                                <span>Read Pre-Reading on X</span>
-                                <Icon name="externalLink" className="w-3.5 h-3.5" />
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 text-center space-y-4">
-                        <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto">
-                          <Icon name="clock" className="w-6 h-6" />
-                        </div>
-                        <div className="max-w-md mx-auto">
-                          <span className="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 text-xs font-semibold border border-amber-500/30">
-                            Upcoming — Materials Release Post-Session
-                          </span>
-                          <h3 className="text-lg font-bold text-white mt-3">
-                            Session Scheduled on Course Calendar
-                          </h3>
-                          <p className="text-xs sm:text-sm text-slate-400 mt-1.5 leading-relaxed">
-                            {selectedWeek.upcomingNote || "Full interactive cases, slide deck releases, and numerical problem sets will be unlocked following the live seminar session."}
-                          </p>
-                        </div>
-
-                        {/* Course Slide Deck Download */}
-                        <div className="pt-2 flex justify-center items-center">
-                          <a
-                            href={getActiveSlideUrl(selectedWeek.id, selectedWeek.slidePath)}
-                            download={getActiveSlideDownloadName(selectedWeek.id, selectedWeek.slidePath)}
-                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-md transition-all"
-                          >
-                            <Icon name="download" className="w-4 h-4" />
-                            Download Course Slide Deck ({getActiveSlideDownloadName(selectedWeek.id, selectedWeek.slidePath)})
-                          </a>
-                        </div>
-                      </div>
-
-                      {/* Business Cases Preview for Upcoming Week */}
-                      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-                          Featured Business Case Studies (Upcoming)
-                        </h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {selectedWeek.businessCases.map((bCase, i) => (
-                            <div
-                              key={i}
-                              className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center gap-3"
-                            >
-                              <span className="w-6 h-6 rounded-lg bg-indigo-900/50 text-indigo-300 text-xs font-mono font-bold flex items-center justify-center">
-                                {i + 1}
-                              </span>
-                              <span className="text-xs sm:text-sm font-semibold text-slate-200">
-                                {bCase}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Student Pre-Reading Personal Notes Box */}
-                      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-3">
-                        <div className="flex items-center justify-between">
-                          <label className="text-xs font-bold text-slate-300 flex items-center gap-2">
-                            <Icon name="fileText" className="w-4 h-4 text-indigo-400" />
-                            Pre-Session Questions & Reading Notes (Week {selectedWeek.id})
-                          </label>
-                          <span className="text-[11px] text-slate-500 font-mono">Persisted locally</span>
-                        </div>
-                        <textarea
-                          rows={4}
-                          value={caseNotes[selectedWeek.id] || ""}
-                          onChange={(e) => handleNoteChange(selectedWeek.id, e.target.value)}
-                          placeholder="Record key questions, industry dilemmas, or preliminary thoughts prior to attending the session..."
-                          className="w-full rounded-xl bg-slate-950 border border-slate-800 p-3.5 text-xs sm:text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-              </div>
-            )}
-
-            {/* VIEW 3: INTERACTIVE STRATEGY QUIZZES */}
-            {activeTab === "quizzes" && (
-              <div className="max-w-4xl mx-auto space-y-8 animate-fadeIn">
-                {/* Quiz Header Banner */}
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div>
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-xs font-semibold mb-2">
-                      <Icon name="award" className="w-3.5 h-3.5 text-indigo-400" />
-                      Executive Strategy Assessment (Weeks 1 & 2)
-                    </div>
-                    <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                      Interactive Strategic Decision Scenarios
-                    </h2>
-                    <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                      Evaluate business dilemmas using formal game theory: dominant strategy equilibria and backward induction.
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-3 self-start sm:self-auto">
-                    <div className="text-right">
-                      <div className="text-2xl font-black text-white font-mono leading-none">
-                        {quizStats.correct} / {quizStats.total}
-                      </div>
-                      <div className="text-[11px] text-slate-400 font-medium">Mastery: {quizStats.scorePct}%</div>
-                    </div>
+                  {/* Subtabs for Module Content */}
+                  <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-1 overflow-x-auto text-xs">
                     <button
-                      onClick={handleResetAllQuizzes}
-                      className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 text-xs flex items-center gap-1"
-                      title="Reset Quiz Attempts"
+                      onClick={() => setWeekSubTab("notes")}
+                      className={`px-3 py-1.5 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
+                        weekSubTab === "notes"
+                          ? "bg-slate-900 text-white"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                      }`}
                     >
-                      <Icon name="refresh" className="w-4 h-4" />
+                      <Icon name="fileText" className="w-3.5 h-3.5" />
+                      Lecture Notes & Recap
+                    </button>
+                    <button
+                      onClick={() => setWeekSubTab("slides")}
+                      className={`px-3 py-1.5 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
+                        weekSubTab === "slides"
+                          ? "bg-slate-900 text-white"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                      }`}
+                    >
+                      <Icon name="layers" className="w-3.5 h-3.5" />
+                      Slide Viewer ({selectedWeek.pageCount} Slides)
+                    </button>
+                    <button
+                      onClick={() => setWeekSubTab("simulator")}
+                      className={`px-3 py-1.5 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
+                        weekSubTab === "simulator"
+                          ? "bg-slate-900 text-white"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                      }`}
+                    >
+                      <Icon name="sparkles" className="w-3.5 h-3.5" />
+                      Interactive Simulator
+                    </button>
+                    <button
+                      onClick={() => setWeekSubTab("exercise")}
+                      className={`px-3 py-1.5 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
+                        weekSubTab === "exercise"
+                          ? "bg-slate-900 text-white"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                      }`}
+                    >
+                      <Icon name="helpCircle" className="w-3.5 h-3.5" />
+                      Case Exercise & Solution
                     </button>
                   </div>
                 </div>
 
-                {/* Question Cards List */}
+                {/* SUBTAB 1: LECTURE NOTES & RECAP */}
+                {weekSubTab === "notes" && (
+                  <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-xs space-y-6">
+                    {/* Callout Quote */}
+                    {selectedWeek.recap && (
+                      <div className="callout callout-note">
+                        <p className="font-semibold text-sm">
+                          "{selectedWeek.recap.academicTakeaway}"
+                        </p>
+                        <p className="text-xs text-blue-800 mt-1">
+                          — Prof. Chiu Yu Ko · CUHK Business School
+                        </p>
+                        <p className="text-xs text-blue-700/80 mt-1 italic">
+                          {selectedWeek.recap.chineseTakeaway}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* WEEK 4 SPECIFIC STRUCTURED RECAP */}
+                    {selectedWeek.id === 4 && (
+                      <div className="space-y-6 text-slate-800 leading-relaxed text-sm">
+                        <div className="border-b border-slate-100 pb-4">
+                          <h3 className="text-lg font-bold text-slate-900">
+                            1. Opening Intuition: From Rock-Paper-Scissors to Cyclic Instability
+                          </h3>
+                          <p className="text-slate-600 text-xs sm:text-sm mt-1">
+                            In simultaneous games, when best responses form an endless cycle, pure strategies leave players vulnerable. Deterministic play can be anticipated and countered.
+                          </p>
+                          <div className="mt-3 bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-700">
+                            <strong>The Only Stable Counter-Exploitation:</strong> Randomize with calibrated probabilities. By making your action statistically unpredictable, the rival cannot profit from targeting a specific counter-measure.
+                          </div>
+                        </div>
+
+                        {/* Core Lecture Case: Coffee Chain Promotion Timing */}
+                        <div className="border-b border-slate-100 pb-4">
+                          <h3 className="text-lg font-bold text-slate-900">
+                            2. The Core Lecture Case: Coffee Chain Promotion Timing (Slides 5–13)
+                          </h3>
+                          <p className="text-slate-600 text-xs sm:text-sm mt-1">
+                            Two competing chains choose whether to run weekly promotions on Monday or Wednesday. Monday has larger baseline foot traffic, but preparing a defensive counter-campaign is fixed and costly.
+                          </p>
+
+                          {/* Payoff Table */}
+                          <div className="my-4 overflow-x-auto">
+                            <table className="w-full max-w-lg border-collapse text-center text-xs">
+                              <thead>
+                                <tr className="bg-slate-100 border border-slate-200 font-semibold text-slate-700">
+                                  <th className="p-2 border border-slate-200">Coffee Chain \ Rival</th>
+                                  <th className="p-2 border border-slate-200">Rival: Defend Mon (q)</th>
+                                  <th className="p-2 border border-slate-200">Rival: Defend Wed (1-q)</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td className="p-2 border border-slate-200 font-bold bg-slate-50">Promote Monday (p)</td>
+                                  <td className="p-2.5 border border-slate-200 bg-white font-mono font-bold text-slate-800">(3, 3)</td>
+                                  <td className="p-2.5 border border-slate-200 bg-white font-mono font-bold text-slate-800">(6, 0)</td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2 border border-slate-200 font-bold bg-slate-50">Promote Wednesday (1-p)</td>
+                                  <td className="p-2.5 border border-slate-200 bg-white font-mono font-bold text-slate-800">(5, 1)</td>
+                                  <td className="p-2.5 border border-slate-200 bg-white font-mono font-bold text-slate-800">(3, 2)</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+
+                          <div className="callout callout-warning text-xs">
+                            <strong>Best-Response Cycling:</strong>
+                            <ul className="list-disc list-inside mt-1 space-y-0.5">
+                              <li>At [Mon, Mon] (3, 3), Chain prefers Wed to evade defense (5 &gt; 3).</li>
+                              <li>At [Wed, Mon] (5, 1), Rival prefers to switch defense to Wed (2 &gt; 1).</li>
+                              <li>At [Wed, Wed] (3, 2), Chain prefers Mon to harvest peak demand (6 &gt; 3).</li>
+                              <li>At [Mon, Wed] (6, 0), Rival prefers Mon to blunt peak demand (3 &gt; 0).</li>
+                            </ul>
+                            <div className="mt-1 font-semibold">
+                              Conclusion: Zero pure-strategy Nash equilibria exist.
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Indifference Principle & Derivation */}
+                        <div className="border-b border-slate-100 pb-4">
+                          <h3 className="text-lg font-bold text-slate-900">
+                            3. The Mathematical Solution: The Indifference Principle
+                          </h3>
+                          <p className="text-slate-600 text-xs sm:text-sm mt-1">
+                            To make the rival willing to randomize, your mixing probabilities must make the rival indifferent between their choices.
+                          </p>
+
+                          <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2">
+                              <h4 className="font-bold text-blue-900 text-xs">Step 1: Finding Chain's Mix (p*)</h4>
+                              <p className="text-xs text-slate-600">
+                                Set Rival's expected payoff from Defending Mon equal to Defending Wed:
+                              </p>
+                              <div className="bg-white p-2 rounded border border-slate-200 font-mono text-xs space-y-1">
+                                <div>E[Rival(Mon)] = 3p + 1(1-p) = 1 + 2p</div>
+                                <div>E[Rival(Wed)] = 0p + 2(1-p) = 2 - 2p</div>
+                                <div className="text-blue-700 font-bold">1 + 2p = 2 - 2p ⇒ 4p = 1 ⇒ p* = 0.25</div>
+                              </div>
+                              <p className="text-[11px] text-slate-600 font-medium">
+                                Result: Chain promotes Monday 25%, Wednesday 75%.
+                              </p>
+                            </div>
+
+                            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2">
+                              <h4 className="font-bold text-emerald-900 text-xs">Step 2: Finding Rival's Mix (q*)</h4>
+                              <p className="text-xs text-slate-600">
+                                Set Chain's expected payoff from Promoting Mon equal to Promoting Wed:
+                              </p>
+                              <div className="bg-white p-2 rounded border border-slate-200 font-mono text-xs space-y-1">
+                                <div>E[Chain(Mon)] = 3q + 6(1-q) = 6 - 3q</div>
+                                <div>E[Chain(Wed)] = 5q + 3(1-q) = 3 + 2q</div>
+                                <div className="text-emerald-700 font-bold">6 - 3q = 3 + 2q ⇒ 5q = 3 ⇒ q* = 0.60</div>
+                              </div>
+                              <p className="text-[11px] text-slate-600 font-medium">
+                                Result: Rival defends Monday 60%, Wednesday 40%.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="mt-3 p-3 bg-blue-50/70 border border-blue-200 rounded-lg text-xs text-blue-950 font-mono">
+                            <strong>Expected Equilibrium Payoffs:</strong> E[Chain] = 6 - 3(0.60) = <strong>4.2</strong> · E[Rival] = 1 + 2(0.25) = <strong>1.5</strong>
+                          </div>
+                        </div>
+
+                        {/* Strategic Counter-Intuition */}
+                        <div>
+                          <h3 className="text-lg font-bold text-slate-900">
+                            4. Managerial Takeaway: The Strategic Counter-Intuition (Slide 13)
+                          </h3>
+                          <div className="callout callout-tip text-xs leading-relaxed">
+                            <strong>Why promote more often on Wednesday (75%) when Monday has larger customer volume?</strong>
+                            <p className="mt-1">
+                              Because Monday offers the larger market opportunity, the rival concentrates defensive readiness on Monday (q* = 0.60). Anticipating this heavier defensive posture, the rational chain promotes more frequently on Wednesday to harvest unguarded demand!
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* GENERAL NOTES FOR OTHER WEEKS */}
+                    {selectedWeek.id !== 4 && selectedWeek.recap && (
+                      <div className="space-y-6 text-slate-800 text-sm leading-relaxed">
+                        <p className="text-slate-600">{selectedWeek.recap.intro}</p>
+                        {selectedWeek.recap.sections && selectedWeek.recap.sections.map((sec: any, idx: number) => (
+                          <div key={idx} className="border-t border-slate-100 pt-4">
+                            <h3 className="text-base font-bold text-slate-900 mb-1">{sec.title}</h3>
+                            <p className="text-slate-600 text-xs sm:text-sm">{sec.content}</p>
+                            {sec.keyTakeaway && (
+                              <div className="callout callout-note text-xs mt-2">
+                                <strong>Key Takeaway:</strong> {sec.keyTakeaway}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Core Concepts & Cases List */}
+                    <div className="pt-6 border-t border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
+                          Core Concepts
+                        </h4>
+                        <ul className="space-y-1 text-xs text-slate-600">
+                          {selectedWeek.coreConcepts.map((c, i) => (
+                            <li key={i} className="flex items-start gap-1.5">
+                              <span className="text-blue-600 font-bold">•</span> {c}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                        <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
+                          Business Applications
+                        </h4>
+                        <ul className="space-y-1 text-xs text-slate-600">
+                          {selectedWeek.businessCases.map((c, i) => (
+                            <li key={i} className="flex items-start gap-1.5">
+                              <span className="text-emerald-600 font-bold">•</span> {c}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 2: SLIDE VIEWER */}
+                {weekSubTab === "slides" && (
+                  <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs space-y-4 p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                      <div>
+                        <h3 className="font-bold text-slate-900 text-sm">
+                          Lecture Slides: {selectedWeek.title}
+                        </h3>
+                        <p className="text-xs text-slate-500">
+                          {selectedWeek.slidePath.split("/").pop()} · {selectedWeek.pageCount} Pages
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={selectedWeek.slidePath}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md flex items-center gap-1 transition-colors"
+                        >
+                          <Icon name="externalLink" className="w-3.5 h-3.5" />
+                          Open in Tab
+                        </a>
+                        <a
+                          href={selectedWeek.slidePath}
+                          download
+                          className="px-3 py-1.5 text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 rounded-md flex items-center gap-1 transition-colors"
+                        >
+                          <Icon name="download" className="w-3.5 h-3.5" />
+                          Download PDF
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="w-full bg-slate-100 rounded-lg overflow-hidden border border-slate-200 h-[650px] sm:h-[800px]">
+                      <iframe
+                        src={selectedWeek.slidePath}
+                        title={`Slides for Week ${selectedWeek.id}`}
+                        className="w-full h-full border-0"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 3: INTERACTIVE SIMULATOR */}
+                {weekSubTab === "simulator" && (
+                  <div>
+                    <PayoffMatrixSimulator initialPresetId={selectedWeekId === 4 ? "coffee_chain" : selectedWeekId === 3 ? "prisoners_dilemma" : "matching_pennies"} />
+                  </div>
+                )}
+
+                {/* SUBTAB 4: REVIEW EXERCISE */}
+                {weekSubTab === "exercise" && (
+                  <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-xs space-y-6">
+                    <div>
+                      <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
+                        Strategic Decision Challenge · Week {selectedWeek.id}
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-900 mt-1">
+                        Executive Case Analysis
+                      </h3>
+                    </div>
+
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-5 text-sm text-slate-700 leading-relaxed">
+                      <strong>Scenario Prompt: </strong>
+                      {selectedWeek.caseStudy.scenario.prompt}
+                    </div>
+
+                    <div className="pt-2">
+                      <button
+                        onClick={() => setShowExerciseSolution(!showExerciseSolution)}
+                        className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                      >
+                        <Icon name={showExerciseSolution ? "eyeOff" : "eye"} className="w-4 h-4" />
+                        {showExerciseSolution ? "Hide Model Solution" : "Reveal Model Solution & Economic Derivation"}
+                      </button>
+
+                      {showExerciseSolution && (
+                        <div className="mt-4 p-5 bg-blue-50/70 border border-blue-200 rounded-xl space-y-3 animate-fadeIn text-xs sm:text-sm">
+                          <div>
+                            <strong className="text-blue-950">Equilibrium Solution:</strong>
+                            <p className="font-mono text-blue-900 mt-0.5">{selectedWeek.caseStudy.scenario.solution.equilibrium}</p>
+                          </div>
+                          <div>
+                            <strong className="text-blue-950">Step-by-Step Derivation:</strong>
+                            <p className="text-blue-900/90 leading-relaxed mt-0.5">{selectedWeek.caseStudy.scenario.solution.breakdown}</p>
+                          </div>
+                          <div className="pt-2 border-t border-blue-200/60">
+                            <strong className="text-blue-950">Executive Takeaway:</strong>
+                            <p className="text-blue-900 leading-relaxed mt-0.5">{selectedWeek.caseStudy.scenario.solution.managerialTakeaway}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* VIEW 3: TOOLS & SOLVERS */}
+            {activeTab === "tools" && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
+                  <button
+                    onClick={() => setToolsSubTab("matrix")}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                      toolsSubTab === "matrix" ? "bg-slate-900 text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                    }`}
+                  >
+                    2×2 Payoff Matrix & Mixed Strategy Solver
+                  </button>
+                  <button
+                    onClick={() => setToolsSubTab("tikz")}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                      toolsSubTab === "tikz" ? "bg-slate-900 text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                    }`}
+                  >
+                    GameTikz Studio (LaTeX TikZ Generator)
+                  </button>
+                </div>
+
+                {toolsSubTab === "matrix" && (
+                  <PayoffMatrixSimulator initialPresetId="coffee_chain" />
+                )}
+
+                {toolsSubTab === "tikz" && (
+                  <GameTikzStudioView />
+                )}
+              </div>
+            )}
+
+            {/* VIEW 4: QUIZZES */}
+            {activeTab === "quizzes" && (
+              <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-xs space-y-6 animate-fadeIn">
+                <div className="border-b border-slate-100 pb-4">
+                  <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
+                    Knowledge Checks
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mt-1">
+                    Game Theory Review Quizzes
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Test your understanding of backward induction, dominant strategies, and mixed strategy Nash equilibria.
+                  </p>
+                </div>
+
                 <div className="space-y-6">
                   {QUIZ_QUESTIONS.map((q, idx) => {
-                    const isSubmitted = !!quizSubmitted[q.id];
-                    const selectedOpt = quizAnswers[q.id];
-                    const isCorrect = selectedOpt === q.correctIndex;
+                    const selected = quizAnswers[q.id];
+                    const isAnswered = selected !== undefined;
+                    const isCorrect = isAnswered && selected === q.correctIndex;
 
                     return (
-                      <div
-                        key={q.id}
-                        className={`bg-slate-900 border rounded-2xl p-6 shadow-sm transition-all ${
-                          isSubmitted
-                            ? isCorrect
-                              ? "border-emerald-800/80 bg-gradient-to-b from-slate-900 to-emerald-950/10"
-                              : "border-red-900/60 bg-gradient-to-b from-slate-900 to-red-950/10"
-                            : "border-slate-800"
-                        }`}
-                      >
-                        {/* Header info */}
-                        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                          <div className="flex items-center gap-2">
-                            <span className="w-6 h-6 rounded-full bg-indigo-600 text-white font-mono text-xs font-bold flex items-center justify-center">
-                              {idx + 1}
-                            </span>
-                            <span className="text-xs font-semibold text-indigo-300 font-mono">
-                              {q.weekTag}
-                            </span>
-                          </div>
-                          {isSubmitted && (
-                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold font-mono ${
-                              isCorrect
-                                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                                : "bg-red-500/20 text-red-300 border border-red-500/30"
+                      <div key={q.id} className="p-4 sm:p-5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-slate-500 uppercase tracking-wider font-mono">
+                            Question {idx + 1} · Week {q.weekId}
+                          </span>
+                          {isAnswered && (
+                            <span className={`font-bold px-2 py-0.5 rounded text-[11px] ${
+                              isCorrect ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"
                             }`}>
-                              {isCorrect ? "CORRECT EQUILIBRIUM" : "SUBOPTIMAL MOVE"}
+                              {isCorrect ? "✓ Correct" : "✗ Review"}
                             </span>
                           )}
                         </div>
 
-                        {/* Title & Scenario */}
-                        <div className="mt-4">
-                          <h4 className="text-base sm:text-lg font-bold text-white">
-                            {q.title}
-                          </h4>
-                          <div className="mt-2 p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                            {q.scenario}
-                          </div>
-                          <p className="mt-3 text-xs sm:text-sm font-bold text-slate-200">
-                            {q.question}
-                          </p>
-                        </div>
+                        <p className="text-sm font-semibold text-slate-900 leading-snug">
+                          {q.question}
+                        </p>
 
-                        {/* Multiple Choice Options */}
-                        <div className="mt-4 space-y-2.5">
-                          {q.options.map((opt, oIdx) => {
-                            const isChosen = selectedOpt === oIdx;
-                            let btnStyle = "bg-slate-950/50 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-800/40";
-
-                            if (isSubmitted) {
-                              if (oIdx === q.correctIndex) {
-                                btnStyle = "bg-emerald-950/40 border-emerald-600 text-emerald-200 ring-1 ring-emerald-500";
-                              } else if (isChosen && !isCorrect) {
-                                btnStyle = "bg-red-950/40 border-red-600 text-red-200 ring-1 ring-red-500";
-                              } else {
-                                btnStyle = "bg-slate-950/30 border-slate-900 text-slate-500 opacity-60";
-                              }
-                            } else if (isChosen) {
-                              btnStyle = "bg-indigo-950/50 border-indigo-500 text-white ring-1 ring-indigo-500";
-                            }
-
-                            return (
-                              <button
-                                key={oIdx}
-                                type="button"
-                                disabled={isSubmitted}
-                                onClick={() => handleQuizSelect(q.id, oIdx)}
-                                className={`w-full text-left p-3 sm:p-3.5 rounded-xl border text-xs sm:text-sm transition-all flex items-start gap-3 ${btnStyle}`}
-                              >
-                                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-mono font-bold mt-0.5 shrink-0 ${
-                                  isChosen
-                                    ? isSubmitted
-                                      ? isCorrect
-                                        ? "bg-emerald-500 text-white"
-                                        : "bg-red-500 text-white"
-                                      : "bg-indigo-600 text-white"
-                                    : "bg-slate-800 text-slate-400"
-                                }`}>
-                                  {String.fromCharCode(65 + oIdx)}
-                                </span>
-                                <span className="leading-snug">{opt}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
-
-                        {/* Action buttons or Feedback Explanation */}
-                        <div className="mt-5 pt-3 border-t border-slate-800 flex items-center justify-between">
-                          {!isSubmitted ? (
+                        <div className="space-y-1.5 pt-1">
+                          {q.options.map((opt, optIdx) => (
                             <button
-                              type="button"
-                              onClick={() => handleQuizSubmit(q.id)}
-                              disabled={selectedOpt === undefined}
-                              className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
-                                selectedOpt !== undefined
-                                  ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30"
-                                  : "bg-slate-800 text-slate-500 cursor-not-allowed"
+                              key={optIdx}
+                              onClick={() => setQuizAnswers(prev => ({ ...prev, [q.id]: optIdx }))}
+                              className={`w-full text-left p-2.5 rounded-lg text-xs font-medium border transition-colors flex items-center justify-between ${
+                                selected === optIdx
+                                  ? optIdx === q.correctIndex
+                                    ? "bg-emerald-50 border-emerald-400 text-emerald-950"
+                                    : "bg-red-50 border-red-300 text-red-950"
+                                  : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
                               }`}
                             >
-                              Submit Executive Decision
+                              <span>{opt}</span>
+                              {selected === optIdx && (
+                                <span className="font-bold font-mono text-[11px]">
+                                  {optIdx === q.correctIndex ? "✓" : "✗"}
+                                </span>
+                              )}
                             </button>
-                          ) : (
-                            <div className="w-full space-y-3">
-                              <div className={`p-4 rounded-xl text-xs sm:text-sm leading-relaxed ${
-                                isCorrect
-                                  ? "bg-emerald-950/30 border border-emerald-700/50 text-emerald-200"
-                                  : "bg-red-950/30 border border-red-700/50 text-red-200"
-                              }`}>
-                                <div className="font-bold flex items-center gap-1.5 mb-1 text-white">
-                                  <Icon name={isCorrect ? "checkCircle" : "helpCircle"} className="w-4 h-4 text-indigo-400" />
-                                  Strategic Equilibrium Explanation:
-                                </div>
-                                <p className="text-slate-200">{q.rationale}</p>
-                              </div>
-                              <div className="flex justify-end">
-                                <button
-                                  type="button"
-                                  onClick={() => handleResetQuiz(q.id)}
-                                  className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1 font-medium"
-                                >
-                                  <Icon name="refresh" className="w-3.5 h-3.5" />
-                                  Retry this scenario
-                                </button>
-                              </div>
-                            </div>
-                          )}
+                          ))}
                         </div>
+
+                        {isAnswered && (
+                          <div className="p-3 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 space-y-1">
+                            <strong className="text-slate-900">Explanation & Strategic Rationale: </strong>
+                            <span>{q.rationale}</span>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
                 </div>
               </div>
             )}
-
-            {/* VIEW 4: SIMULATIONS & TOOLS SHELF */}
-            {activeTab === "reference" && (
-              <div className="max-w-5xl mx-auto space-y-8 animate-fadeIn">
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                  <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                    Curated Simulations & Decision Reference Shelf
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                    Direct access to game theory sandboxes, behavioral economic tools, and video briefings.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* GameTikzStudio Visual Suite Card */}
-                  <div className="md:col-span-2 bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 border border-purple-600/50 rounded-2xl p-6 shadow-xl">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="px-2.5 py-1 rounded bg-purple-500/20 text-purple-300 text-xs font-bold uppercase tracking-wider border border-purple-500/30">
-                            Visual Authoring Suite
-                          </span>
-                          <span className="text-xs text-slate-400 font-mono">
-                            By Prof. Chiu Yu Ko
-                          </span>
-                        </div>
-                        <h3 className="text-lg sm:text-xl font-bold text-white mt-2 flex items-center gap-2">
-                          <Icon name="gitBranch" className="w-5 h-5 text-purple-400" />
-                          GameTikzStudio: Game Tree, Payoff Matrix & Timeline Builder
-                        </h3>
-                        <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
-                          Official interactive web software to effortlessly construct extensive-form game trees with information sets, normal-form payoff matrices, and chronological sequential timelines. Automatically outputs ready-to-compile LaTeX TikZ code.
-                        </p>
-                        <div className="flex flex-wrap gap-2 mt-3">
-                          <span className="text-[11px] px-2.5 py-0.5 rounded bg-slate-800 text-purple-300 border border-slate-700 font-medium">🌳 Extensive Form Trees</span>
-                          <span className="text-[11px] px-2.5 py-0.5 rounded bg-slate-800 text-purple-300 border border-slate-700 font-medium">📊 Strategic Payoff Matrices</span>
-                          <span className="text-[11px] px-2.5 py-0.5 rounded bg-slate-800 text-purple-300 border border-slate-700 font-medium">⏱️ Multi-Stage Timelines</span>
-                          <span className="text-[11px] px-2.5 py-0.5 rounded bg-slate-800 text-purple-300 border border-slate-700 font-medium">📝 Instant TikZ LaTeX Export</span>
-                        </div>
-                      </div>
-                      <div className="flex sm:flex-col gap-2 shrink-0">
-                        <button
-                          onClick={() => setActiveTab("gametikz")}
-                          className="px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2 whitespace-nowrap transition-all"
-                        >
-                          <Icon name="gitBranch" className="w-4 h-4" />
-                          Open In-App Studio
-                        </button>
-                        <a
-                          href="https://kochiuyu.github.io/GameTikzStudio/"
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 whitespace-nowrap transition-colors"
-                        >
-                          <Icon name="externalLink" className="w-4 h-4 text-purple-400" />
-                          Launch Fullscreen
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* DOTE 3090 Simulator Feature Card */}
-                  <div className="md:col-span-2 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-700/60 rounded-2xl p-6 shadow-xl">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                      <div>
-                        <span className="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-wider border border-indigo-500/30">
-                          Recommended Primary Lab
-                        </span>
-                        <h3 className="text-lg sm:text-xl font-bold text-white mt-2">
-                          DOTE 3090: Strategic Interactive Simulations
-                        </h3>
-                        <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
-                          Developed by Prof. Chiu Yu Ko for applied game theory education. Provides live multi-user environments for beauty contests, ultimatum bargaining, Cournot quantity competition, and repeated coordination dilemmas.
-                        </p>
-                      </div>
-                      <a
-                        href="https://kochiuyu.github.io/dote3090/"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-lg shadow-indigo-600/30 flex items-center gap-2 whitespace-nowrap self-start sm:self-auto"
-                      >
-                        Launch Interactive Lab
-                        <Icon name="externalLink" className="w-4 h-4" />
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Embedded 2x2 Matrix Strategy Simulator */}
-                  <div className="md:col-span-2">
-                    <PayoffMatrixSimulator />
-                  </div>
-
-                  {/* Video Dilemma Cases */}
-                  {REFERENCE_TOOLS.filter((item) => !item.isLab).map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-all"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-indigo-300 font-semibold">
-                            {item.badge}
-                          </span>
-                          <span className="text-[11px] text-slate-500 uppercase">{item.type}</span>
-                        </div>
-                        <h4 className="text-base font-bold text-white mt-2.5 leading-snug">
-                          {item.title}
-                        </h4>
-                        <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                          {item.description}
-                        </p>
-                      </div>
-                      <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                        <a
-                          href={item.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1.5"
-                        >
-                          <Icon name="play" className="w-3.5 h-3.5" />
-                          Watch Video Analysis
-                          <Icon name="externalLink" className="w-3 h-3 ml-0.5" />
-                        </a>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* VIEW 5: GAMETIKZSTUDIO PORTAL */}
-            {activeTab === "gametikz" && (
-              <GameTikzStudioView onNavigateTab={setActiveTab} />
-            )}
-
           </main>
 
-          {/* SLIDE MODAL VIEWER */}
-          {slideModalWeek && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-sm animate-fadeIn">
-              <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl flex flex-col max-h-[92vh] space-y-3.5">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center border border-indigo-500/30">
-                      <Icon name="fileText" className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-mono text-indigo-400 font-bold uppercase tracking-wider">
-                          Week {slideModalWeek.id} Slide Deck
-                        </span>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-                          {slideModalWeek.pageCount || 45} Slides
-                        </span>
-                      </div>
-                      <h3 className="text-sm sm:text-base font-bold text-white leading-tight mt-0.5">
-                        {slideModalWeek.title}
-                      </h3>
-                    </div>
+          {/* Fullscreen Slide Modal */}
+          {slideModalWeek !== null && (
+            <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-fadeIn">
+              <div className="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-5xl h-[92vh] flex flex-col overflow-hidden">
+                <div className="px-5 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900">
+                      Week {slideModalWeek} Slide Deck · {CURRICULUM_DATA.find(w => w.id === slideModalWeek)?.title}
+                    </h4>
+                    <p className="text-xs text-slate-500">
+                      CUHK Business School · Prof. Chiu Yu Ko
+                    </p>
                   </div>
-                  <button
-                    onClick={() => setSlideModalWeek(null)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-                    title="Close viewer"
-                  >
-                    <Icon name="x" className="w-5 h-5" />
-                  </button>
-                </div>
-
-                {/* Embedded PDF Viewer */}
-                <div className="flex-1 w-full min-h-[350px] sm:min-h-[480px] rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative">
-                  <iframe
-                    src={getActiveSlideUrl(slideModalWeek.id, slideModalWeek.slidePath)}
-                    className="w-full h-full min-h-[350px] sm:min-h-[480px] border-0"
-                    title={`Slides for ${slideModalWeek.title}`}
-                  />
-                </div>
-
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs text-slate-400">
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-500 font-mono truncate max-w-xs">
-                      {customSlideUrls[slideModalWeek.id]
-                        ? `Custom: ${customSlideUrls[slideModalWeek.id].name}`
-                        : slideModalWeek.slidePath}
-                    </span>
-                    <span>•</span>
-                    <span className="text-emerald-400 font-medium">Native PDF Render</span>
-                  </div>
-                  <div className="flex items-center gap-2 self-end sm:self-auto">
                     <a
-                      href={getActiveSlideUrl(slideModalWeek.id, slideModalWeek.slidePath)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center gap-1.5 border border-slate-700 transition-all"
-                    >
-                      <Icon name="externalLink" className="w-3.5 h-3.5 text-indigo-400" />
-                      Open in New Tab
-                    </a>
-                    <a
-                      href={getActiveSlideUrl(slideModalWeek.id, slideModalWeek.slidePath)}
-                      download={getActiveSlideDownloadName(slideModalWeek.id, slideModalWeek.slidePath)}
-                      className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-1.5 shadow-md shadow-indigo-600/30 transition-all"
+                      href={CURRICULUM_DATA.find(w => w.id === slideModalWeek)?.slidePath}
+                      download
+                      className="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md flex items-center gap-1 transition-colors"
                     >
                       <Icon name="download" className="w-3.5 h-3.5" />
-                      Download PDF
+                      Download
                     </a>
+                    <button
+                      onClick={() => setSlideModalWeek(null)}
+                      className="p-1.5 text-slate-400 hover:text-slate-700 rounded-md transition-colors"
+                      aria-label="Close modal"
+                    >
+                      <Icon name="x" className="w-5 h-5" />
+                    </button>
                   </div>
+                </div>
+                <div className="flex-1 bg-slate-100 p-2">
+                  <iframe
+                    src={CURRICULUM_DATA.find(w => w.id === slideModalWeek)?.slidePath}
+                    title="Slide Modal Viewer"
+                    className="w-full h-full rounded border border-slate-200 bg-white"
+                  />
                 </div>
               </div>
             </div>
           )}
 
-          {/* Footer */}
-          <footer className="mt-auto border-t border-slate-800/80 bg-slate-950 py-6 px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500">
-            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-400">Strategic Thinking: Game Theory for Business Strategy</span>
-                <span>•</span>
-                <span>商業策略博弈論</span>
+          {/* Clean Academic Footer */}
+          <footer className="mt-auto border-t border-slate-200 bg-white py-6 px-4 text-center text-xs text-slate-500">
+            <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+              <div>
+                <strong>Strategic Thinking: Game Theory for Business Strategy</strong> · DOTE 3090
               </div>
-              <div className="flex items-center gap-4 text-[11px]">
-                <span>Zero-Build Single File index.html</span>
-                <span>•</span>
-                <span>GitHub Pages Ready</span>
-                <span>•</span>
-                <a href="https://kochiuyu.github.io/GameTikzStudio/" target="_blank" rel="noreferrer" className="text-purple-400 hover:underline">
-                  GameTikzStudio
-                </a>
-                <span>•</span>
-                <a href="https://kochiuyu.github.io/dote3090/" target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline">
-                  DOTE 3090 Lab
-                </a>
+              <div>
+                CUHK Business School · Prof. Chiu Yu Ko
               </div>
             </div>
           </footer>
-
         </div>
       );
     }
 
-    // Render the React 18 root
-
-export default App;
+    export default App;
