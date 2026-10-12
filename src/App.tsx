@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import { LectureNotesView } from "./components/LectureNotesView";
+import { GameTreeDiagram } from "./components/GameTreeDiagram";
+import { DominanceSolvableMatrix } from "./components/DominanceSolvableMatrix";
+import { CommitmentGameTree } from "./components/CommitmentGameTree";
+import { MixedStrategyVisualizer } from "./components/MixedStrategyVisualizer";
 
 // --- Clean Inline Lucide Icons ---
     const Icon = ({ name, className = "w-5 h-5", ...props }) => {
@@ -1008,6 +1013,26 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         ],
         slidePath: "./slides/week06.pdf",
         pageCount: 50,
+                caseAnalysis: {
+          title: "Tacit Collusion & Grim Trigger in Global Container Shipping",
+          subtitle: "Repeated Games, Discount Factors & Enforcing Tacit Alliances",
+          scenario: "Two global container freight lines (OceanCargo and AtlanticStar) compete on the trans-Pacific route. Each period, maintaining High Freight Rates yields 0M per firm. Cheating with Secret Spot Discounts yields 0M to the defector while crushing the rival to 0M. If both discount, rate wars trigger an equilibrium profit of only 5M each. The shipping lines interact repeatedly with discount factor delta.",
+          matrix: {
+            player1: "OceanCargo",
+            player2: "AtlanticStar",
+            actions: ["Maintain High Rates", "Secret Spot Discount"],
+            payoffs: [
+              [["60", "60"], ["10", "90"]],
+              [["90", "10"], ["25", "25"]]
+            ]
+          },
+          prompt: "Calculate the minimum discount factor delta* required to sustain tacit cooperation under a Grim Trigger punishment strategy.",
+          solution: {
+            equilibrium: "Cooperation is sustained under Grim Trigger if and only if delta >= (90 - 60) / (90 - 25) = 30 / 65 ≈ 0.462.",
+            breakdown: "1. One-period temptation to defect: 90 - 60 = 30. 2. Loss of future cooperative surplus: 60 - 25 = 35 each period forever. 3. Present value of cooperation exceeds defection when 30 <= 35 * delta / (1 - delta), giving delta >= 30 / 65.",
+            managerialTakeaway: "In repeated market games, the shadow of the future sustains cooperation without explicit cartels, provided cheating is rapidly detected and firms value future earnings sufficiently."
+          }
+        },
         upcomingNote: "Simulation laboratory will feature live multi-round iterated prisoner dilemma experiments."
       },
       {
@@ -1032,6 +1057,17 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         ],
         slidePath: "./slides/week07.pdf",
         pageCount: 42,
+                caseAnalysis: {
+          title: "Offshore Wind Seabed Lease Procurement Auction",
+          subtitle: "First-Price vs. Second-Price Sealed Bidding in Energy Infrastructure",
+          scenario: "A government energy agency auctions a prime 2GW offshore wind lease area. EnerCo values the lease at 00M based on its proprietary turbine grid connection, while rival WindPower values it at 20M. Both know their own private valuation, while valuations are independently uniformly distributed over [00M, ,000M].",
+          prompt: "Contrast EnerCo's optimal bidding strategy under a First-Price Sealed-Bid (FPSB) auction vs. a Second-Price Vickrey Auction (SPSB).",
+          solution: {
+            equilibrium: "SPSB: Bid true valuation b* = 00M (weakly dominant). FPSB: Shade bid b* = E[V_rival | V_rival < 800] = 500 + (800 - 500)/2 = 50M.",
+            breakdown: "In a second-price auction, your bid determines winning but not the price paid; truthful bidding is strictly optimal. In a first-price auction, bidding your valuation guarantees zero surplus, creating an optimal tradeoff between winning probability and profit margin.",
+            managerialTakeaway: "Never shade your bid in second-price auctions. In first-price auctions, shade bids strategically based on the distribution of competitor numbers and valuation density."
+          }
+        },
         upcomingNote: "Bidding calculator workbook and procurement scenario packet available prior to session."
       },
       {
@@ -1056,6 +1092,17 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         ],
         slidePath: "./slides/week08.pdf",
         pageCount: 56,
+                caseAnalysis: {
+          title: "Digital Search Keyword Advertising: Generalized Second Price (GSP)",
+          subtitle: "Position Auctions, Click-Through Rates & Bid Saliency",
+          scenario: "Three advertisers bid for two top search ad positions. Position 1 generates 200 clicks/hour; Position 2 generates 120 clicks/hour. Advertiser A values clicks at 0, Advertiser B at , and Advertiser C at . Under GSP, the winner of Slot 1 pays the per-click bid of Slot 2, and the winner of Slot 2 pays the bid of Slot 3.",
+          prompt: "Explain why truthful bidding (b_i = v_i) is NOT always a dominant strategy in Generalized Second Price (GSP) multi-slot auctions, unlike single-item Vickrey auctions.",
+          solution: {
+            equilibrium: "Truthful bidding is not dominant in GSP because an advertiser can intentionally shade their bid to fall into Slot 2 at a substantially lower per-click clearing price, yielding higher net surplus.",
+            breakdown: "If Advertiser A bids 0, B bids , C bids : A wins Slot 1, pays /click, earning (10 - 8)*200 = 00. If A shades bid to , B wins Slot 1 (pays ), A wins Slot 2 and pays C's bid (/click), earning (10 - 4)*120 = 20! Since 720 > 400, truthful bidding is not dominant.",
+            managerialTakeaway: "In multi-unit position auctions, bidding your value can leave money on the table; equilibrium bidding requires factoring in position decay and competitor bid spreads."
+          }
+        },
         upcomingNote: "Includes live algorithmic auction analysis of Google Ads Generalized Second Price auctions."
       },
       {
@@ -1080,6 +1127,17 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         ],
         slidePath: "./slides/week09.pdf",
         pageCount: 45,
+                caseAnalysis: {
+          title: "Cross-Border Tech M&A: Rubinstein Bargaining & Outside Options (BATNA)",
+          subtitle: "Splitting Transaction Synergies Under Time Impatience",
+          scenario: "A global enterprise software company negotiates to acquire a specialized AI infrastructure startup. The standalone startup is worth 00M. In the acquirer's ecosystem, the startup generates 00M, creating a 00M synergy surplus. The startup has a credible secondary outside offer from a private equity firm worth 50M (0M of surplus).",
+          prompt: "Under the Outside Option Principle in alternating-offer bargaining, what is the equilibrium acquisition price?",
+          solution: {
+            equilibrium: "Acquisition Price = 00M (Startup captures 00M baseline + 00M equal surplus share, because 100 > outside option 50).",
+            breakdown: "The Outside Option Principle states that an outside option only affects the bargain if it binds. The unconstrained 50-50 Nash bargaining split yields 00M surplus each (total price 00M). Since 00M surplus > 0M PE outside surplus, the outside option does not constrain the equilibrium.",
+            managerialTakeaway: "Outside options (BATNA) act as a floor constraint, not an automatic bonus added to the bargaining split. Only outside options exceeding the natural focal bargain alter the transaction price."
+          }
+        },
         upcomingNote: "Student pairs will run live M&A negotiation roles with assigned confidential pay-offs."
       },
       {
@@ -1104,6 +1162,17 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         ],
         slidePath: "./slides/week10.pdf",
         pageCount: 40,
+                caseAnalysis: {
+          title: "Quality Guarantees & Costly Signaling in Enterprise Cloud Migrations",
+          subtitle: "Spence Signaling & Separating Equilibria Under Asymmetric Reliability",
+          scenario: "An enterprise cloud hosting market contains High-Reliability providers (H) with 99.999% uptime and Low-Reliability providers (L) with 99.9% uptime. Clients cannot directly inspect server architecture and are willing to pay 0M for High and M for Low. A provider can offer a contractual Service Level Agreement (SLA) with financial penalty bond D for any outage. Due to differing failure frequencies, providing a penalty bond of size D costs the Low provider sh.5*D but costs the High provider only sh.1*D.",
+          prompt: "Determine the minimum SLA penalty bond D* that establishes a separating equilibrium where High-Reliability providers credibly signal quality and earn 0M.",
+          solution: {
+            equilibrium: "Separating SLA Penalty Bond D* = 2M.",
+            breakdown: "For Low providers not to mimic High: Profit(Mimic) <= Profit(Low) => 0M - 0.5*D <= M => 0.5*D >= M => D >= 2M. For High providers, cost of D = 2M is 0.1*12 = .2M, leaving net profit 0M - .2M = .8M > M.",
+            managerialTakeaway: "To be credible, a signal must be differential in cost: it must be prohibitively expensive for a low-quality mimic to replicate, while profitable for the genuine high-quality player."
+          }
+        },
         upcomingNote: "Case analysis focuses on how high-quality firms separate themselves from low-quality imitators."
       },
       {
@@ -1128,6 +1197,17 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         ],
         slidePath: "./slides/week11.pdf",
         pageCount: 54,
+                caseAnalysis: {
+          title: "Two-Sided Platform Subsidies: Ride-Hailing Driver Lock-In",
+          subtitle: "Cross-Side Network Externalities & Chicken-and-Egg Launch Dynamics",
+          scenario: "Two competing urban mobility platforms (CityRide and UrbanGo) enter a new metropolitan market. Passengers value platform density (number of active drivers), while drivers value fare requests (number of active passengers). If drivers multi-home (use both apps), price competition drives platform margins to zero. If CityRide pays exclusive weekly driver retention bonuses of 00/driver, it tips the market into single-homing.",
+          prompt: "Analyze the strategic condition under which subsidizing the driver side of the two-sided market creates a sustainable competitive moat on the passenger side.",
+          solution: {
+            equilibrium: "Platform subsidizes drivers whenever cross-side network externality on passengers exceeds driver acquisition cost.",
+            breakdown: "In two-sided platforms, the side with higher price elasticity or stronger cross-side positive externality is subsidized, while the locked-in side is monetized. Exclusive driver supply starves rival platform of passenger responsiveness, tipping riders to CityRide.",
+            managerialTakeaway: "Identify which platform side produces the strongest cross-side network feedback loop; subsidize that side aggressively to create high switching costs and winner-take-most market leadership."
+          }
+        },
         upcomingNote: "Explores antitrust regulatory actions and platform monetization boundaries."
       },
       {
@@ -1152,6 +1232,17 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         ],
         slidePath: "./slides/week12.pdf",
         pageCount: 60,
+                caseAnalysis: {
+          title: "Hyperscaler AI Ecosystem War: Strategic Synthesis & Multi-Market Preemption",
+          subtitle: "Executive Decision Synthesis Across Simultaneous & Sequential Dimensions",
+          scenario: "Three tech hyperscalers (CloudCorp, ApexCompute, and DataNet) compete simultaneously across custom AI silicon fabrication, proprietary model licensing, and enterprise cloud distribution. Committing multi-billion capital into proprietary silicon lowers long-term LLM inference marginal costs, but risks obsolescence if standardized open-source chips emerge.",
+          prompt: "Synthesize the 5 strategic game forms (Extensive Tree, Normal Matrix, Repeated Folk Theorem, Signaling, Platform Coopetition) into an executive investment roadmap.",
+          solution: {
+            equilibrium: "Hybrid Strategy: Early irreversible silicon commitment paired with open platform APIs for third-party developers.",
+            breakdown: "1. Sequential move: Lock in fab capacity (first-mover advantage). 2. Simultaneous pricing: Price platform subscriptions at marginal cost to deter entrant hyperscalers. 3. Repeated interaction: Maintain tacit capacity discipline in core enterprise cloud regions.",
+            managerialTakeaway: "True business strategy is rarely a single static game matrix. High-level executives must sequence multiple interdependent games across time, balancing commitment with strategic agility."
+          }
+        },
         upcomingNote: "Final capstone case presentations and executive strategy portfolios."
       },
       {
@@ -1176,6 +1267,17 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         ],
         slidePath: "./slides/week13.pdf",
         pageCount: 50,
+                caseAnalysis: {
+          title: "Capstone Boardroom Simulation: Multi-Stage Strategy Defense",
+          subtitle: "Final Capstone Synthesis & Executive Strategic Audit",
+          scenario: "An executive strategy committee presents its multi-year competitive roadmap to the Board of Directors. The firm faces an aggressive low-cost foreign entrant, shifting enterprise customer demands, and potential platform antitrust scrutiny.",
+          prompt: "Synthesize backward induction, credible commitment devices, signaling mechanisms, and repeated interaction into an executive defense against market commoditization.",
+          solution: {
+            equilibrium: "Comprehensive Boardroom Equilibrium Defense Portfolio.",
+            breakdown: "1. Backward Induction: Audit all contractual and capacity commitments. 2. Strategic Signaling: Establish verified quality warranties that low-cost rivals cannot copy. 3. Dynamic Repeated Interaction: Use transparent pricing indices to deter predatory price wars.",
+            managerialTakeaway: "Mastery of strategic thinking transforms tactical reactivity into proactive market architecture. Always evaluate your actions through the eyes of rational rivals and the equilibria they create."
+          }
+        },
         upcomingNote: "Final capstone examination and comprehensive executive strategy synthesis. Review all weekly pre-readings on X before the session."
       }
     ];
@@ -1381,16 +1483,16 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
         title: "GameTikzStudio: Game Tree, Payoff Matrix & Timeline Generator",
         type: "Interactive Tool & TikZ Export",
         url: "https://kochiuyu.github.io/GameTikzStudio/",
-        description: "Official visual authoring studio developed by Prof. Chiu Yu Ko. Interactively construct extensive-form game trees with information sets, normal-form payoff matrices, and sequential event timelines with instant LaTeX TikZ code generation.",
+        description: "Official visual authoring studio. Interactively construct extensive-form game trees with information sets, normal-form payoff matrices, and sequential event timelines with instant LaTeX TikZ code generation.",
         badge: "Official Authoring Suite",
         isLab: true
       },
       {
-        id: "dote3090",
-        title: "DOTE 3090: Strategic Interactive Simulations",
+        id: "strategic_sims",
+        title: "Strategic Interactive Game Theory Simulations",
         type: "Interactive Tool",
-        url: "https://kochiuyu.github.io/dote3090/",
-        description: "Official interactive behavioral game theory simulator suite developed by Prof. Chiu Yu Ko. Test real-time bargaining, beauty contests, and repeated dilemmas.",
+        url: "https://kochiuyu.github.io/",
+        description: "Interactive behavioral game theory simulator suite. Test real-time bargaining, beauty contests, and repeated dilemmas.",
         badge: "Curriculum Highlight",
         isLab: true
       },
@@ -1442,7 +1544,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
       },
       {
         id: "coffee_chain",
-        name: "Coffee Chain Promotion (Prof. Ko's Slide Case)",
+        name: "Coffee Chain Promotion (Classic Strategic Case)",
         p1Name: "Coffee Chain",
         p2Name: "Rival Chain",
         a1Name: "Promote Monday",
@@ -1664,7 +1766,7 @@ const TIKZ_TEMPLATES = {
 const MIXED_STRATEGY_PRESETS = [
       {
         id: 0,
-        name: "Coffee Chain Promotion Timing (Prof. Ko's Slide Case)",
+        name: "Coffee Chain Promotion Timing (Classic Strategic Case)",
         tag: "Official Lecture Case",
         rowPlayer: "Coffee Chain",
         colPlayer: "Rival Chain",
@@ -2315,9 +2417,7 @@ const MIXED_STRATEGY_PRESETS = [
                       Strategic Thinking: Game Theory for Business Strategy
                     </h1>
                     <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-                      <span>DOTE 3090</span>
-                      <span aria-hidden="true">·</span>
-                      <span>CUHK Business School</span>
+                      <span>Executive Masterclass</span>
                       <span aria-hidden="true">·</span>
                       <span>Prof. Chiu Yu Ko</span>
                     </div>
@@ -2411,18 +2511,18 @@ const MIXED_STRATEGY_PRESETS = [
                     Executive Master & MBA Strategic Decision Sciences
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 tracking-tight">
-                    DOTE 3090: Strategic Thinking (商業策略博弈論)
+                    Strategic Thinking: Game Theory for Business Strategy (商業策略博弈論)
                   </h2>
                   <p className="text-sm sm:text-base text-slate-600 mt-2 leading-relaxed max-w-3xl">
-                    A rigorous 12-week course on applied game theory in executive strategy, competitive pricing, strategic commitment, mechanism design, and platform competition.
+                    A rigorous 12-week curriculum on applied game theory in executive strategy, competitive pricing, strategic commitment, mechanism design, and platform competition.
                   </p>
                   
                   <div className="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-y-2 gap-x-6 text-xs text-slate-500">
                     <div>
-                      <strong className="text-slate-700">Instructor:</strong> Prof. Chiu Yu Ko
+                      <strong className="text-slate-700">Level:</strong> Executive Master & MBA
                     </div>
                     <div>
-                      <strong className="text-slate-700">Institution:</strong> CUHK Business School
+                      <strong className="text-slate-700">Curriculum:</strong> Executive Strategic Decision Sciences
                     </div>
                     <div>
                       <strong className="text-slate-700">Format:</strong> 12 Lecture Modules · Case Analyses · Interactive Solvers
@@ -2596,7 +2696,7 @@ const MIXED_STRATEGY_PRESETS = [
                         {selectedWeek.title}
                       </h2>
                       <div className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
-                        {selectedWeek.chineseTitle} · CUHK Business School · Prof. Chiu Yu Ko
+                        {selectedWeek.chineseTitle}
                       </div>
                     </div>
 
@@ -2671,359 +2771,10 @@ const MIXED_STRATEGY_PRESETS = [
 
                 {/* SUBTAB 1: LECTURE NOTES & RECAP */}
                 {weekSubTab === "notes" && (
-                  <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-xs space-y-6">
-                    {/* Callout Quote */}
-                    {selectedWeek.recap && (
-                      <div className="callout callout-note">
-                        <p className="font-semibold text-sm">
-                          "{selectedWeek.recap.academicTakeaway}"
-                        </p>
-                        <p className="text-xs text-blue-800 mt-1">
-                          — Prof. Chiu Yu Ko · CUHK Business School
-                        </p>
-                        <p className="text-xs text-blue-700/80 mt-1 italic">
-                          {selectedWeek.recap.chineseTakeaway}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* WEEK 4 SPECIFIC STRUCTURED RECAP */}
-                    {selectedWeek.id === 4 && (
-                      <div className="space-y-6 text-slate-800 leading-relaxed text-sm">
-                        <div className="border-b border-slate-100 pb-4">
-                          <h3 className="text-lg font-bold text-slate-900">
-                            1. Opening Intuition: From Rock-Paper-Scissors to Cyclic Instability
-                          </h3>
-                          <p className="text-slate-600 text-xs sm:text-sm mt-1">
-                            In simultaneous games, when best responses form an endless cycle, pure strategies leave players vulnerable. Deterministic play can be anticipated and countered.
-                          </p>
-                          <div className="mt-3 bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-700">
-                            <strong>The Only Stable Counter-Exploitation:</strong> Randomize with calibrated probabilities. By making your action statistically unpredictable, the rival cannot profit from targeting a specific counter-measure.
-                          </div>
-                        </div>
-
-                        {/* Core Lecture Case: Coffee Chain Promotion Timing */}
-                        <div className="border-b border-slate-100 pb-4">
-                          <h3 className="text-lg font-bold text-slate-900">
-                            2. The Core Lecture Case: Coffee Chain Promotion Timing (Slides 5–13)
-                          </h3>
-                          <p className="text-slate-600 text-xs sm:text-sm mt-1">
-                            Two competing chains choose whether to run weekly promotions on Monday or Wednesday. Monday has larger baseline foot traffic, but preparing a defensive counter-campaign is fixed and costly.
-                          </p>
-
-                          {/* Payoff Table */}
-                          <div className="my-4 overflow-x-auto">
-                            <table className="w-full max-w-lg border-collapse text-center text-xs">
-                              <thead>
-                                <tr className="bg-slate-100 border border-slate-200 font-semibold text-slate-700">
-                                  <th className="p-2 border border-slate-200">Coffee Chain \ Rival</th>
-                                  <th className="p-2 border border-slate-200">Rival: Defend Mon (q)</th>
-                                  <th className="p-2 border border-slate-200">Rival: Defend Wed (1-q)</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td className="p-2 border border-slate-200 font-bold bg-slate-50">Promote Monday (p)</td>
-                                  <td className="p-2.5 border border-slate-200 bg-white font-mono font-bold text-slate-800">(3, 3)</td>
-                                  <td className="p-2.5 border border-slate-200 bg-white font-mono font-bold text-slate-800">(6, 0)</td>
-                                </tr>
-                                <tr>
-                                  <td className="p-2 border border-slate-200 font-bold bg-slate-50">Promote Wednesday (1-p)</td>
-                                  <td className="p-2.5 border border-slate-200 bg-white font-mono font-bold text-slate-800">(5, 1)</td>
-                                  <td className="p-2.5 border border-slate-200 bg-white font-mono font-bold text-slate-800">(3, 2)</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-
-                          <div className="callout callout-warning text-xs">
-                            <strong>Best-Response Cycling:</strong>
-                            <ul className="list-disc list-inside mt-1 space-y-0.5">
-                              <li>At [Mon, Mon] (3, 3), Chain prefers Wed to evade defense (5 &gt; 3).</li>
-                              <li>At [Wed, Mon] (5, 1), Rival prefers to switch defense to Wed (2 &gt; 1).</li>
-                              <li>At [Wed, Wed] (3, 2), Chain prefers Mon to harvest peak demand (6 &gt; 3).</li>
-                              <li>At [Mon, Wed] (6, 0), Rival prefers Mon to blunt peak demand (3 &gt; 0).</li>
-                            </ul>
-                            <div className="mt-1 font-semibold">
-                              Conclusion: Zero pure-strategy Nash equilibria exist.
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Indifference Principle & Derivation */}
-                        <div className="border-b border-slate-100 pb-4">
-                          <h3 className="text-lg font-bold text-slate-900">
-                            3. The Mathematical Solution: The Indifference Principle
-                          </h3>
-                          <p className="text-slate-600 text-xs sm:text-sm mt-1">
-                            To make the rival willing to randomize, your mixing probabilities must make the rival indifferent between their choices.
-                          </p>
-
-                          <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2">
-                              <h4 className="font-bold text-blue-900 text-xs">Step 1: Finding Chain's Mix (p*)</h4>
-                              <p className="text-xs text-slate-600">
-                                Set Rival's expected payoff from Defending Mon equal to Defending Wed:
-                              </p>
-                              <div className="bg-white p-2 rounded border border-slate-200 font-mono text-xs space-y-1">
-                                <div>E[Rival(Mon)] = 3p + 1(1-p) = 1 + 2p</div>
-                                <div>E[Rival(Wed)] = 0p + 2(1-p) = 2 - 2p</div>
-                                <div className="text-blue-700 font-bold">1 + 2p = 2 - 2p ⇒ 4p = 1 ⇒ p* = 0.25</div>
-                              </div>
-                              <p className="text-[11px] text-slate-600 font-medium">
-                                Result: Chain promotes Monday 25%, Wednesday 75%.
-                              </p>
-                            </div>
-
-                            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2">
-                              <h4 className="font-bold text-emerald-900 text-xs">Step 2: Finding Rival's Mix (q*)</h4>
-                              <p className="text-xs text-slate-600">
-                                Set Chain's expected payoff from Promoting Mon equal to Promoting Wed:
-                              </p>
-                              <div className="bg-white p-2 rounded border border-slate-200 font-mono text-xs space-y-1">
-                                <div>E[Chain(Mon)] = 3q + 6(1-q) = 6 - 3q</div>
-                                <div>E[Chain(Wed)] = 5q + 3(1-q) = 3 + 2q</div>
-                                <div className="text-emerald-700 font-bold">6 - 3q = 3 + 2q ⇒ 5q = 3 ⇒ q* = 0.60</div>
-                              </div>
-                              <p className="text-[11px] text-slate-600 font-medium">
-                                Result: Rival defends Monday 60%, Wednesday 40%.
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="mt-3 p-3 bg-blue-50/70 border border-blue-200 rounded-lg text-xs text-blue-950 font-mono">
-                            <strong>Expected Equilibrium Payoffs:</strong> E[Chain] = 6 - 3(0.60) = <strong>4.2</strong> · E[Rival] = 1 + 2(0.25) = <strong>1.5</strong>
-                          </div>
-                        </div>
-
-                        {/* Strategic Counter-Intuition */}
-                        <div>
-                          <h3 className="text-lg font-bold text-slate-900">
-                            4. Managerial Takeaway: The Strategic Counter-Intuition (Slide 13)
-                          </h3>
-                          <div className="callout callout-tip text-xs leading-relaxed">
-                            <strong>Why promote more often on Wednesday (75%) when Monday has larger customer volume?</strong>
-                            <p className="mt-1">
-                              Because Monday offers the larger market opportunity, the rival concentrates defensive readiness on Monday (q* = 0.60). Anticipating this heavier defensive posture, the rational chain promotes more frequently on Wednesday to harvest unguarded demand!
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* WEEK 5 SPECIFIC STRUCTURED RECAP */}
-                    {selectedWeek.id === 5 && (
-                      <div className="space-y-6 text-slate-800 leading-relaxed text-sm">
-                        {/* Section 1: Baseline Entry Game */}
-                        <div className="border-b border-slate-100 pb-5">
-                          <h3 className="text-lg font-bold text-slate-900">
-                            1. Opening Decision: Can a Threat Deter Entry? (Slides 3, 11)
-                          </h3>
-                          <p className="text-slate-600 text-xs sm:text-sm mt-1">
-                            An Entrant chooses <strong>Enter</strong> or <strong>Stay Out</strong>. If entry occurs, an Incumbent chooses <strong>Fight</strong> (damaging price/ad war) or <strong>Accommodate</strong> (share duopoly market).
-                          </p>
-
-                          {/* Sequential Game Comparison Box */}
-                          <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 space-y-2">
-                              <div className="flex items-center justify-between">
-                                <span className="font-bold text-red-800 text-xs uppercase tracking-wide">
-                                  Baseline Game (No Commitment)
-                                </span>
-                                <span className="px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded">
-                                  Threat Is Cheap Talk
-                                </span>
-                              </div>
-                              <div className="font-mono text-xs bg-white p-2.5 rounded border border-slate-200 space-y-1">
-                                <div>• Entrant Enters → Incumbent: Fight (-1, -1) vs. Accommodate (2, 2)</div>
-                                <div className="text-red-700 font-semibold">• Post-entry: 2 &gt; -1 ⇒ Rational Incumbent Accommodates</div>
-                                <div className="text-slate-800 font-bold">• Entrant backward induces this: Enters (2 &gt; 0)</div>
-                              </div>
-                              <div className="callout callout-warning text-[11px] p-2">
-                                <strong>Equilibrium:</strong> Entrant Enters, Incumbent Accommodates. Net Incumbent Payoff = <strong>2</strong>.
-                              </div>
-                            </div>
-
-                            <div className="bg-blue-50/50 border border-blue-200 rounded-lg p-3.5 space-y-2">
-                              <div className="flex items-center justify-between">
-                                <span className="font-bold text-blue-900 text-xs uppercase tracking-wide">
-                                  With Strategic Commitment (K = 1)
-                                </span>
-                                <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded">
-                                  Credible Defense
-                                </span>
-                              </div>
-                              <div className="font-mono text-xs bg-white p-2.5 rounded border border-slate-200 space-y-1">
-                                <div>• Incumbent pays K = 1 upfront for dedicated capacity</div>
-                                <div className="text-blue-700 font-semibold">• Lower marginal cost: Post-entry Fight yields (0), Accommodate yields (-1)</div>
-                                <div className="text-slate-800 font-bold">• 0 &gt; -1 ⇒ Fighting is strictly optimal! Entrant Stays Out (0 &gt; -1)</div>
-                              </div>
-                              <div className="callout callout-tip text-[11px] p-2">
-                                <strong>Equilibrium:</strong> Entry Deterred. Net Incumbent Payoff = 5 - 1 = <strong>4</strong> (vs. 2 baseline).
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Section 2: The Four Pillars */}
-                        <div className="border-b border-slate-100 pb-5">
-                          <h3 className="text-lg font-bold text-slate-900">
-                            2. The Four Pillars of Strategic Commitment (Slide 5, 14)
-                          </h3>
-                          <p className="text-slate-600 text-xs sm:text-sm mt-1">
-                            A strategic commitment is an observable earlier action that changes future incentives or feasible choices, altering how rivals respond.
-                          </p>
-                          <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                              <div className="font-bold text-slate-900">1. Prior</div>
-                              <div className="text-[11px] text-slate-600 mt-1">Executed before the competitor's relevant response point.</div>
-                            </div>
-                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                              <div className="font-bold text-slate-900">2. Observable</div>
-                              <div className="text-[11px] text-slate-600 mt-1">The competitor can verify or reliably audit the move.</div>
-                            </div>
-                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                              <div className="font-bold text-slate-900">3. Costly to Reverse</div>
-                              <div className="text-[11px] text-slate-600 mt-1">Cancelling or reneging triggers prohibitive penalties.</div>
-                            </div>
-                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                              <div className="font-bold text-slate-900">4. Payoff-Relevant</div>
-                              <div className="text-[11px] text-slate-600 mt-1">Changes continuation payoffs or constraints directly.</div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Section 3: Sunk Cost vs Commitment */}
-                        <div className="border-b border-slate-100 pb-5">
-                          <h3 className="text-lg font-bold text-slate-900">
-                            3. Sunk Costs: Important but Often Misunderstood (Slides 8, 24)
-                          </h3>
-                          <div className="callout callout-warning text-xs mt-2 leading-relaxed">
-                            <strong>The Sunk-Cost Fallacy:</strong> <em>"We spent too much to stop."</em>
-                            <p className="mt-1">
-                              If past expenditure K is unrecoverable regardless of whether you fight or accommodate in the future, it cancels out in marginal decision-making:
-                            </p>
-                            <div className="font-mono text-center my-1 bg-white/80 p-1.5 rounded border border-amber-300">
-                              (u_Fight - K) &gt; (u_Accommodate - K) ⇔ u_Fight &gt; u_Accommodate
-                            </div>
-                            <p>
-                              A past expenditure does NOT create credibility by itself. A factory only matters if it lowers future marginal cost or expands capacity. A contract matters if withdrawal triggers future penalties.
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Section 4: Commitment vs Flexibility */}
-                        <div className="border-b border-slate-100 pb-5">
-                          <h3 className="text-lg font-bold text-slate-900">
-                            4. The Executive Trade-off: Commitment vs. Flexibility (Slide 17)
-                          </h3>
-                          <div className="mt-3 overflow-x-auto">
-                            <table className="w-full border-collapse text-xs">
-                              <thead>
-                                <tr className="bg-slate-100 border border-slate-200 text-slate-700">
-                                  <th className="p-2.5 border border-slate-200 text-left font-bold w-1/2">Commitment Is More Valuable When...</th>
-                                  <th className="p-2.5 border border-slate-200 text-left font-bold w-1/2">Flexibility Is More Valuable When...</th>
-                                </tr>
-                              </thead>
-                              <tbody className="text-slate-700">
-                                <tr>
-                                  <td className="p-2.5 border border-slate-200">• Rival response is highly sensitive to future incentives</td>
-                                  <td className="p-2.5 border border-slate-200 bg-slate-50/50">• Demand, technology, or regulations are volatile</td>
-                                </tr>
-                                <tr>
-                                  <td className="p-2.5 border border-slate-200">• Scarce resources or first-mover moats can be secured early</td>
-                                  <td className="p-2.5 border border-slate-200 bg-slate-50/50">• Physical or digital assets face rapid technological obsolescence</td>
-                                </tr>
-                                <tr>
-                                  <td className="p-2.5 border border-slate-200">• Reversal would destroy executive or institutional credibility</td>
-                                  <td className="p-2.5 border border-slate-200 bg-slate-50/50">• Staged learning, prototyping, and option value are critical</td>
-                                </tr>
-                                <tr>
-                                  <td className="p-2.5 border border-slate-200">• Rivals cannot easily imitate or bypass the commitment</td>
-                                  <td className="p-2.5 border border-slate-200 bg-slate-50/50">• Competitors can cheaply duplicate or bypass the barrier</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-
-                        {/* Section 5: Real World Cases & Exit Ticket */}
-                        <div>
-                          <h3 className="text-lg font-bold text-slate-900">
-                            5. Managerial Cases & Exit Ticket (Slides 15, 19, 21)
-                          </h3>
-                          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1">
-                              <div className="font-bold text-slate-900">TSMC 2nm CapEx Preemption</div>
-                              <p className="text-slate-600">
-                                Multi-billion fab spending committed years early lowers marginal wafer production costs, deterring rival foundry expansions.
-                              </p>
-                            </div>
-                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1">
-                              <div className="font-bold text-slate-900">AI Infrastructure Trade-off</div>
-                              <p className="text-slate-600">
-                                Dedicated cluster CapEx offers massive unit deterrence but locks in obsolescence; on-demand cloud preserves flexibility at zero deterrence.
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="callout callout-note text-xs mt-3">
-                            <strong>Exit Ticket Question:</strong> Why is <em>"We have already spent too much to stop"</em> not a valid commitment argument by itself?
-                            <div className="mt-1 text-slate-700">
-                              <strong>Answer:</strong> Sunk costs cannot be recovered in either scenario. Continued action is only rational and credible if prior spending lowered subsequent marginal costs or created contractual/reputational penalties that make continuing strictly optimal.
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* GENERAL NOTES FOR OTHER WEEKS */}
-                    {selectedWeek.id !== 4 && selectedWeek.id !== 5 && selectedWeek.recap && (
-                      <div className="space-y-6 text-slate-800 text-sm leading-relaxed">
-                        <p className="text-slate-600">{selectedWeek.recap.intro}</p>
-                        {selectedWeek.recap.sections && selectedWeek.recap.sections.map((sec: any, idx: number) => (
-                          <div key={idx} className="border-t border-slate-100 pt-4">
-                            <h3 className="text-base font-bold text-slate-900 mb-1">{sec.title}</h3>
-                            <p className="text-slate-600 text-xs sm:text-sm">{sec.content}</p>
-                            {sec.keyTakeaway && (
-                              <div className="callout callout-note text-xs mt-2">
-                                <strong>Key Takeaway:</strong> {sec.keyTakeaway}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Core Concepts & Cases List */}
-                    <div className="pt-6 border-t border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                        <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
-                          Core Concepts
-                        </h4>
-                        <ul className="space-y-1 text-xs text-slate-600">
-                          {selectedWeek.coreConcepts.map((c, i) => (
-                            <li key={i} className="flex items-start gap-1.5">
-                              <span className="text-blue-600 font-bold">•</span> {c}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                        <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
-                          Business Applications
-                        </h4>
-                        <ul className="space-y-1 text-xs text-slate-600">
-                          {selectedWeek.businessCases.map((c, i) => (
-                            <li key={i} className="flex items-start gap-1.5">
-                              <span className="text-emerald-600 font-bold">•</span> {c}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
+                  <LectureNotesView
+                    selectedWeek={selectedWeek}
+                    onSelectWeek={(id) => setSelectedWeekId(id)}
+                  />
                 )}
 
                 {/* SUBTAB 2: SLIDE VIEWER */}
@@ -3071,54 +2822,229 @@ const MIXED_STRATEGY_PRESETS = [
 
                 {/* SUBTAB 3: INTERACTIVE SIMULATOR */}
                 {weekSubTab === "simulator" && (
-                  <div>
-                    <PayoffMatrixSimulator initialPresetId={selectedWeekId === 4 ? "coffee_chain" : selectedWeekId === 3 ? "prisoners_dilemma" : "matching_pennies"} />
+                  <div className="space-y-6">
+                    {selectedWeekId === 3 ? (
+                      <div className="space-y-4">
+                        <DominanceSolvableMatrix initialPresetId="classic_3x3" />
+                      </div>
+                    ) : selectedWeekId === 4 ? (
+                      <div className="space-y-4">
+                        <MixedStrategyVisualizer initialPresetId="coffee_chain" />
+                      </div>
+                    ) : selectedWeekId === 5 ? (
+                      <div className="space-y-4">
+                        <CommitmentGameTree initialK={1.0} />
+                      </div>
+                    ) : selectedWeekId === 2 ? (
+                      <div className="space-y-4">
+                        <GameTreeDiagram initialPresetId="entry_deterrence" />
+                      </div>
+                    ) : (
+                      <PayoffMatrixSimulator initialPresetId="coffee_chain" />
+                    )}
                   </div>
                 )}
 
                 {/* SUBTAB 4: REVIEW EXERCISE */}
                 {weekSubTab === "exercise" && (
-                  <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-xs space-y-6">
-                    <div>
-                      <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
-                        Strategic Decision Challenge · Week {selectedWeek.id}
-                      </div>
-                      <h3 className="text-lg font-bold text-slate-900 mt-1">
-                        Executive Case Analysis
-                      </h3>
-                    </div>
-
-                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-5 text-sm text-slate-700 leading-relaxed">
-                      <strong>Scenario Prompt: </strong>
-                      {selectedWeek.caseStudy.scenario.prompt}
-                    </div>
-
-                    <div className="pt-2">
-                      <button
-                        onClick={() => setShowExerciseSolution(!showExerciseSolution)}
-                        className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
-                      >
-                        <Icon name={showExerciseSolution ? "eyeOff" : "eye"} className="w-4 h-4" />
-                        {showExerciseSolution ? "Hide Model Solution" : "Reveal Model Solution & Economic Derivation"}
-                      </button>
-
-                      {showExerciseSolution && (
-                        <div className="mt-4 p-5 bg-blue-50/70 border border-blue-200 rounded-xl space-y-3 animate-fadeIn text-xs sm:text-sm">
-                          <div>
-                            <strong className="text-blue-950">Equilibrium Solution:</strong>
-                            <p className="font-mono text-blue-900 mt-0.5">{selectedWeek.caseStudy.scenario.solution.equilibrium}</p>
+                  <div className="space-y-6">
+                    {selectedWeek?.caseAnalysis ? (
+                      <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-xs space-y-6 animate-fadeIn">
+                        <div>
+                          <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
+                            Strategic Decision Challenge · Week {selectedWeek.id}
                           </div>
-                          <div>
-                            <strong className="text-blue-950">Step-by-Step Derivation:</strong>
-                            <p className="text-blue-900/90 leading-relaxed mt-0.5">{selectedWeek.caseStudy.scenario.solution.breakdown}</p>
-                          </div>
-                          <div className="pt-2 border-t border-blue-200/60">
-                            <strong className="text-blue-950">Executive Takeaway:</strong>
-                            <p className="text-blue-900 leading-relaxed mt-0.5">{selectedWeek.caseStudy.scenario.solution.managerialTakeaway}</p>
-                          </div>
+                          <h3 className="text-lg sm:text-xl font-bold text-slate-900 mt-1">
+                            {selectedWeek?.caseAnalysis?.title}
+                          </h3>
+                          {selectedWeek?.caseAnalysis?.subtitle && (
+                            <p className="text-xs sm:text-sm text-slate-500 mt-0.5 font-medium">
+                              {selectedWeek.caseAnalysis.subtitle}
+                            </p>
+                          )}
                         </div>
-                      )}
-                    </div>
+
+                        {/* Executive Scenario Narrative */}
+                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-2">
+                          <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                            Executive Scenario Context
+                          </div>
+                          <p className="text-sm text-slate-800 leading-relaxed">
+                            {selectedWeek?.caseAnalysis?.scenario}
+                          </p>
+                        </div>
+
+                        {/* If Week 2, render interactive extensive game tree */}
+                        {selectedWeek?.id === 2 && (
+                          <div className="space-y-2">
+                            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                              Extensive-Form Game Tree (Backward Induction Solver)
+                            </div>
+                            <GameTreeDiagram initialPresetId="entry_deterrence" />
+                          </div>
+                        )}
+
+                        {/* If Week 3, render interactive dominance solvable matrix */}
+                        {selectedWeek?.id === 3 && (
+                          <div className="space-y-2">
+                            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                              Interactive Payoff Matrix: Dominance Solvability & IESDS Solver
+                            </div>
+                            <DominanceSolvableMatrix initialPresetId="classic_3x3" />
+                          </div>
+                        )}
+
+                        {/* If Week 4, render interactive mixed strategy visualizer */}
+                        {selectedWeek?.id === 4 && (
+                          <div className="space-y-2">
+                            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-purple-600"></span>
+                              Interactive Mixed Strategy Simulator: Indifference Probabilities & Cycling
+                            </div>
+                            <MixedStrategyVisualizer initialPresetId="coffee_chain" />
+                          </div>
+                        )}
+
+                        {/* If Week 5, render interactive 3-stage strategic commitment tree */}
+                        {selectedWeek?.id === 5 && (
+                          <div className="space-y-2">
+                            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-purple-600"></span>
+                              Strategic Move Game Tree (Branching Out: Commitment vs. No Commitment)
+                            </div>
+                            <CommitmentGameTree initialK={1.0} />
+                          </div>
+                        )}
+
+                        {/* Payoff Matrix if applicable */}
+                        {selectedWeek?.caseAnalysis?.matrix && (
+                          <div className="bg-blue-50/40 border border-blue-200 rounded-xl p-4 sm:p-5 space-y-3">
+                            <div className="text-xs font-bold text-blue-900 uppercase tracking-wider">
+                              Interactive Normal-Form Payoff Matrix: {selectedWeek.caseAnalysis.matrix.player1} vs. {selectedWeek.caseAnalysis.matrix.player2}
+                            </div>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-xs text-center border-collapse">
+                                <thead>
+                                  <tr className="border-b border-blue-200">
+                                    <th className="p-2 text-left text-slate-600 font-semibold bg-blue-100/50">
+                                      {selectedWeek.caseAnalysis.matrix.player1} ↓ \ {selectedWeek.caseAnalysis.matrix.player2} →
+                                    </th>
+                                    {selectedWeek.caseAnalysis.matrix.actions.map((act: string, aIdx: number) => (
+                                      <th key={aIdx} className="p-2 font-bold text-slate-800 bg-blue-100/50">
+                                        {act}
+                                      </th>
+                                    ))}
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {selectedWeek.caseAnalysis.matrix.actions.map((rowAct: string, rIdx: number) => (
+                                    <tr key={rIdx} className="border-b border-blue-100">
+                                      <td className="p-2 text-left font-bold text-slate-800 bg-blue-50/30">{rowAct}</td>
+                                      {selectedWeek.caseAnalysis.matrix.payoffs[rIdx].map((payoff: [string, string], cIdx: number) => (
+                                        <td key={cIdx} className="p-3 bg-white font-mono text-slate-900 border border-blue-100">
+                                          <span className="text-blue-700 font-bold">{payoff[0]}</span>, <span className="text-emerald-700 font-bold">{payoff[1]}</span>
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Extensive Tree flow if applicable */}
+                        {selectedWeek?.caseAnalysis?.treeDescription && selectedWeek?.id !== 2 && (
+                          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                              Extensive-Form Game Tree Structure
+                            </div>
+                            <p className="text-xs text-slate-700 font-mono leading-relaxed bg-white p-3 rounded-lg border border-slate-200">
+                              {selectedWeek.caseAnalysis.treeDescription}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Challenge Prompt */}
+                        {selectedWeek?.caseAnalysis?.prompt && (
+                          <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-5 text-sm text-amber-950 space-y-1.5">
+                            <div className="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+                              <span>⚡</span> Strategic Decision Challenge
+                            </div>
+                            <p className="leading-relaxed font-medium">
+                              {selectedWeek.caseAnalysis.prompt}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Solution Section */}
+                        {selectedWeek?.caseAnalysis?.solution && (
+                          <div className="pt-2">
+                            <button
+                              onClick={() => setShowExerciseSolution(!showExerciseSolution)}
+                              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+                            >
+                              <Icon name={showExerciseSolution ? "eyeOff" : "eye"} className="w-4 h-4" />
+                              {showExerciseSolution ? "Hide Model Solution" : "Reveal Model Solution & Economic Derivation"}
+                            </button>
+
+                            {showExerciseSolution && (
+                              <div className="mt-4 p-5 bg-blue-50/70 border border-blue-200 rounded-xl space-y-4 animate-fadeIn text-xs sm:text-sm">
+                                <div>
+                                  <div className="text-[11px] font-bold text-blue-900 uppercase tracking-wider">
+                                    Equilibrium Solution:
+                                  </div>
+                                  <p className="font-mono text-blue-900 mt-1 font-semibold">{selectedWeek.caseAnalysis.solution.equilibrium}</p>
+                                </div>
+                                <div>
+                                  <div className="text-[11px] font-bold text-blue-900 uppercase tracking-wider">
+                                    Step-by-Step Derivation & Best Responses:
+                                  </div>
+                                  <p className="text-blue-950/90 leading-relaxed mt-1">{selectedWeek.caseAnalysis.solution.breakdown}</p>
+                                </div>
+                                <div className="pt-3 border-t border-blue-200/70">
+                                  <div className="text-[11px] font-bold text-blue-900 uppercase tracking-wider">
+                                    Executive Managerial Takeaway:
+                                  </div>
+                                  <p className="text-blue-950 leading-relaxed mt-1 font-medium">{selectedWeek.caseAnalysis.solution.managerialTakeaway}</p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-xs text-center space-y-4 animate-fadeIn">
+                        <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-xl font-bold">
+                          📋
+                        </div>
+                        <div>
+                          <h3 className="text-base font-bold text-slate-900">
+                            Executive Case Analysis · Week {selectedWeek.id}
+                          </h3>
+                          <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+                            The interactive case study challenge for {selectedWeek.title} is scheduled for release alongside the lecture module.
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-center gap-2 pt-2">
+                          <button
+                            onClick={() => setWeekSubTab("notes")}
+                            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors"
+                          >
+                            View Lecture Notes
+                          </button>
+                          <button
+                            onClick={() => setSelectedWeekId(1)}
+                            className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition-colors"
+                          >
+                            Try Week 1 Case (Coca-Cola vs. Pepsi)
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -3243,7 +3169,7 @@ const MIXED_STRATEGY_PRESETS = [
                       Week {slideModalWeek} Slide Deck · {CURRICULUM_DATA.find(w => w.id === slideModalWeek)?.title}
                     </h4>
                     <p className="text-xs text-slate-500">
-                      CUHK Business School · Prof. Chiu Yu Ko
+                      Executive Education Curriculum
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -3279,10 +3205,10 @@ const MIXED_STRATEGY_PRESETS = [
           <footer className="mt-auto border-t border-slate-200 bg-white py-6 px-4 text-center text-xs text-slate-500">
             <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
               <div>
-                <strong>Strategic Thinking: Game Theory for Business Strategy</strong> · DOTE 3090
+                <strong>Strategic Thinking: Game Theory for Business Strategy</strong>
               </div>
               <div>
-                CUHK Business School · Prof. Chiu Yu Ko
+                Executive Strategic Decision Sciences
               </div>
             </div>
           </footer>

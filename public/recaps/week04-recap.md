@@ -1,8 +1,8 @@
 # Course Recap: Mixed Strategies & Strategic Randomisation
 
-The fourth class in **DOTE 3090: Strategic Thinking (Game Theory for Business Strategy)**, instructed by **Prof. Chiu Yu Ko** at **CUHK Business School**, directly addressed the fundamental strategic dilemma: **what should an executive do when no pure-strategy Nash equilibrium exists?** When deterministic actions create predictable vulnerabilities that competitors can exploit, rational play requires **deliberate strategic randomisation** (Mixed Strategies).
+The fourth class in **Strategic Thinking (Game Theory for Business Strategy)**, directly addressed the fundamental strategic dilemma: **what should an executive do when no pure-strategy Nash equilibrium exists?** When deterministic actions create predictable vulnerabilities that competitors can exploit, rational play requires **deliberate strategic randomisation** (Mixed Strategies).
 
-> **Core Maxim:** *"When predictability makes you exploitable, randomisation can be rational."* — Prof. Chiu Yu Ko
+> **Core Maxim:** *"When predictability makes you exploitable, randomisation can be rational."* 
 
 ---
 
@@ -20,7 +20,7 @@ In sequential games (Week 2), players look ahead and reason backward. In simulta
 
 ### 2. The Core Lecture Case: Coffee Chain Promotion Timing (Slides 5–13)
 
-To ground mixed strategies in competitive business strategy, Prof. Ko examined a simultaneous scheduling duel between competing coffee chains:
+To ground mixed strategies in competitive business strategy, the lecture examined a simultaneous scheduling duel between competing coffee chains:
 
 #### The Situation & Payoff Matrix
 A coffee chain chooses whether to run its weekly promotion on **Monday** or **Wednesday**. Its main rival simultaneously chooses which day to prepare and staff a defensive counter-campaign:
@@ -36,11 +36,11 @@ A coffee chain chooses whether to run its weekly promotion on **Monday** or **We
 - **Payoff Formula:** $\text{Payoff} = \text{Customer Gross Contribution} - \text{Promotion or Defense Cost}$.
 - **Monday Demand Advantage:** Monday baseline consumer foot traffic is substantially higher than Wednesday.
 - **Defensive Preparedness:** A prepared defensive campaign blunts the promotion's effectiveness:
-  - $\text{Mon–Mon } (3, 3)$: High demand, but the defense limits promotional conversion.
-  - $\text{Wed–Wed } (3, 2)$: The defense works, but protects a smaller baseline market opportunity.
+ - $\text{Mon–Mon } (3, 3)$: High demand, but the defense limits promotional conversion.
+ - $\text{Wed–Wed } (3, 2)$: The defense works, but protects a smaller baseline market opportunity.
 - **Wrong-Day Defensive Preparation:** Preparing counter-promotions is fixed and costly:
-  - $\text{Mon–Wed } (6, 0)$: Chain captures the large Monday opportunity completely undefended; rival wastes defensive resources.
-  - $\text{Wed–Mon } (5, 1)$: Chain gains open traffic on Wednesday, while the rival salvages minimal customers on Monday.
+ - $\text{Mon–Wed } (6, 0)$: Chain captures the large Monday opportunity completely undefended; rival wastes defensive resources.
+ - $\text{Wed–Mon } (5, 1)$: Chain gains open traffic on Wednesday, while the rival salvages minimal customers on Monday.
 
 #### Best-Response Cycling (Slide 7)
 1. At $[\text{Mon}, \text{Mon}]$, the chain wants to switch to Wednesday to evade defense ($(5, 1)$).
@@ -97,7 +97,7 @@ $$\text{Rival prepares Monday with } 60\%, \text{ Wednesday with } 40\%.$$
 
 ### 4. A Reliable 6-Step Mixed-Strategy Workflow (Slide 14)
 
-Prof. Ko laid out a structured algorithmic workflow for solving any two-by-two game:
+The lecture laid out a structured algorithmic workflow for solving any two-by-two game:
 
 ```
 1. Mark pure best responses ──> Confirm no pure equilibrium exists

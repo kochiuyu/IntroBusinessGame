@@ -1,6 +1,6 @@
 # Course Recap: Games with Simultaneous Moves and Nash Equilibrium
 
-The third class in **DOTE 3090: Strategic Thinking (Game Theory for Business Strategy)** advanced from sequential interactions to **simultaneous-move games**, in which decision-makers must choose their actions without observing the current decisions of their competitors. The session established the formal mathematics of best responses, iterated elimination of strictly dominated strategies (IESDS), the concept of strategic stability through **Nash Equilibrium**, the four archetypal 2x2 games, and the foundational oligopoly models of Cournot (quantity) and Bertrand (price) competition.
+The third class in **Strategic Thinking (Game Theory for Business Strategy)** advanced from sequential interactions to **simultaneous-move games**, in which decision-makers must choose their actions without observing the current decisions of their competitors. The session established the formal mathematics of best responses, iterated elimination of strictly dominated strategies (IESDS), the concept of strategic stability through **Nash Equilibrium**, the four archetypal 2x2 games, and the foundational oligopoly models of Cournot (quantity) and Bertrand (price) competition.
 
 ---
 
@@ -34,7 +34,7 @@ In a two-player game, this is represented by a **Payoff Matrix (Bimatrix)**, whe
 The core analytical building block of simultaneous-move games is the **Best Response Function**, denoted $BR_i(s_{-i})$.
 
 - **Definition of Best Response:** An action $s_i^*$ is player $i$'s best response to rival strategy $s_{-i}$ if and only if:
-  $$u_i(s_i^*, s_{-i}) \ge u_i(s_i, s_{-i}) \quad \forall s_i \in S_i$$
+ $$u_i(s_i^*, s_{-i}) \ge u_i(s_i, s_{-i}) \quad \forall s_i \in S_i$$
 - **Strictly Dominant Strategy:** An action that is a best response to *every* possible strategy the rival might play. If an executive possesses a strictly dominant strategy, they should play it regardless of rival intentions.
 - **Strictly Dominated Strategy:** An action for which another strategy always delivers a strictly higher payoff, regardless of what competitors choose.
 
@@ -88,7 +88,7 @@ In oligopoly markets, the dimension of simultaneous competition fundamentally de
 - Market price adjusts to clear total industry supply $P(Q) = a - b(q_1 + q_2)$.
 - Quantities are **strategic substitutes**: when a competitor expands output, your optimal response is to contract.
 - Equilibrium price settles strictly between Monopoly and Perfect Competition:
-  $$P_{\text{monopoly}} > P_{\text{cournot}} > P_{\text{competitive}} = MC$$
+ $$P_{\text{monopoly}} > P_{\text{cournot}} > P_{\text{competitive}} = MC$$
 - **Real-World Domain:** Capital-intensive industries with irreversible capacity build-ups (commercial aircraft assembly, semiconductor foundries, petrochemicals).
 
 #### Bertrand Competition (Price):
@@ -96,7 +96,7 @@ In oligopoly markets, the dimension of simultaneous competition fundamentally de
 - Consumers purchase exclusively from the lowest-priced supplier.
 - Any firm priced above rival gets 0 demand; undercutting by $0.01 captures 100% of the market.
 - **The Bertrand Paradox:** With only two firms, price collapses to marginal cost:
-  $$p_1^* = p_2^* = MC, \quad \Pi_1 = \Pi_2 = 0$$
+ $$p_1^* = p_2^* = MC, \quad \Pi_1 = \Pi_2 = 0$$
 - **Escaping the Bertrand Trap:** High-margin executives escape cutthroat price competition via product differentiation, brand moats, switching costs, capacity caps, or repeated tacit cooperation.
 
 ---

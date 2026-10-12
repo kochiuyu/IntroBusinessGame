@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "katex/dist/katex.min.css";
 
 @theme {
   --color-slate-850: #161f38;
@@ -61,5 +62,178 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* Markdown Recap Reader Prose Styles */
+.prose-recap {
+  color: #334155;
+  line-height: 1.7;
+}
+
+.prose-recap h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  padding-bottom: 0.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.prose-recap h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  padding-bottom: 0.4rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.prose-recap h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose-recap h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+  margin-top: 1.25rem;
+  margin-bottom: 0.4rem;
+}
+
+.prose-recap p {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  color: #334155;
+}
+
+.prose-recap strong {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.prose-recap em {
+  font-style: italic;
+  color: #1e293b;
+}
+
+.prose-recap ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.prose-recap ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-top: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.prose-recap li {
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.prose-recap li > ul,
+.prose-recap li > ol {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  padding-left: 1.25rem;
+}
+
+.prose-recap blockquote {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1.25rem;
+  border-left: 4px solid #3b82f6;
+  background-color: #f8fafc;
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: #1e3a8a;
+  font-style: italic;
+}
+
+.prose-recap blockquote p {
+  margin: 0.25rem 0;
+}
+
+.prose-recap hr {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.prose-recap table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.8125rem;
+}
+
+.prose-recap th {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  font-weight: 700;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #cbd5e1;
+  text-align: left;
+}
+
+.prose-recap td {
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  vertical-align: top;
+}
+
+.prose-recap tr:nth-child(even) td {
+  background-color: #f8fafc;
+}
+
+.prose-recap tr:hover td {
+  background-color: #f1f5f9;
+}
+
+.prose-recap code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8em;
+  background-color: #f1f5f9;
+  color: #0f172a;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+  border: 1px solid #e2e8f0;
+}
+
+.prose-recap pre {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  background-color: #0f172a;
+  color: #f8fafc;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.prose-recap pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  border: none;
+  font-size: inherit;
 }
 

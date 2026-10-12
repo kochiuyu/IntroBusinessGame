@@ -1,8 +1,8 @@
 # Course Recap: Commitment and Strategic Moves
 
-The fifth class in **DOTE 3090: Strategic Thinking (Game Theory for Business Strategy)**, instructed by **Prof. Chiu Yu Ko** at **CUHK Business School**, addressed one of the most powerful concepts in executive decision-making: **how to change the rules of the game before your rivals move**. While Week 4 focused on managing predictability through mixed strategies (making rivals indifferent to avoid exploitation), Week 5 shifts to **restricting flexibility to force a favorable response from competitors**.
+The fifth class in **Strategic Thinking (Game Theory for Business Strategy)**, addressed one of the most powerful concepts in executive decision-making: **how to change the rules of the game before your rivals move**. While Week 4 focused on managing predictability through mixed strategies (making rivals indifferent to avoid exploitation), Week 5 shifts to **restricting flexibility to force a favorable response from competitors**.
 
-> **Core Maxim:** *"Commitment changes the game; cheap talk describes the game you wish existed."* — Prof. Chiu Yu Ko
+> **Core Maxim:** *"Commitment changes the game; cheap talk describes the game you wish existed."* 
 
 ---
 
@@ -23,24 +23,24 @@ The fifth class in **DOTE 3090: Strategic Thinking (Game Theory for Business Str
 Consider a potential market entrant ($E$) deciding whether to **Enter** or **Stay Out** of a lucrative market currently monopolised by an incumbent ($I$). If the entrant enters, the incumbent chooses whether to **Fight** (launch a damaging price or advertising war) or **Accommodate** (share the market as a duopoly).
 
 ```
-          [ Entrant ]
-          /         \
-   (Enter)           (Stay Out)
-       /                 \
-  [ Incumbent ]        (0, 5)  [End]
-    /         \
-(Fight)   (Accommodate)
-  /             \
-(-1, -1)        (2, 2)
+ [ Entrant ]
+ / \
+ (Enter) (Stay Out)
+ / \
+ [ Incumbent ] (0, 5) [End]
+ / \
+(Fight) (Accommodate)
+ / \
+(-1, -1) (2, 2)
 ```
 *(Payoffs: Entrant, Incumbent)*
 
 1. **Subgame Analysis at the Incumbent's Node:**
-   - If entry occurs, the incumbent compares $u_I(\text{Accommodate}) = 2$ against $u_I(\text{Fight}) = -1$.
-   - Because $2 > -1$, a rational incumbent **always accommodates**.
+ - If entry occurs, the incumbent compares $u_I(\text{Accommodate}) = 2$ against $u_I(\text{Fight}) = -1$.
+ - Because $2 > -1$, a rational incumbent **always accommodates**.
 2. **Backward Induction by the Entrant:**
-   - The entrant looks ahead and anticipates that the incumbent's threat to fight is an **empty bluff**.
-   - Comparing $u_E(\text{Enter}) = 2$ against $u_E(\text{Stay Out}) = 0$, the entrant chooses **Enter**.
+ - The entrant looks ahead and anticipates that the incumbent's threat to fight is an **empty bluff**.
+ - Comparing $u_E(\text{Enter}) = 2$ against $u_E(\text{Stay Out}) = 0$, the entrant chooses **Enter**.
 3. **Equilibrium Outcome:** Entry occurs and is accommodated. The incumbent's pre-entry warning (*"If you enter, we will crush you"*) is pure **cheap talk** with zero deterrent power.
 
 ---
@@ -56,28 +56,28 @@ Suppose the incumbent pays an upfront capital cost $K = 1$ for dedicated plant c
 
 #### The Altered Post-Commitment Subgame
 ```
-          [ Entrant ]
-          /         \
-   (Enter)           (Stay Out)
-       /                 \
-  [ Incumbent ]        (0, 4)  [End: 5 - K=1]
-    /         \
-(Fight)   (Accommodate)
-  /             \
-(-1, 0)         (2, -1)
+ [ Entrant ]
+ / \
+ (Enter) (Stay Out)
+ / \
+ [ Incumbent ] (0, 4) [End: 5 - K=1]
+ / \
+(Fight) (Accommodate)
+ / \
+(-1, 0) (2, -1)
 [Note: Incumbent net payoffs after K=1: Fight yields 1-1=0; Accommodate yields 0-1=-1]
 ```
 
 1. **Backward Induction Post-Commitment:**
-   - Now, facing entry, the incumbent compares $u_I(\text{Fight}) = 0$ against $u_I(\text{Accommodate}) = -1$.
-   - **Fighting is now the dominant, credible response!**
+ - Now, facing entry, the incumbent compares $u_I(\text{Fight}) = 0$ against $u_I(\text{Accommodate}) = -1$.
+ - **Fighting is now the dominant, credible response!**
 2. **Entrant's Decision:**
-   - The entrant foresees that entering leads directly to an incumbent price war ($u_E = -1 < 0$).
-   - The rational entrant chooses **Stay Out** ($u_E = 0$).
+ - The entrant foresees that entering leads directly to an incumbent price war ($u_E = -1 < 0$).
+ - The rational entrant chooses **Stay Out** ($u_E = 0$).
 3. **Incumbent's Net Payoff Comparison (Slide 13):**
-   - **Without Commitment:** Entry accommodated $\implies \text{Incumbent Profit} = \mathbf{2}$.
-   - **With Commitment:** Entry deterred $\implies \text{Incumbent Profit} = 5 - K = 5 - 1 = \mathbf{4}$.
-   - Because $4 > 2$, investing $K = 1$ in the strategic commitment device is an optimal, high-return executive decision.
+ - **Without Commitment:** Entry accommodated $\implies \text{Incumbent Profit} = \mathbf{2}$.
+ - **With Commitment:** Entry deterred $\implies \text{Incumbent Profit} = 5 - K = 5 - 1 = \mathbf{4}$.
+ - Because $4 > 2$, investing $K = 1$ in the strategic commitment device is an optimal, high-return executive decision.
 
 ---
 
@@ -95,7 +95,7 @@ Suppose the incumbent pays an upfront capital cost $K = 1$ for dedicated plant c
 
 ### 5. Testing Credibility at the Future Decision Node (Slide 6)
 
-A strategic move is only as strong as its **credibility**. Prof. Ko highlighted the cardinal test:
+A strategic move is only as strong as its **credibility**. The lecture highlighted the cardinal test:
 
 - **Credible Move:** The promised or threatened action will be **strictly optimal (or unavoidable)** when the future decision node is actually reached.
 - **Non-Credible Move:** The player will privately prefer to renege or abandon the announcement once the rival has acted.
@@ -106,13 +106,13 @@ $$\text{Credibility Rule: Always evaluate incentives at the FUTURE decision node
 
 ### 6. Sunk Costs: Important but Often Misunderstood (Slides 8, 24)
 
-Executive teams frequently confuse past expenditures with credible commitments. Prof. Ko unpacked the boundary between the **sunk-cost fallacy** and **true strategic commitments**:
+Executive teams frequently confuse past expenditures with credible commitments. The lecture unpacked the boundary between the **sunk-cost fallacy** and **true strategic commitments**:
 
 #### The Sunk-Cost Fallacy
 *"We have already spent $50M on this project, so we cannot afford to back out now."*
 - If an expenditure $K$ is unrecoverable regardless of whether you fight or accommodate in the future, it reduces all continuation payoffs equally ($u - K$).
 - In marginal decision-making, common past expenses drop out of the comparison:
-  $$(u_{\text{Fight}} - K) > (u_{\text{Accommodate}} - K) \iff u_{\text{Fight}} > u_{\text{Accommodate}}$$
+ $$(u_{\text{Fight}} - K) > (u_{\text{Accommodate}} - K) \iff u_{\text{Fight}} > u_{\text{Accommodate}}$$
 - **A pure historical expense does NOT create credibility.**
 
 #### When Capital Expenditure Becomes a Strategic Commitment
