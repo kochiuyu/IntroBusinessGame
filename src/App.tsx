@@ -564,6 +564,84 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
       ]
     };
 
+    const WEEK5_RECAP = {
+      weekId: 5,
+      title: "Course Recap: Commitment and Strategic Moves",
+      chineseTitle: "課堂精華回顧：戰略承諾、可信度與未來激勵重塑",
+      duration: "3 Hours • Credibility & Irreversibility Seminar",
+      markdownPath: "./recaps/week05-recap.md",
+      academicTakeaway: "Commitment changes the game; cheap talk describes the game you wish existed.",
+      chineseTakeaway: "戰略承諾改變了博弈本質；空談只是描述了你一廂情願的博弈。唯有在未來的決策節點依然最優或無法逆轉，威脅或承諾才具備可信度。",
+      readTime: "11 min read • Executive Synthesis (Slides 1–28)",
+      intro: "Week 5 investigates strategic moves: observable earlier actions that deliberately alter future incentives, payoff matrices, or available options before rivals respond. While Week 4 focused on managing predictability through mixed strategies, Week 5 shifts to restricting flexibility to force favorable responses from competitors. This seminar examines the classic Entry Deterrence Game, backward-induction credibility testing, the four pillars of strategic commitment, the boundary between sunk costs and true commitment devices, and the core strategic trade-off between commitment and flexibility.",
+      sections: [
+        {
+          id: "w5-entry-deterrence",
+          title: "The Baseline Entry Game: Why Empty Threats Fail",
+          chineseTitle: "基準市場進入博弈：為何口頭威脅必定失敗",
+          content: [
+            "In a sequential entry game, an entrant chooses whether to Enter or Stay Out. If entry occurs, an incumbent chooses whether to Fight (price war) or Accommodate (duopoly).",
+            "At the post-entry node, accommodating yields a higher payoff than fighting. Because a rational incumbent will always accommodate, the entrant backward-induces that the threat to fight is pure cheap talk, and safely enters the market."
+          ],
+          keyTakeaway: "Talk is cheap. Any threat or promise that is not in your self-interest when the future decision node is reached has zero deterrent power."
+        },
+        {
+          id: "w5-commitment-transformation",
+          title: "Transforming the Game with Upfront Commitment",
+          chineseTitle: "透過事前戰略承諾重塑未來博弈結構",
+          content: [
+            "Suppose the incumbent pays an upfront capital cost K = 1 for dedicated capacity or long-term contracts. This lowers future marginal costs of fighting.",
+            "Post-commitment, fighting becomes the dominant response if entry occurs. The entrant foresees a price war and chooses to Stay Out.",
+            "Incumbent net profit rises from 2 (accommodated duopoly) to 4 (monopoly minus commitment cost 5 - 1 = 4)."
+          ],
+          keyTakeaway: "Optimal Commitment Rule: Invest in commitment if and only if V(after rival response) - K > V(without commitment)."
+        },
+        {
+          id: "w5-four-pillars",
+          title: "The Four Pillars of Strategic Commitment",
+          chineseTitle: "戰略承諾的四大核心支柱",
+          content: [
+            "1. Prior: Executed before the rival's relevant response.",
+            "2. Observable: The rival can clearly verify or reliably infer the move.",
+            "3. Irreversible / Costly Reversal: Withdrawal triggers prohibitive operational or legal penalties.",
+            "4. Payoff-Relevant: Fundamentally reshapes future continuation payoffs or action spaces."
+          ],
+          keyTakeaway: "Observability and irreversibility are the twin anchors of credible strategic moves."
+        },
+        {
+          id: "w5-sunk-cost-distinction",
+          title: "Sunk Costs vs. Strategic Commitment Devices",
+          chineseTitle: "沉沒成本謬誤與真正戰略承諾工具的界線",
+          content: [
+            "Sunk Cost Fallacy: 'We spent too much to stop.' Past expenses unrecoverable under both actions drop out of marginal comparison.",
+            "A past expenditure only acts as a strategic commitment if it changes future marginal costs, expanded capacity, or imposes contractual penalties."
+          ],
+          keyTakeaway: "The mechanism of commitment is the changed continuation game, NOT the historical expense."
+        },
+        {
+          id: "w5-commitment-devices",
+          title: "Four Primary Commitment Devices in Industry",
+          chineseTitle: "四種產業實戰承諾工具",
+          content: [
+            "Capacity & Physical Infrastructure: Semiconductor fabs, distribution networks, GPU clusters.",
+            "Contracts & Financial Penalties: Take-or-pay supply agreements, most-favored-nation clauses.",
+            "Reputational Bonding: Public CEO stances, transparent refund guarantees, brand staking.",
+            "Cutting Off Options: Deliberately burning retreat bridges (Cortés strategy)."
+          ]
+        },
+        {
+          id: "w5-flexibility-tradeoff",
+          title: "The Strategic Trade-Off: Commitment vs. Flexibility",
+          chineseTitle: "戰略權衡：承諾鎖定 vs. 靈活性保留",
+          content: [
+            "Commitment is more valuable when: rival responses are sensitive to incentives, first-mover advantages exist, assets cannot be bypassed.",
+            "Flexibility is more valuable when: demand or technology is uncertain, assets face rapid obsolescence, staged learning creates real-option value."
+          ],
+          keyTakeaway: "Commitment purchases leverage by sacrificing optionality. Weigh the deterrence surplus against the option value of flexibility."
+        }
+      ]
+    };
+
     // --- Complete 12-Week Curriculum Data Architecture ---
     const CURRICULUM_DATA = [
       {
@@ -844,27 +922,69 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
       },
       {
         id: 5,
-        title: "Strategic Commitment & Sunk Costs",
-        chineseTitle: "戰略承諾、沉沒成本與競爭護城河",
-        status: "upcoming",
-        duration: "3 Hours • Capital Allocation Case Study",
+        title: "Commitment & Strategic Moves: Credibility & Irreversibility",
+        chineseTitle: "戰略承諾、沉沒成本與未來激勵重塑",
+        status: "active",
+        duration: "3 Hours • Credibility & Irreversibility Seminar",
         preReadingUrl: "https://x.com/kochiuyu/status/2040215057498620112",
+        recap: WEEK5_RECAP,
         coreConcepts: [
-          "Credible Commitments (Burning Bridges)",
-          "Strategic Sunk Investments as Entry Barriers",
-          "Capacity Preemption & Expansion Wars",
-          "Reputational Bonding & Executive Signaling",
-          "Flexibility vs. Commitment Tradeoffs"
+          "Strategic Commitment vs. Cheap Talk",
+          "Testing Credibility at Future Decision Nodes",
+          "Sequential Entry Game & Backward Induction",
+          "Four Commitment Devices (Capacity, Contracts, Public Stances, Burning Bridges)",
+          "Sunk Costs vs. Changes in Continuation Incentives",
+          "Commitment vs. Flexibility Trade-off",
+          "Costly Signalling vs. Strategic Commitment"
         ],
         businessCases: [
-          "TSMC Multi-Billion Leading-Edge Fab Expansion",
-          "Walmart Geographic Saturation & Supercenter Moats",
-          "Disney Theme Park Mega-Investments vs. Rivals",
-          "SpaceX Reusable Rocket Development Preemption"
+          "TSMC Leading-Edge Fab Expansion (Preemptive CapEx)",
+          "AI Infrastructure: Dedicated Hardware vs. Cloud Contracts vs. On-Demand",
+          "Platform Exclusivity & Content Licensing Lock-in",
+          "Airline Fleet Financing Take-or-Pay Guarantees",
+          "Walmart Rural Saturation & Distribution Center Preemption"
         ],
         slidePath: "./slides/week05.pdf",
-        pageCount: 48,
-        upcomingNote: "Includes detailed financial modeling of TSMC capital expenditure commitment strategies."
+        pageCount: 28,
+        executiveSummary: [
+          "Commitment changes the game; cheap talk describes the game you wish existed: An unbacked threat has zero deterrent power when reversing or accommodating is privately optimal.",
+          "Test Credibility at the Future Decision Node: A strategic move is only credible if the threatened action is subgame-perfect and self-enforcing after the rival acts.",
+          "Sunk Costs Do Not Equal Commitment: A past cost K subtracted from both outcomes drops out of the margin. An action is a commitment device only if it changes continuation marginal costs, capacity, or penalties."
+        ],
+        caseAnalysis: {
+          title: "Entry Deterrence & Credible Capacity Commitment",
+          subtitle: "Official Lecture Case (Slides 3, 11–13, 22–26) • Sequential Move & Backward Induction",
+          scenario: "A prospective Entrant decides whether to Enter or Stay Out of a profitable market dominated by an established Incumbent. If the entrant stays out, the incumbent retains monopoly profit (5, 0). If the entrant enters, the incumbent chooses whether to Fight (damaging price war) or Accommodate (duopoly). In the baseline game without commitment, Fighting yields (-1, -1) and Accommodating yields (2, 2) to each; since 2 > -1, accommodating is subgame-perfect, so the entrant enters. However, the incumbent can invest upfront K = 1 in dedicated capacity or take-or-pay supplier contracts. This shifts the continuation game such that Fighting becomes optimal (yielding 0 > -1), credibly deterring the entrant and yielding a net monopoly profit of 5 - 1 = 4.",
+          matrix: {
+            player1: "Prospective Entrant",
+            player2: "Incumbent Monopolist",
+            actions: ["Enter Market", "Stay Out"],
+            payoffs: [
+              [["-1", "0"], ["2", "-1"]],
+              [["0", "4"], ["0", "4"]]
+            ]
+          },
+          cellLabels: [
+            ["Credible War (Post-Commitment)", "Accommodate (Post-Commitment)"],
+            ["Entry Deterred (Monopoly Net of K=1)", "Entry Deterred (Monopoly Net of K=1)"]
+          ],
+          cellDescriptions: [
+            [
+              "[Enter, Fight] — Post-Commitment Price War (-1, 0): With dedicated capacity, incumbent marginal costs are low, making fighting optimal (0 > -1). The entrant incurs severe entry losses (-1).",
+              "[Enter, Accommodate] — Accommodate Under Commitment (2, -1): Accommodation under expanded capacity yields lower net return (-1) than fighting (0)."
+            ],
+            [
+              "[Stay Out, High Capacity] — Entry Deterred (0, 4): Foreseeing certain price war upon entry, the entrant stays out (0 > -1). The incumbent secures monopoly profit minus commitment cost: 5 - 1 = 4.",
+              "[Stay Out, Baseline] — Entry Deterred (0, 4): Baseline deterrent state yielding 4 to incumbent and 0 to entrant."
+            ]
+          ],
+          prompt: "Analyze the entry deterrence game with and without strategic commitment. Show why the threat to fight is non-credible in the baseline game, and demonstrate how paying K = 1 upfront for dedicated capacity changes backward induction to deter entry and increase net incumbent profit from 2 to 4.",
+          solution: {
+            equilibrium: "Baseline Subgame Perfect Equilibrium: Entrant Enters, Incumbent Accommodates (2, 2). With Commitment (K = 1): Incumbent commits upfront -> Entrant Stays Out -> Incumbent earns 5 - 1 = 4.",
+            breakdown: "1. Baseline Game (Without Commitment): If entry occurs, Incumbent compares Accommodate (2) vs Fight (-1). Because 2 > -1, the incumbent accommodates. Entrant looks ahead, anticipates accommodation, and enters (2 > 0). Incumbent threat to fight is empty cheap talk. 2. Post-Commitment Subgame (With K = 1): Dedicated capacity lowers marginal production cost, making Fight yield net 0 (1 - 1) and Accommodate yield net -1 (0 - 1). Faced with entry, Incumbent now strictly prefers Fight (0 > -1). Fighting is now credible! Foreseeing this, Entrant chooses Stay Out (0 > -1). 3. Optimal Commitment Decision: Incumbent compares payoff with commitment (5 - 1 = 4) against baseline accommodated duopoly (2). Since 4 > 2, investing in the strategic commitment device is strictly optimal.",
+            managerialTakeaway: "Strategic Moves Axiom (Slide 5 & 26): A strategic commitment is an observable earlier action that changes future incentives or feasible choices, altering how rivals respond. By deliberately constraining its own options and making aggressive defense rational in the future, the firm forces the competitor into a retreat that preserves a high-margin monopoly position."
+          }
+        }
       },
       {
         id: 6,
@@ -1307,6 +1427,19 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
     // INTERACTIVE 2x2 MATRIX SIMULATOR COMPONENT
     // ==========================================
     const MATRIX_PRESETS = [
+      {
+        id: "entry_deterrence",
+        name: "Entry Deterrence & Capacity Commitment (Week 5 Slide Case)",
+        p1Name: "Potential Entrant",
+        p2Name: "Incumbent Monopolist",
+        a1Name: "Enter Market",
+        a2Name: "Stay Out of Market",
+        payoffs: [
+          [[-1, 0], [2, -1]],
+          [[0, 4], [0, 4]]
+        ],
+        description: "From Week 5 Slides 11–13: Without commitment, incumbent accommodates entry (2, 2). By investing K=1 in visible capacity, incumbent makes Fighting credible (0 > -1). Entrant chooses Stay Out, securing monopoly profit 5 - 1 = 4 for the incumbent."
+      },
       {
         id: "coffee_chain",
         name: "Coffee Chain Promotion (Prof. Ko's Slide Case)",
@@ -2678,8 +2811,174 @@ const MIXED_STRATEGY_PRESETS = [
                       </div>
                     )}
 
+                    {/* WEEK 5 SPECIFIC STRUCTURED RECAP */}
+                    {selectedWeek.id === 5 && (
+                      <div className="space-y-6 text-slate-800 leading-relaxed text-sm">
+                        {/* Section 1: Baseline Entry Game */}
+                        <div className="border-b border-slate-100 pb-5">
+                          <h3 className="text-lg font-bold text-slate-900">
+                            1. Opening Decision: Can a Threat Deter Entry? (Slides 3, 11)
+                          </h3>
+                          <p className="text-slate-600 text-xs sm:text-sm mt-1">
+                            An Entrant chooses <strong>Enter</strong> or <strong>Stay Out</strong>. If entry occurs, an Incumbent chooses <strong>Fight</strong> (damaging price/ad war) or <strong>Accommodate</strong> (share duopoly market).
+                          </p>
+
+                          {/* Sequential Game Comparison Box */}
+                          <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-red-800 text-xs uppercase tracking-wide">
+                                  Baseline Game (No Commitment)
+                                </span>
+                                <span className="px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded">
+                                  Threat Is Cheap Talk
+                                </span>
+                              </div>
+                              <div className="font-mono text-xs bg-white p-2.5 rounded border border-slate-200 space-y-1">
+                                <div>• Entrant Enters → Incumbent: Fight (-1, -1) vs. Accommodate (2, 2)</div>
+                                <div className="text-red-700 font-semibold">• Post-entry: 2 &gt; -1 ⇒ Rational Incumbent Accommodates</div>
+                                <div className="text-slate-800 font-bold">• Entrant backward induces this: Enters (2 &gt; 0)</div>
+                              </div>
+                              <div className="callout callout-warning text-[11px] p-2">
+                                <strong>Equilibrium:</strong> Entrant Enters, Incumbent Accommodates. Net Incumbent Payoff = <strong>2</strong>.
+                              </div>
+                            </div>
+
+                            <div className="bg-blue-50/50 border border-blue-200 rounded-lg p-3.5 space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-blue-900 text-xs uppercase tracking-wide">
+                                  With Strategic Commitment (K = 1)
+                                </span>
+                                <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded">
+                                  Credible Defense
+                                </span>
+                              </div>
+                              <div className="font-mono text-xs bg-white p-2.5 rounded border border-slate-200 space-y-1">
+                                <div>• Incumbent pays K = 1 upfront for dedicated capacity</div>
+                                <div className="text-blue-700 font-semibold">• Lower marginal cost: Post-entry Fight yields (0), Accommodate yields (-1)</div>
+                                <div className="text-slate-800 font-bold">• 0 &gt; -1 ⇒ Fighting is strictly optimal! Entrant Stays Out (0 &gt; -1)</div>
+                              </div>
+                              <div className="callout callout-tip text-[11px] p-2">
+                                <strong>Equilibrium:</strong> Entry Deterred. Net Incumbent Payoff = 5 - 1 = <strong>4</strong> (vs. 2 baseline).
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Section 2: The Four Pillars */}
+                        <div className="border-b border-slate-100 pb-5">
+                          <h3 className="text-lg font-bold text-slate-900">
+                            2. The Four Pillars of Strategic Commitment (Slide 5, 14)
+                          </h3>
+                          <p className="text-slate-600 text-xs sm:text-sm mt-1">
+                            A strategic commitment is an observable earlier action that changes future incentives or feasible choices, altering how rivals respond.
+                          </p>
+                          <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                              <div className="font-bold text-slate-900">1. Prior</div>
+                              <div className="text-[11px] text-slate-600 mt-1">Executed before the competitor's relevant response point.</div>
+                            </div>
+                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                              <div className="font-bold text-slate-900">2. Observable</div>
+                              <div className="text-[11px] text-slate-600 mt-1">The competitor can verify or reliably audit the move.</div>
+                            </div>
+                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                              <div className="font-bold text-slate-900">3. Costly to Reverse</div>
+                              <div className="text-[11px] text-slate-600 mt-1">Cancelling or reneging triggers prohibitive penalties.</div>
+                            </div>
+                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                              <div className="font-bold text-slate-900">4. Payoff-Relevant</div>
+                              <div className="text-[11px] text-slate-600 mt-1">Changes continuation payoffs or constraints directly.</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Section 3: Sunk Cost vs Commitment */}
+                        <div className="border-b border-slate-100 pb-5">
+                          <h3 className="text-lg font-bold text-slate-900">
+                            3. Sunk Costs: Important but Often Misunderstood (Slides 8, 24)
+                          </h3>
+                          <div className="callout callout-warning text-xs mt-2 leading-relaxed">
+                            <strong>The Sunk-Cost Fallacy:</strong> <em>"We spent too much to stop."</em>
+                            <p className="mt-1">
+                              If past expenditure K is unrecoverable regardless of whether you fight or accommodate in the future, it cancels out in marginal decision-making:
+                            </p>
+                            <div className="font-mono text-center my-1 bg-white/80 p-1.5 rounded border border-amber-300">
+                              (u_Fight - K) &gt; (u_Accommodate - K) ⇔ u_Fight &gt; u_Accommodate
+                            </div>
+                            <p>
+                              A past expenditure does NOT create credibility by itself. A factory only matters if it lowers future marginal cost or expands capacity. A contract matters if withdrawal triggers future penalties.
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Section 4: Commitment vs Flexibility */}
+                        <div className="border-b border-slate-100 pb-5">
+                          <h3 className="text-lg font-bold text-slate-900">
+                            4. The Executive Trade-off: Commitment vs. Flexibility (Slide 17)
+                          </h3>
+                          <div className="mt-3 overflow-x-auto">
+                            <table className="w-full border-collapse text-xs">
+                              <thead>
+                                <tr className="bg-slate-100 border border-slate-200 text-slate-700">
+                                  <th className="p-2.5 border border-slate-200 text-left font-bold w-1/2">Commitment Is More Valuable When...</th>
+                                  <th className="p-2.5 border border-slate-200 text-left font-bold w-1/2">Flexibility Is More Valuable When...</th>
+                                </tr>
+                              </thead>
+                              <tbody className="text-slate-700">
+                                <tr>
+                                  <td className="p-2.5 border border-slate-200">• Rival response is highly sensitive to future incentives</td>
+                                  <td className="p-2.5 border border-slate-200 bg-slate-50/50">• Demand, technology, or regulations are volatile</td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2.5 border border-slate-200">• Scarce resources or first-mover moats can be secured early</td>
+                                  <td className="p-2.5 border border-slate-200 bg-slate-50/50">• Physical or digital assets face rapid technological obsolescence</td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2.5 border border-slate-200">• Reversal would destroy executive or institutional credibility</td>
+                                  <td className="p-2.5 border border-slate-200 bg-slate-50/50">• Staged learning, prototyping, and option value are critical</td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2.5 border border-slate-200">• Rivals cannot easily imitate or bypass the commitment</td>
+                                  <td className="p-2.5 border border-slate-200 bg-slate-50/50">• Competitors can cheaply duplicate or bypass the barrier</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+
+                        {/* Section 5: Real World Cases & Exit Ticket */}
+                        <div>
+                          <h3 className="text-lg font-bold text-slate-900">
+                            5. Managerial Cases & Exit Ticket (Slides 15, 19, 21)
+                          </h3>
+                          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1">
+                              <div className="font-bold text-slate-900">TSMC 2nm CapEx Preemption</div>
+                              <p className="text-slate-600">
+                                Multi-billion fab spending committed years early lowers marginal wafer production costs, deterring rival foundry expansions.
+                              </p>
+                            </div>
+                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1">
+                              <div className="font-bold text-slate-900">AI Infrastructure Trade-off</div>
+                              <p className="text-slate-600">
+                                Dedicated cluster CapEx offers massive unit deterrence but locks in obsolescence; on-demand cloud preserves flexibility at zero deterrence.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="callout callout-note text-xs mt-3">
+                            <strong>Exit Ticket Question:</strong> Why is <em>"We have already spent too much to stop"</em> not a valid commitment argument by itself?
+                            <div className="mt-1 text-slate-700">
+                              <strong>Answer:</strong> Sunk costs cannot be recovered in either scenario. Continued action is only rational and credible if prior spending lowered subsequent marginal costs or created contractual/reputational penalties that make continuing strictly optimal.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* GENERAL NOTES FOR OTHER WEEKS */}
-                    {selectedWeek.id !== 4 && selectedWeek.recap && (
+                    {selectedWeek.id !== 4 && selectedWeek.id !== 5 && selectedWeek.recap && (
                       <div className="space-y-6 text-slate-800 text-sm leading-relaxed">
                         <p className="text-slate-600">{selectedWeek.recap.intro}</p>
                         {selectedWeek.recap.sections && selectedWeek.recap.sections.map((sec: any, idx: number) => (
