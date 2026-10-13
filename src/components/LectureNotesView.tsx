@@ -5,6 +5,7 @@ import { GameTreeDiagram } from "./GameTreeDiagram";
 import { DominanceSolvableMatrix } from "./DominanceSolvableMatrix";
 import { CommitmentGameTree } from "./CommitmentGameTree";
 import { MixedStrategyVisualizer } from "./MixedStrategyVisualizer";
+import { ElaboratedBusinessCasesView } from "./ElaboratedBusinessCasesView";
 
 interface LectureNotesViewProps {
   selectedWeek: {
@@ -1587,240 +1588,10 @@ export const LectureNotesView: React.FC<LectureNotesViewProps> = ({ selectedWeek
       {/* MODE 3: BUSINESS CASES & EXECUTIVE PLAYBOOK */}
       {/* ========================================================================= */}
       {learningMode === "cases" && (
-        <div className="space-y-6 text-slate-800 text-sm leading-relaxed animate-fadeIn">
-          {/* Executive Trade-Off Table for Week 5 */}
-          {selectedWeek.id === 5 && (
-            <div className="border border-slate-200 rounded-xl p-5 bg-white space-y-4">
-              <h3 className="font-bold text-slate-900 text-base">
-                1. Executive Decision Matrix: Commitment vs. Flexibility (Slide 17)
-              </h3>
-              <p className="text-slate-600 text-xs">
-                When should a C-suite executive commit resources irrevocably, and when should they preserve agility?
-              </p>
-
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-xs">
-                  <thead>
-                    <tr className="bg-slate-100 border border-slate-200 text-slate-700">
-                      <th className="p-2.5 border border-slate-200 text-left font-bold w-1/2">
-                        Commitment Is More Valuable When...
-                      </th>
-                      <th className="p-2.5 border border-slate-200 text-left font-bold w-1/2">
-                        Flexibility Is More Valuable When...
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-slate-700">
-                    <tr>
-                      <td className="p-2.5 border border-slate-200">
-                        • Rival response is highly sensitive to future incentives
-                      </td>
-                      <td className="p-2.5 border border-slate-200 bg-slate-50/50">
-                        • Demand, technology, or regulations are volatile
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="p-2.5 border border-slate-200">
-                        • Scarce resources or first-mover moats can be secured early
-                      </td>
-                      <td className="p-2.5 border border-slate-200 bg-slate-50/50">
-                        • Digital or hardware assets face rapid obsolescence
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="p-2.5 border border-slate-200">
-                        • Reversal would destroy executive or institutional credibility
-                      </td>
-                      <td className="p-2.5 border border-slate-200 bg-slate-50/50">
-                        • Staged learning, prototyping, and option value are critical
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="p-2.5 border border-slate-200">
-                        • Rivals cannot easily imitate or bypass the commitment
-                      </td>
-                      <td className="p-2.5 border border-slate-200 bg-slate-50/50">
-                        • Competitors can cheaply duplicate or bypass the barrier
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* Real World Cases Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {selectedWeek.id === 5 && (
-              <>
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-sm">Case 1: TSMC 2nm CapEx Preemption</span>
-                    <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 font-bold rounded text-[10px]">Semiconductors</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    TSMC commits tens of billions in advanced lithography fabs years before commercial volume. Once built, the marginal cost of producing an additional 2nm wafer is small, credibly deterring rival foundries from attempting a price war.
-                  </p>
-                </div>
-
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-sm">Case 2: AI Infrastructure Dilemma (Slide 19)</span>
-                    <span className="px-1.5 py-0.5 bg-purple-100 text-purple-800 font-bold rounded text-[10px]">Cloud & AI</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    Buying dedicated GPU clusters locks in CapEx and drives marginal inference costs down, deterring rivals. However, on-demand cloud preserves option value if new model architectures make existing clusters obsolete.
-                  </p>
-                </div>
-              </>
-            )}
-
-            {selectedWeek.id === 4 && (
-              <>
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-sm">Case 1: Retail Flash Sale Scheduling</span>
-                    <span className="px-1.5 py-0.5 bg-orange-100 text-orange-800 font-bold rounded text-[10px]">E-Commerce</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    E-commerce retailers randomize weekly promotion drop dates. If promotions occur on fixed schedules, rivals pre-emptively match discounts and bots scrape inventory. Unpredictability preserves consumer excitement and margin.
-                  </p>
-                </div>
-
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-sm">Case 2: Corporate Tax & Audit Scheduling</span>
-                    <span className="px-1.5 py-0.5 bg-teal-100 text-teal-800 font-bold rounded text-[10px]">Regulatory</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    Tax authorities cannot audit 100% of filings due to resource constraints. By randomly auditing with probability q*, they maintain deterrence without bearing total inspection costs.
-                  </p>
-                </div>
-              </>
-            )}
-
-            {selectedWeek.id === 0 && (
-              <>
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-sm">Case 1: Apple iOS vs. Android Ecosystem Moats</span>
-                    <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 font-bold rounded text-[10px]">Platforms</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    Apple creates a closed two-sided market with strict developer guidelines and app store fees. Because consumers value app selection and developers value affluent buyers, neither group can defect unilaterally. Apple manages incentives to sustain high-margin hardware pricing.
-                  </p>
-                </div>
-
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-sm">Case 2: Netflix vs. Blockbuster Inertia</span>
-                    <span className="px-1.5 py-0.5 bg-red-100 text-red-800 font-bold rounded text-[10px]">Entertainment</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    Blockbuster relied on late fees for 16% of total revenue. Netflix anticipated Blockbuster's organizational inability to cannibalize its own P&L, enabling Netflix to scale subscription DVDs and streaming before the incumbent could strategically pivot.
-                  </p>
-                </div>
-              </>
-            )}
-
-            {selectedWeek.id === 1 && (
-              <>
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-sm">Case 1: Airline Automated Fare Matching</span>
-                    <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 font-bold rounded text-[10px]">Aviation</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    American Airlines and Delta deploy algorithmic pricing bots. When one carrier cuts fares on a competing route, bots match within minutes. Both carriers know price cuts will be matched instantly, transforming fare competition into a classic Prisoner's Dilemma.
-                  </p>
-                </div>
-
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-sm">Case 2: Coca-Cola vs. Pepsi Advertising Arms Race</span>
-                    <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 font-bold rounded text-[10px]">Consumer FMCG</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    Both soda giants spend hundreds of millions annually on Super Bowl and billboard ads. If either stopped advertising, the other would capture massive shelf-space and market share. Mutually high ad spend is a stable, dominant-strategy trap that maintains parity.
-                  </p>
-                </div>
-              </>
-            )}
-
-            {selectedWeek.id === 2 && (
-              <>
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-sm">Case 1: Intel Preemptive Fab Expansion</span>
-                    <span className="px-1.5 py-0.5 bg-indigo-100 text-indigo-800 font-bold rounded text-[10px]">Semiconductors</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    Intel builds high-volume microchip fabs years ahead of customer demand. In sequential market competition, moving first by locking in scarce lithography tools and cleanrooms pre-empts rivals, ensuring that entering rivals face low marginal production costs from Intel.
-                  </p>
-                </div>
-
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-sm">Case 2: Disney+ vs. Netflix Release Strategy</span>
-                    <span className="px-1.5 py-0.5 bg-purple-100 text-purple-800 font-bold rounded text-[10px]">Streaming</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    Netflix pioneered the binge model (dropping all episodes at once). Disney+ analyzed subscriber retention through backward induction and chose weekly releases for flagship series (e.g. The Mandalorian), forcing subscribers to maintain paid memberships across months.
-                  </p>
-                </div>
-              </>
-            )}
-
-            {selectedWeek.id === 3 && (
-              <>
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-sm">Case 1: Tesla NACS vs. CCS EV Charging Standard War</span>
-                    <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded text-[10px]">CleanTech / Auto</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    Standard wars are coordination games. Tesla opened its North American Charging Standard (NACS). Ford and GM realized coordinating on Tesla's proven Supercharger network created higher joint value than fighting over competing CCS standards.
-                  </p>
-                </div>
-
-                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 text-sm">Case 2: FCC 5G Telecom Spectrum Band Auctions</span>
-                    <span className="px-1.5 py-0.5 bg-sky-100 text-sky-800 font-bold rounded text-[10px]">Telecom</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    Telecom giants bid simultaneously across regional spectrum licenses. Game theoretic auction design ensures truthful value revelation while preventing predatory sniping and the Winner's Curse through simultaneous multi-round bidding.
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Executive Checklist */}
-          <div className="border border-slate-200 rounded-xl p-5 bg-white space-y-3">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <span>📋</span> Executive Strategic Checklist
-            </h3>
-            <ul className="text-xs text-slate-700 space-y-2">
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-600 font-bold">✓</span>
-                <span><strong>Clarify the Order of Play:</strong> Are we making a simultaneous guess or an observable sequential commitment?</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-600 font-bold">✓</span>
-                <span><strong>Audit Rival Observability:</strong> If competitors cannot audit or verify your move, it has zero deterrence power.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-600 font-bold">✓</span>
-                <span><strong>Separate Past Sunk Costs from Marginal Incentives:</strong> Disregard historical CapEx unless it changes tomorrow's unit economics.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-emerald-600 font-bold">✓</span>
-                <span><strong>Evaluate at the Future Decision Node:</strong> Never believe your own announcement—calculate if you will actually execute when tested.</span>
-              </li>
-            </ul>
-          </div>
-        </div>
+        <ElaboratedBusinessCasesView
+          currentWeekId={selectedWeek.id}
+          onSelectWeek={onSelectWeek}
+        />
       )}
 
       {/* ========================================================================= */}
@@ -1849,18 +1620,26 @@ export const LectureNotesView: React.FC<LectureNotesViewProps> = ({ selectedWeek
           </ul>
         </div>
 
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-          <h4 className="font-bold text-slate-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-            Real-World Strategic Applications
-          </h4>
-          <ul className="space-y-1 text-slate-600">
-            {selectedWeek.businessCases.map((c, i) => (
-              <li key={i} className="flex items-start gap-1.5">
-                <span className="text-emerald-600 font-bold">•</span> {c}
-              </li>
-            ))}
-          </ul>
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col justify-between">
+          <div>
+            <h4 className="font-bold text-slate-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+              Real-World Strategic Applications
+            </h4>
+            <ul className="space-y-1 text-slate-600">
+              {selectedWeek.businessCases.map((c, i) => (
+                <li key={i} className="flex items-start gap-1.5">
+                  <span className="text-emerald-600 font-bold">•</span> {c}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button
+            onClick={() => setLearningMode("cases")}
+            className="mt-3 text-[11px] font-semibold text-indigo-700 hover:text-indigo-900 flex items-center gap-1 self-start"
+          >
+            <span>🏢</span> Open 4-Pillar Case Dossiers & Sources →
+          </button>
         </div>
       </div>
     </div>
