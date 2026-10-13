@@ -4,6 +4,7 @@ import { GameTreeDiagram } from "./components/GameTreeDiagram";
 import { DominanceSolvableMatrix } from "./components/DominanceSolvableMatrix";
 import { CommitmentGameTree } from "./components/CommitmentGameTree";
 import { MixedStrategyVisualizer } from "./components/MixedStrategyVisualizer";
+import { RepeatedGameSimulator } from "./components/RepeatedGameSimulator";
 
 // --- Clean Inline Lucide Icons ---
     const Icon = ({ name, className = "w-5 h-5", ...props }) => {
@@ -647,6 +648,86 @@ import { MixedStrategyVisualizer } from "./components/MixedStrategyVisualizer";
       ]
     };
 
+    const WEEK6_RECAP = {
+      weekId: 6,
+      title: "Course Recap: Repeated Games — Cooperation, Punishment, and the Value of the Future",
+      chineseTitle: "課堂精華回顧：重複博弈、懲罰機制與未來的價值",
+      duration: "3 Hours • Dynamic Strategy Workshop & Case Lab",
+      markdownPath: "./recaps/week06-recap.md",
+      academicTakeaway: "Future interaction can change what is rational today: repetition makes the future discipline the present.",
+      chineseTakeaway: "未來的策略互動，能夠從根本上改變今天的理性選擇：重複博弈讓未來的長期利益，約束今天的短期投機。",
+      readTime: "11 min read • Executive Synthesis (Slides 1–30)",
+      intro: "Week 6 transitions from upfront irreversible commitments (Week 5) to repeated interactions over time. When competitors know they will meet again tomorrow, the threat of future retaliation can transform a destructive Prisoner's Dilemma into sustainable tacit cooperation. This seminar investigates backward-induction unraveling in finite games, indefinite horizons, the discount factor delta (patience), the Grim Trigger threshold delta* = (T - R)/(T - P) = 1/3, Tit for Tat dynamics, asymmetric supply chain relationships, and monitoring errors.",
+      sections: [
+        {
+          id: "w6-opening-dilemma",
+          title: "The Pricing Stage Game & The Cooperation Question",
+          chineseTitle: "基準定價博弈：囚徒困境與重複互動的破局可能",
+          content: [
+            "In a single-period stage game, two firms choose between Maintain (4, 4) and Discount (2, 2). Unilateral discount yields 5 to the discounter and 1 to the victim.",
+            "In a one-shot interaction, Discount is strictly dominant; [Discount, Discount] (2, 2) is the unique Nash equilibrium despite destroying industry profit.",
+            "Can the prospect of repeated future interaction discipline firms into maintaining high margins today without explicit illegal cartels?"
+          ]
+        },
+        {
+          id: "w6-finite-unraveling",
+          title: "Why a Known Final Period Unravels Cooperation",
+          chineseTitle: "為何已知的終止期限會導致合作徹底瓦解",
+          content: [
+            "In period T (the final period), there is no tomorrow to punish bad behavior, so both firms defect (Discount).",
+            "At period T-1, both foresee that period T will collapse regardless of today's actions. Cooperation at T-1 cannot protect tomorrow, so both discount at T-1.",
+            "Backward induction cascades all the way to period 1: In any finitely repeated Prisoner's Dilemma with a known final round, the one-shot defection repeats in every period."
+          ],
+          keyTakeaway: "The key to sustaining cooperation is not literal immortality; it is the absence of a known final interaction."
+        },
+        {
+          id: "w6-two-strategies",
+          title: "Two Repeated-Game Strategies: Grim Trigger vs. Tit for Tat",
+          chineseTitle: "兩大經典重複博弈策略：冷酷觸發 vs. 以牙還牙",
+          comparison: [
+            {
+              strategy: "Grim Trigger (Friedman 1971)",
+              rule: "Begin by cooperating; cooperate while nobody deviates; punish with defection FOREVER upon any violation.",
+              properties: "Maximum deterrence; lowest required discount factor threshold; fragile under observation errors."
+            },
+            {
+              strategy: "Tit for Tat (Axelrod 1984)",
+              rule: "Begin by cooperating; in every subsequent period, exactly copy the rival's previous period action.",
+              properties: "Forgiving and responsive; punishment stops once cooperation resumes; may trigger retaliation echo cycles."
+            }
+          ]
+        },
+        {
+          id: "w6-discount-factor",
+          title: "The Discount Factor δ & Geometric Series Derivations",
+          chineseTitle: "貼現因子 δ（耐心程度）與無窮等比數列推導",
+          formula: "δ = p / (1 + r), where p is continuation probability and r is cost of capital.",
+          derivation: "V_Cooperate = 4 / (1 - δ). V_Deviate = 5 + 2δ / (1 - δ). Cooperation holds iff 4 / (1 - δ) >= 5 + 2δ / (1 - δ) <=> δ >= 1/3.",
+          generalRule: "General Grim Trigger Rule: δ* = (T - R) / (T - P). Lower temptation gain (T - R) and harsher punishment (P) make cooperation easier."
+        },
+        {
+          id: "w6-asymmetric-partnerships",
+          title: "Asymmetric Relationships & Dual Thresholds",
+          chineseTitle: "非對稱企業夥伴關係與雙重門檻檢驗",
+          content: [
+            "In supply chain partnerships (powerful buyer vs. dependent supplier), payoffs and outside options differ.",
+            "Separate thresholds must be checked: δ_1* = (T_1 - R_1)/(T_1 - P_1) and δ_2* = (T_2 - R_2)/(T_2 - P_2).",
+            "Cooperation requires BOTH conditions to hold: δ >= max(δ_1*, δ_2*). The player with the larger threshold is the weakest link."
+          ]
+        },
+        {
+          id: "w6-monitoring-recovery",
+          title: "Monitoring Noise & Recovery Mechanisms",
+          chineseTitle: "資訊監控噪音、歸因謬誤與合作修復機制",
+          takeaways: [
+            "Secret rebates, customized enterprise bundling, and demand slumps make detecting cheating noisy.",
+            "Permanent Grim Trigger destroys viable alliances upon a false positive or external demand slump.",
+            "Effective real-world governance requires verified industry transparency indices and structured forgiveness periods."
+          ]
+        }
+      ]
+    };
+
     // --- Complete 12-Week Curriculum Data Architecture ---
     const CURRICULUM_DATA = [
       {
@@ -993,47 +1074,70 @@ import { MixedStrategyVisualizer } from "./components/MixedStrategyVisualizer";
       },
       {
         id: 6,
-        title: "Repeated Games & Tacit Cooperation",
-        chineseTitle: "重複博弈與默契合作機制",
-        status: "upcoming",
-        duration: "3 Hours • Dynamic Strategy Workshop",
+        title: "Repeated Games: Cooperation, Punishment & Value of the Future",
+        chineseTitle: "重複博弈：合作、懲罰與未來的價值",
+        status: "active",
+        duration: "3 Hours • Dynamic Strategy Workshop & Case Lab",
         preReadingUrl: "https://x.com/kochiuyu/status/2040215365813498301",
+        recap: WEEK6_RECAP,
         coreConcepts: [
-          "Infinitely Repeated Games & Folk Theorem",
-          "Discount Factor (δ) Thresholds for Cooperation",
-          "Trigger Strategies: Grim Trigger vs. Tit-for-Tat",
-          "Detecting Cheating & Market Transparency",
-          "Sustaining Oligopolistic Collusion without Communication"
+          "Stage Game vs. Repeated Game",
+          "Backward Induction Unraveling in Known Horizons",
+          "Three Horizons: Finite, Indefinite, Infinite",
+          "Grim Trigger vs. Tit for Tat Strategies",
+          "The Discount Factor δ (Patience & Continuation Prob)",
+          "Geometric Series Derivation: V_C = R / (1 - δ)",
+          "Critical Cooperation Threshold: δ >= (T - R) / (T - P) = 1/3",
+          "Asymmetric Relationships & Dual Thresholds",
+          "Monitoring Noise, Imperfect Signals & Forgiveness"
         ],
         businessCases: [
+          "Duopoly Pricing Game (Maintain vs. Discount)",
+          "Long-Term Buyer–Supplier Relationship (Quality & Payment)",
           "Global Container Shipping Alliances (2M & Ocean Alliance)",
-          "Convenience Store Density Treaties (7-Eleven vs. FamilyMart)",
-          "Airline Frequent Flyer Program Parity Treaties",
-          "UK Supermarket Price-Match Guarantees"
+          "Convenience Store Density Treaties (7-Eleven Japan)"
         ],
         slidePath: "./slides/week06.pdf",
-        pageCount: 50,
-                caseAnalysis: {
-          title: "Tacit Collusion & Grim Trigger in Global Container Shipping",
-          subtitle: "Repeated Games, Discount Factors & Enforcing Tacit Alliances",
-          scenario: "Two global container freight lines (OceanCargo and AtlanticStar) compete on the trans-Pacific route. Each period, maintaining High Freight Rates yields 0M per firm. Cheating with Secret Spot Discounts yields 0M to the defector while crushing the rival to 0M. If both discount, rate wars trigger an equilibrium profit of only 5M each. The shipping lines interact repeatedly with discount factor delta.",
+        pageCount: 30,
+        executiveSummary: [
+          "Future interaction changes what is rational today: The shadow of the future disciplines short-term opportunism when interactions are repeated without a known terminal date.",
+          "Backward induction unravels finite horizons: In any finitely repeated Prisoner's Dilemma with a known final round, the incentive to defect in round T ripples backward to round 1.",
+          "The Grim Trigger threshold δ* = (T - R)/(T - P): Cooperation is sustainable if and only if patience δ exceeds the ratio of immediate temptation gain to total future punishment loss. In the benchmark pricing game, δ >= 1/3."
+        ],
+        caseAnalysis: {
+          title: "Tacit Collusion & Grim Trigger in Duopoly Pricing & Shipping Alliances",
+          subtitle: "Official Lecture Case (Slides 3, 10–13, 21–25) • Dynamic Games & Folk Theorem",
+          scenario: "Two competing firms in a duopoly face the choice between maintaining price margins (4, 4) and secretly discounting (5, 1). If both discount, a price war breaks out, driving payoffs to (2, 2). The firms interact repeatedly with discount factor delta. The firms consider a Grim Trigger punishment strategy to preserve margin cooperation.",
           matrix: {
-            player1: "OceanCargo",
-            player2: "AtlanticStar",
-            actions: ["Maintain High Rates", "Secret Spot Discount"],
+            player1: "Your Firm",
+            player2: "Rival Firm",
+            actions: ["Maintain Price", "Secret Discount"],
             payoffs: [
-              [["60", "60"], ["10", "90"]],
-              [["90", "10"], ["25", "25"]]
+              [["4", "4"], ["1", "5"]],
+              [["5", "1"], ["2", "2"]]
             ]
           },
-          prompt: "Calculate the minimum discount factor delta* required to sustain tacit cooperation under a Grim Trigger punishment strategy.",
+          cellLabels: [
+            ["Cooperative High-Margin (4, 4)", "Sucker Payoff (1, 5)"],
+            ["Temptation to Discount (5, 1)", "Price War Trap (2, 2)"]
+          ],
+          cellDescriptions: [
+            [
+              "[Maintain, Maintain] — Mutual Cooperation (4, 4): Both protect margin and share customer demand equally.",
+              "[Maintain, Discount] — Rival Cheats (1, 5): The rival steals market share via secret discounts; maintainer loses demand."
+            ],
+            [
+              "[Discount, Maintain] — You Cheat (5, 1): You capture unilateral windfall customers, earning temptation payoff 5.",
+              "[Discount, Discount] — Punished Equilibrium (2, 2): Both firms fight a margin-destroying price war."
+            ]
+          ],
+          prompt: "Using the geometric-series continuation values derived in lecture (Slides 10–12), calculate the present value of cooperating forever (V_C) versus deviating once under Grim Trigger (V_D). Solve for the minimum discount factor delta* required to sustain mutual cooperation.",
           solution: {
-            equilibrium: "Cooperation is sustained under Grim Trigger if and only if delta >= (90 - 60) / (90 - 25) = 30 / 65 ≈ 0.462.",
-            breakdown: "1. One-period temptation to defect: 90 - 60 = 30. 2. Loss of future cooperative surplus: 60 - 25 = 35 each period forever. 3. Present value of cooperation exceeds defection when 30 <= 35 * delta / (1 - delta), giving delta >= 30 / 65.",
-            managerialTakeaway: "In repeated market games, the shadow of the future sustains cooperation without explicit cartels, provided cheating is rapidly detected and firms value future earnings sufficiently."
+            equilibrium: "Cooperation is self-enforcing under Grim Trigger if and only if delta >= (T - R) / (T - P) = (5 - 4) / (5 - 2) = 1/3 ≈ 0.333.",
+            breakdown: "1. Value of Cooperating Forever: V_C = 4 + 4*delta + 4*delta^2 + ... = 4 / (1 - delta). 2. Value of Deviating Once: V_D = 5 + 2*delta + 2*delta^2 + ... = 5 + 2*delta / (1 - delta). 3. No-Deviation Condition: 4 / (1 - delta) >= 5 + 2*delta / (1 - delta) <=> 4 >= 5 - 3*delta <=> 3*delta >= 1 <=> delta >= 1/3. 4. Economic Interpretation: As long as firms discount future earnings by less than 66.7% per period, the ongoing surplus loss (4 - 2 = 2 per period forever) heavily outweighs the one-period temptation gain (5 - 4 = 1).",
+            managerialTakeaway: "Repeated Games Axiom (Slide 1): Cooperation does not require altruism or legal cartels. It requires patience (delta >= delta*), high visibility of competitor actions, and a credible retaliatory trigger that disciplines the present with the shadow of the future."
           }
-        },
-        upcomingNote: "Simulation laboratory will feature live multi-round iterated prisoner dilemma experiments."
+        }
       },
       {
         id: 7,
@@ -2823,17 +2927,21 @@ const MIXED_STRATEGY_PRESETS = [
                 {/* SUBTAB 3: INTERACTIVE SIMULATOR */}
                 {weekSubTab === "simulator" && (
                   <div className="space-y-6">
-                    {selectedWeekId === 3 ? (
+                    {selectedWeekId === 6 ? (
                       <div className="space-y-4">
-                        <DominanceSolvableMatrix initialPresetId="classic_3x3" />
+                        <RepeatedGameSimulator />
+                      </div>
+                    ) : selectedWeekId === 5 ? (
+                      <div className="space-y-4">
+                        <CommitmentGameTree initialK={1.0} />
                       </div>
                     ) : selectedWeekId === 4 ? (
                       <div className="space-y-4">
                         <MixedStrategyVisualizer initialPresetId="coffee_chain" />
                       </div>
-                    ) : selectedWeekId === 5 ? (
+                    ) : selectedWeekId === 3 ? (
                       <div className="space-y-4">
-                        <CommitmentGameTree initialK={1.0} />
+                        <DominanceSolvableMatrix initialPresetId="classic_3x3" />
                       </div>
                     ) : selectedWeekId === 2 ? (
                       <div className="space-y-4">
@@ -2916,6 +3024,17 @@ const MIXED_STRATEGY_PRESETS = [
                               Strategic Move Game Tree (Branching Out: Commitment vs. No Commitment)
                             </div>
                             <CommitmentGameTree initialK={1.0} />
+                          </div>
+                        )}
+
+                        {/* If Week 6, render interactive repeated game simulator */}
+                        {selectedWeek?.id === 6 && (
+                          <div className="space-y-2">
+                            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+                              Repeated Game & Discount Factor Simulator (Grim Trigger vs. Tit for Tat)
+                            </div>
+                            <RepeatedGameSimulator />
                           </div>
                         )}
 

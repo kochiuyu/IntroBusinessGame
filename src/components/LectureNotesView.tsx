@@ -6,6 +6,7 @@ import { DominanceSolvableMatrix } from "./DominanceSolvableMatrix";
 import { CommitmentGameTree } from "./CommitmentGameTree";
 import { MixedStrategyVisualizer } from "./MixedStrategyVisualizer";
 import { ElaboratedBusinessCasesView } from "./ElaboratedBusinessCasesView";
+import { RepeatedGameSimulator } from "./RepeatedGameSimulator";
 
 interface LectureNotesViewProps {
   selectedWeek: {
@@ -468,15 +469,85 @@ export const LectureNotesView: React.FC<LectureNotesViewProps> = ({ selectedWeek
             </div>
           )}
 
-          {/* WEEKS 6+ EXECUTIVE MODULES OVERVIEW */}
-          {selectedWeek.id >= 6 && (
+          {/* WEEK 6 BEGINNER INTUITION */}
+          {selectedWeek.id === 6 && (
+            <div className="space-y-6">
+              {/* Beginner Overview Card */}
+              <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-5 space-y-3">
+                <div className="flex items-center gap-2 text-emerald-900 font-bold text-base">
+                  <span>🌱</span> Week 6 in Plain English: How Tomorrow's Profit Disciplines Today's Cheating
+                </div>
+                <p className="text-emerald-950 text-xs sm:text-sm">
+                  In a one-time business deal, cheating your rival or slashing prices often feels tempting because there are no future consequences. But when you face the exact same competitor week after week, <strong>the shadow of the future</strong> changes everything. The fear of triggering an endless price war tomorrow convinces rational executives to protect high profit margins today!
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+                  <div className="bg-white p-3 rounded-lg border border-emerald-200 shadow-2xs">
+                    <strong className="text-emerald-900 block mb-1">1. The Known End Trap</strong>
+                    If everyone knows the exact last day (Period T), cheating in the final round is guaranteed. Anticipating this, everyone cheats at T-1, unraveling cooperation from Day 1!
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-emerald-200 shadow-2xs">
+                    <strong className="text-emerald-900 block mb-1">2. The Shadow of the Future (δ)</strong>
+                    The discount factor δ measures patience and continuation probability. When δ ≥ 1/3 in the pricing game, the long-term pain of price wars overcomes the quick cash from cheating.
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-emerald-200 shadow-2xs">
+                    <strong className="text-emerald-900 block mb-1">3. Grim Trigger vs. Tit for Tat</strong>
+                    Grim Trigger threatens permanent war upon a single mistake (maximum deterrence, but fragile). Tit for Tat copies the rival's previous move (responsive and forgiving).
+                  </div>
+                </div>
+              </div>
+
+              {/* The Duopoly Pricing Stage Game & Intuition */}
+              <div className="border border-slate-200 rounded-xl p-5 bg-white space-y-3">
+                <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                  <span>🏪</span> The Duopoly Price Competition Dilemma (Slides 3, 10–13)
+                </h3>
+                <p className="text-slate-600 text-xs sm:text-sm">
+                  Two competing firms choose between <strong>Maintain Margin ($4, $4)</strong> and <strong>Secret Discount ($2, $2)</strong>. In a single round, undercutting grabs customer market share (+1 temptation gain), but when both discount, margins collapse from 4 to 2.
+                </p>
+
+                <div className="callout callout-warning text-xs">
+                  <strong>The Executive Rule (Slide 12):</strong>
+                  <div className="mt-1 font-semibold text-slate-800">
+                    Cooperation is sustainable under Grim Trigger if and only if: <strong>δ ≥ (T - R) / (T - P) = (5 - 4) / (5 - 2) = 1/3</strong>.
+                  </div>
+                </div>
+
+                {/* Interactive Simulator Embedded */}
+                <div className="mt-4 pt-3 border-t border-slate-200 space-y-2">
+                  <div className="text-xs font-bold text-slate-900 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                    Interactive Repeated Game Simulator: Discount Factors, Triggers & Multi-Round Retaliation
+                  </div>
+                  <RepeatedGameSimulator />
+                </div>
+              </div>
+
+              {/* Beginner Trap: Why Promises Collapse Without Punishment */}
+              <div className="border border-amber-200 bg-amber-50/40 rounded-xl p-5 space-y-3">
+                <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
+                  <span>⚠️</span> Beginner Pitfall Alert: "Can't We Just Promise Each Other Not to Discount?"
+                </div>
+                <div className="text-xs text-slate-700 space-y-2">
+                  <p>
+                    <strong>NO!</strong> Pure verbal promises without a credible enforcement mechanism are cheap talk. If there is no punishment or future consequence, private greed inevitably triggers unilateral price cuts.
+                  </p>
+                  <p>
+                    Tacit cooperation works <em>only</em> because each firm knows that cheating today triggers swift, observable, and painful retaliation tomorrow.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* WEEKS 7+ EXECUTIVE MODULES OVERVIEW */}
+          {selectedWeek.id > 6 && (
             <div className="space-y-6">
               <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-5 space-y-3">
                 <div className="flex items-center gap-2 text-emerald-900 font-bold text-base">
                   <span>🌱</span> Week {selectedWeek.id} in Plain English: {selectedWeek.title}
                 </div>
                 <p className="text-emerald-950 text-xs sm:text-sm leading-relaxed">
-                  {selectedWeek.description}
+                  {selectedWeek.recap?.intro || "Applied strategic game theory framework for executive decision analysis."}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
@@ -762,6 +833,78 @@ export const LectureNotesView: React.FC<LectureNotesViewProps> = ({ selectedWeek
               <span className="text-[11px] text-indigo-700 font-medium">Instant Feedback & Explanation</span>
             </div>
 
+            {selectedWeek.id === 6 && (
+              <div className="space-y-4 text-xs">
+                {/* Question 1 */}
+                <div className="bg-white p-4 rounded-lg border border-indigo-200 space-y-2">
+                  <div className="font-bold text-slate-900">
+                    Q1: Why does a known, publicly agreed contract termination date (Period T) cause cooperation to unravel through backward induction?
+                  </div>
+                  <div className="space-y-1.5">
+                    {[
+                      "Because firms run out of capital after T periods of discounting.",
+                      "Because in the final period T there is no future tomorrow to punish cheating, so both defect; anticipating this, both defect at T-1, cascading all the way to Round 1.",
+                      "Because antitrust agencies only enforce collusion laws during the final period.",
+                      "Because the discount factor becomes mathematically negative at Period T."
+                    ].map((opt, oIdx) => (
+                      <button
+                        key={oIdx}
+                        onClick={() => handleSelectQuiz("w6-q1", oIdx)}
+                        className={`w-full text-left p-2 rounded border transition-colors ${
+                          quizAnswers["w6-q1"] === oIdx
+                            ? oIdx === 1
+                              ? "bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold"
+                              : "bg-red-50 border-red-300 text-red-900"
+                            : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {String.fromCharCode(65 + oIdx)}. {opt}
+                      </button>
+                    ))}
+                  </div>
+                  {quizRevealed["w6-q1"] && (
+                    <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-emerald-950 text-[11px]">
+                      <strong>Explanation:</strong> Correct answer is <strong>B</strong>! In period T, no future punishment is possible, so discounting is dominant. At T-1, maintaining today cannot protect tomorrow, so both discount. Backward induction cascades all the way to period 1. Sustainable cooperation requires an indefinite horizon without a known final period!
+                    </div>
+                  )}
+                </div>
+
+                {/* Question 2 */}
+                <div className="bg-white p-4 rounded-lg border border-indigo-200 space-y-2">
+                  <div className="font-bold text-slate-900">
+                    Q2: In the lecture pricing stage game (Reward R = 4, Temptation T = 5, Punishment P = 2), what is the minimum discount factor δ* needed to sustain cooperation under Grim Trigger?
+                  </div>
+                  <div className="space-y-1.5">
+                    {[
+                      "δ ≥ 0.75 (high patience required)",
+                      "δ ≥ 1/3 ≈ 0.333 (patience must exceed 33.3%)",
+                      "δ ≥ 0.50 (exact 50/50 balance)",
+                      "δ ≥ 0.10 (very minimal patience needed)"
+                    ].map((opt, oIdx) => (
+                      <button
+                        key={oIdx}
+                        onClick={() => handleSelectQuiz("w6-q2", oIdx)}
+                        className={`w-full text-left p-2 rounded border transition-colors ${
+                          quizAnswers["w6-q2"] === oIdx
+                            ? oIdx === 1
+                              ? "bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold"
+                              : "bg-red-50 border-red-300 text-red-900"
+                            : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {String.fromCharCode(65 + oIdx)}. {opt}
+                      </button>
+                    ))}
+                  </div>
+                  {quizRevealed["w6-q2"] && (
+                    <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-emerald-950 text-[11px]">
+                      <strong>Explanation:</strong> Correct answer is <strong>B</strong>! Using the general formula δ* = (T - R) / (T - P) = (5 - 4) / (5 - 2) = 1/3. As long as δ ≥ 1/3, the ongoing future loss from price wars (4 - 2 = 2 per period forever) heavily outweighs the one-period windfall gain from cheating (5 - 4 = 1).
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {selectedWeek.id === 5 && (
               <div className="space-y-4 text-xs">
                 {/* Question 1 */}
@@ -1027,6 +1170,136 @@ export const LectureNotesView: React.FC<LectureNotesViewProps> = ({ selectedWeek
       {/* ========================================================================= */}
       {learningMode === "formal" && (
         <div className="space-y-6 text-slate-800 text-sm leading-relaxed animate-fadeIn">
+          {/* WEEK 6 FORMAL DERIVATIONS */}
+          {selectedWeek.id === 6 && (
+            <div className="space-y-6">
+              {/* Formal Mathematical Setup & Geometric Series Derivations */}
+              <div className="border border-slate-200 rounded-xl p-5 bg-white space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-base">
+                      1. Infinitely Repeated Game & Geometric-Series Continuation Values (Slides 10–12, 22–24)
+                    </h3>
+                    <p className="text-slate-600 text-xs">
+                      Rigorous algebraic solution of infinite discounted payoffs and the critical threshold δ*.
+                    </p>
+                  </div>
+                  <span className="text-xs font-mono bg-blue-100 px-2 py-0.5 rounded text-blue-700 font-bold">
+                    Folk Theorem & Grim Trigger
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  {/* Derivation 1: Cooperate Forever */}
+                  <div className="p-4 bg-emerald-50/50 border border-emerald-200 rounded-xl space-y-2">
+                    <div className="font-bold text-emerald-950 flex items-center justify-between">
+                      <span>Value of Cooperating Forever (V_C)</span>
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-mono">Mutual Margin</span>
+                    </div>
+                    <p className="text-slate-600 text-[11px]">
+                      Under mutual cooperation [Maintain, Maintain], each firm receives R = 4 in every period:
+                    </p>
+                    <div className="font-mono bg-white p-2.5 rounded-lg border border-emerald-200 space-y-1 text-slate-800 text-[11px]">
+                      <div>V_C = 4 + 4δ + 4δ² + 4δ³ + ...</div>
+                      <div>δ V_C = 4δ + 4δ² + 4δ³ + ...</div>
+                      <div className="text-slate-500 text-[10px] border-t border-slate-100 pt-1">Subtracting the second equation from the first:</div>
+                      <div>(1 - δ) V_C = 4</div>
+                      <div className="text-emerald-700 font-bold text-xs pt-1 border-t border-emerald-200">
+                        V_C = 4 / (1 - δ)
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Derivation 2: Deviate Once */}
+                  <div className="p-4 bg-amber-50/50 border border-amber-200 rounded-xl space-y-2">
+                    <div className="font-bold text-amber-950 flex items-center justify-between">
+                      <span>Value of Deviating Once under Grim Trigger (V_D)</span>
+                      <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-mono">Cheat & Punish</span>
+                    </div>
+                    <p className="text-slate-600 text-[11px]">
+                      Unilateral cheat yields temptation T = 5 today, followed by permanent punishment P = 2 forever:
+                    </p>
+                    <div className="font-mono bg-white p-2.5 rounded-lg border border-amber-200 space-y-1 text-slate-800 text-[11px]">
+                      <div>V_D = 5 + 2δ + 2δ² + 2δ³ + ...</div>
+                      <div>V_D = 5 + 2δ(1 + δ + δ² + ...)</div>
+                      <div className="text-slate-500 text-[10px] border-t border-slate-100 pt-1">Summing the discounted punishment stream:</div>
+                      <div className="text-amber-800 font-bold text-xs pt-1 border-t border-amber-200">
+                        V_D = 5 + (2δ) / (1 - δ)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Solving the Inequality */}
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2 text-xs">
+                  <div className="font-bold text-slate-900 flex items-center gap-2">
+                    <span>📐</span> Step-by-Step Inequality Solution for δ* (Slide 24):
+                  </div>
+                  <div className="font-mono text-slate-800 bg-white p-3 rounded-lg border border-slate-200 space-y-1.5 text-xs">
+                    <div>No-Deviation Condition:  V_C ≥ V_D</div>
+                    <div className="text-blue-900 font-semibold">4 / (1 - δ) ≥ 5 + (2δ) / (1 - δ)</div>
+                    <div className="text-slate-500 text-[11px]">Multiply both sides by (1 - δ) [since δ &lt; 1]:</div>
+                    <div>4 ≥ 5(1 - δ) + 2δ</div>
+                    <div>4 ≥ 5 - 5δ + 2δ</div>
+                    <div>4 ≥ 5 - 3δ</div>
+                    <div>3δ ≥ 5 - 4</div>
+                    <div>3δ ≥ 1</div>
+                    <div className="text-emerald-700 font-bold text-sm pt-1 border-t border-slate-200">
+                      δ ≥ 1/3 ≈ 0.333
+                    </div>
+                  </div>
+                  <p className="text-slate-600 text-[11px]">
+                    <strong>Economic Proof:</strong> The continuation value of protecting the duopoly margin is large enough to offset the one-period gain of (5 - 4 = 1) if and only if firms discount the future by less than 66.7% per period (δ ≥ 1/3).
+                  </p>
+                </div>
+              </div>
+
+              {/* General Formula & Asymmetric Generalization */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div className="border border-slate-200 rounded-xl p-4 bg-white space-y-2">
+                  <div className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                    <span>⚡</span> General Grim-Trigger Formula (Slide 25)
+                  </div>
+                  <p className="text-slate-600 text-[11px]">
+                    For any symmetric stage game with Reward R, Temptation T, and Punishment P:
+                  </p>
+                  <div className="font-mono bg-slate-50 p-2.5 rounded border border-slate-200 text-indigo-950 font-bold text-xs text-center">
+                    δ* = (T - R) / (T - P)
+                  </div>
+                  <ul className="text-slate-600 text-[11px] space-y-1 list-disc list-inside pt-1">
+                    <li>Cooperation is <strong>easier</strong> when R is larger.</li>
+                    <li>Cooperation is <strong>harder</strong> when temptation gain (T - R) is larger.</li>
+                    <li>A lower punishment payoff P <strong>strengthens deterrence</strong>.</li>
+                  </ul>
+                </div>
+
+                <div className="border border-slate-200 rounded-xl p-4 bg-white space-y-2">
+                  <div className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                    <span>🔄</span> Tit-for-Tat Exact Alternating Check (Slide 28)
+                  </div>
+                  <p className="text-slate-600 text-[11px]">
+                    After one deviation, play alternates [D, M] and [M, D], giving payoff sequence 5, 1, 5, 1, ...:
+                  </p>
+                  <div className="font-mono bg-slate-50 p-2.5 rounded border border-slate-200 text-blue-950 font-bold text-xs text-center">
+                    V_TFT = (5 + δ) / (1 - δ²)
+                  </div>
+                  <p className="text-slate-600 text-[11px]">
+                    Comparing V_C = 4(1 + δ)/(1 - δ²) ≥ (5 + δ)/(1 - δ²) yields 4 + 4δ ≥ 5 + δ ⟺ <strong>δ ≥ 1/3</strong>.
+                  </p>
+                </div>
+              </div>
+
+              {/* Embedded Interactive Simulator */}
+              <div className="border border-slate-200 rounded-xl p-5 bg-white space-y-3">
+                <div className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+                  Interactive Discount Factor & Repeated Game Simulator
+                </div>
+                <RepeatedGameSimulator />
+              </div>
+            </div>
+          )}
+
           {/* WEEK 5 FORMAL DERIVATIONS */}
           {selectedWeek.id === 5 && (
             <div className="space-y-6">

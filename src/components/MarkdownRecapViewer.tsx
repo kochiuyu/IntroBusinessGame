@@ -15,6 +15,7 @@ const WEEKS_METADATA = [
   { id: 3, title: "Week 3: Simultaneous Moves", tag: "Nash Equilibrium" },
   { id: 4, title: "Week 4: Mixed Strategies", tag: "Randomisation" },
   { id: 5, title: "Week 5: Strategic Commitment", tag: "Credible Moves" },
+  { id: 6, title: "Week 6: Repeated Games", tag: "Grim Trigger & Folk Theorem" },
 ];
 
 export const MarkdownRecapViewer: React.FC<MarkdownRecapViewerProps> = ({
