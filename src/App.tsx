@@ -1106,7 +1106,7 @@ import { RepeatedGameSimulator } from "./components/RepeatedGameSimulator";
         ],
         caseAnalysis: {
           title: "Tacit Collusion & Grim Trigger in Duopoly Pricing & Shipping Alliances",
-          subtitle: "Official Lecture Case (Slides 3, 10–13, 21–25) • Dynamic Games & Folk Theorem",
+          subtitle: "Executive Dynamic Game Analysis • Folk Theorem & Tacit Cooperation",
           scenario: "Two competing firms in a duopoly face the choice between maintaining price margins (4, 4) and secretly discounting (5, 1). If both discount, a price war breaks out, driving payoffs to (2, 2). The firms interact repeatedly with discount factor delta. The firms consider a Grim Trigger punishment strategy to preserve margin cooperation.",
           matrix: {
             player1: "Your Firm",
@@ -1131,11 +1131,11 @@ import { RepeatedGameSimulator } from "./components/RepeatedGameSimulator";
               "[Discount, Discount] — Punished Equilibrium (2, 2): Both firms fight a margin-destroying price war."
             ]
           ],
-          prompt: "Using the geometric-series continuation values derived in lecture (Slides 10–12), calculate the present value of cooperating forever (V_C) versus deviating once under Grim Trigger (V_D). Solve for the minimum discount factor delta* required to sustain mutual cooperation.",
+          prompt: "Using geometric-series continuation values, calculate the present value of cooperating forever (V_C) versus deviating once under Grim Trigger (V_D). Solve for the minimum discount factor delta* required to sustain mutual cooperation.",
           solution: {
             equilibrium: "Cooperation is self-enforcing under Grim Trigger if and only if delta >= (T - R) / (T - P) = (5 - 4) / (5 - 2) = 1/3 ≈ 0.333.",
             breakdown: "1. Value of Cooperating Forever: V_C = 4 + 4*delta + 4*delta^2 + ... = 4 / (1 - delta). 2. Value of Deviating Once: V_D = 5 + 2*delta + 2*delta^2 + ... = 5 + 2*delta / (1 - delta). 3. No-Deviation Condition: 4 / (1 - delta) >= 5 + 2*delta / (1 - delta) <=> 4 >= 5 - 3*delta <=> 3*delta >= 1 <=> delta >= 1/3. 4. Economic Interpretation: As long as firms discount future earnings by less than 66.7% per period, the ongoing surplus loss (4 - 2 = 2 per period forever) heavily outweighs the one-period temptation gain (5 - 4 = 1).",
-            managerialTakeaway: "Repeated Games Axiom (Slide 1): Cooperation does not require altruism or legal cartels. It requires patience (delta >= delta*), high visibility of competitor actions, and a credible retaliatory trigger that disciplines the present with the shadow of the future."
+            managerialTakeaway: "Repeated Games Axiom: Cooperation does not require altruism or legal cartels. It requires patience (delta >= delta*), high visibility of competitor actions, and a credible retaliatory trigger that disciplines the present with the shadow of the future."
           }
         }
       },
@@ -1563,6 +1563,134 @@ import { RepeatedGameSimulator } from "./components/RepeatedGameSimulator";
         ],
         correctIndex: 0,
         rationale: "Under Varian's Model of Sales, predictable discount calendars train informed consumers to never buy at full price and invite competitor preemption. Unpredictable randomized promotional timing forces convenience-seeking uninformed consumers to pay full price while still capturing price-sensitive deal hunters who invest time to monitor flash markdowns."
+      },
+      {
+        id: "q12",
+        weekId: 5,
+        weekTag: "Week 5: Strategic Moves & Commitment",
+        title: "Entry Deterrence & Sunk Capital Commitment (K = 1)",
+        scenario: "An incumbent monopolist faces a prospective entrant. Without commitment, if entry occurs, accommodating yields duopoly profits (2, 2) while fighting a price war yields (-1, -1) to each. Since 2 > -1, the incumbent's threat to fight is non-credible, and the entrant enters. The incumbent can pay K = 1 upfront in dedicated capacity or take-or-pay supplier contracts before entry occurs, lowering marginal costs so fighting yields (0, 0 net of K=1) and accommodating yields (-1, 2). Monopoly profit with deterrence is 5 - 1 = 4.",
+        question: "Why does sinking irreversible capital K = 1 successfully deter entry, and how does it change the backward induction solution?",
+        options: [
+          "It forces the entrant to pay double the capital cost to enter.",
+          "It alters the incumbent's own future incentives: in the post-commitment subgame, fighting yields 0 which is strictly greater than accommodating (-1), making fighting credible and forcing the entrant to stay out.",
+          "It creates an illegal monopoly trust that automatically shuts down competitor bank accounts.",
+          "It guarantees that the market will permanently operate as a Cournot quantity competition."
+        ],
+        correctIndex: 1,
+        rationale: "Strategic moves work by constraining one's own future options: by spending K = 1 upfront on dedicated capacity, fighting becomes the incumbent's rational best response (0 > -1). The entrant foresees credible fighting and chooses Stay Out (0 > -1), allowing the incumbent to earn net monopoly profit 5 - 1 = 4, superior to accommodating (2)."
+      },
+      {
+        id: "q13",
+        weekId: 5,
+        weekTag: "Week 5: Strategic Moves & Contracting",
+        title: "Most-Favored-Customer (MFC) Price Matching Clauses",
+        scenario: "Two electronics retailers compete in consumer appliances. Retailer A publicly promises all consumers: 'If we ever lower our price or any competitor offers a lower price, we will refund the difference to all past buyers.'",
+        question: "How does a public Most-Favored-Customer clause act as a strategic commitment device rather than just consumer friendliness?",
+        options: [
+          "It increases the cost of unilateral price discounting so severely that Retailer A credibly ties its own hands against initiating price cuts, softening competition across the market.",
+          "It is designed solely to increase sales tax deductions at the end of the fiscal year.",
+          "It legally forces the rival retailer to close down stores in the same geographic radius.",
+          "It guarantees that consumer demand becomes completely price-inelastic."
+        ],
+        correctIndex: 0,
+        rationale: "An MFC clause acts as a strategic commitment: cutting price on marginal units requires refunding all existing customers. This makes price cuts unprofitable, credibly signaling to rivals that Retailer A will not initiate price wars, which fosters tacit industry price elevation."
+      },
+      {
+        id: "q14",
+        weekId: 6,
+        weekTag: "Week 6: Repeated Games & Horizon",
+        title: "The Backward Induction Paradox in Finitely Repeated Games",
+        scenario: "Two commercial suppliers enter a joint consortium with a legally binding, publicly known termination date in exactly 10 quarters (T = 10). Each quarter, they face a Prisoner's Dilemma between cooperative quality maintenance ($4M, $4M) and opportunistic cost-cutting ($5M, $1M). Mutual defection yields ($2M, $2M).",
+        question: "According to backward induction in repeated games with a known terminal period, what equilibrium will emerge throughout the 10 quarters?",
+        options: [
+          "Both suppliers will cooperate peacefully until Quarter 9, and only defect in Quarter 10.",
+          "Both suppliers will cooperate for all 10 quarters because long-term goodwill prevents defection.",
+          "Cooperation unravels completely: both suppliers defect starting in Quarter 1 and in every single subsequent period.",
+          "Suppliers will alternate cheating every other quarter in an exact Tit-for-Tat pattern."
+        ],
+        correctIndex: 2,
+        rationale: "The Known Final Period Unraveling Principle: In round 10, there is no future tomorrow to punish cheating, so defection is strictly dominant for both. Anticipating certain defection in period 10, maintaining cooperation in period 9 cannot protect period 10, so defection becomes dominant in period 9. Backward induction cascades all the way to Round 1! Sustainable tacit cooperation requires an indefinite or infinite horizon without a known terminal date."
+      },
+      {
+        id: "q15",
+        weekId: 6,
+        weekTag: "Week 6: Grim Trigger & Valuation",
+        title: "Critical Discount Factor in Duopoly Pricing (δ ≥ 1/3)",
+        scenario: "Consider a repeated pricing game between two duopolists interacting over an indefinite horizon with discount factor δ. Cooperating (Maintain Price) yields profit R = 4 each round. Cheating (Discount Price) yields temptation profit T = 5 in the current round, after which the rival triggers Grim Trigger retaliation, collapsing payoffs to P = 2 forever.",
+        question: "What is the exact minimum discount factor δ* required to sustain high-margin cooperation under Grim Trigger, and what is its economic interpretation?",
+        options: [
+          "δ ≥ 0.75; firms must be almost completely patient because price wars are extremely mild.",
+          "δ ≥ 1/3 ≈ 0.333; cooperation is sustainable whenever firms discount future cash flows by less than 66.7% per period, because the ongoing loss of 2 per period forever outweighs the one-period gain of 1.",
+          "δ ≥ 0.50; cooperation requires exactly equal weight placed on today and tomorrow.",
+          "δ ≥ 0.10; cooperation is virtually guaranteed in any market structure."
+        ],
+        correctIndex: 1,
+        rationale: "Solving the no-deviation condition: V_C ≥ V_D <=> 4/(1 - δ) ≥ 5 + 2δ/(1 - δ) <=> 4 ≥ 5(1 - δ) + 2δ <=> 4 ≥ 5 - 3δ <=> 3δ ≥ 1 <=> δ ≥ 1/3 ≈ 0.333. General Grim Trigger formula: δ* = (T - R) / (T - P) = (5 - 4) / (5 - 2) = 1/3. Economically, as long as firms place at least 33.3% weight on next period's cash flow, the ongoing penalty (R - P = 4 - 2 = 2 per period forever) heavily deters the one-time temptation gain (T - R = 5 - 4 = 1)."
+      },
+      {
+        id: "q16",
+        weekId: 6,
+        weekTag: "Week 6: Tit for Tat & Retaliation",
+        title: "Exact Tit-for-Tat Calculation & The Alternating Retaliation Cycle",
+        scenario: "Two competing firms operate under Axelrod's exact Tit-for-Tat enforcement strategy in a repeated pricing game with stage payoffs: Reward R = 4, Temptation T = 5, Punishment P = 2, and Sucker payoff S = 1. Suppose Player 1 initiates a unilateral price cut in period 1 against a Tit-for-Tat rival.",
+        question: "What payoff stream does Player 1 receive after that unilateral defection, and what is the exact discount threshold for cooperation to be preferred?",
+        options: [
+          "The payoff stream is 5, 2, 2, 2... and the required threshold is δ ≥ 1/2.",
+          "The payoff stream is 5, 1, 5, 1, 5, 1... because play alternates between (Discount, Maintain) and (Maintain, Discount); cooperation is preferred if and only if δ ≥ (T - R)/(R - S) = 1/3.",
+          "The rival forgives immediately in round 2, giving payoffs 5, 4, 4, 4... so cooperation is impossible.",
+          "Player 1 earns 5 in round 1 and 0 in all subsequent rounds."
+        ],
+        correctIndex: 1,
+        rationale: "Exact Tit-for-Tat makes each firm copy the rival's previous move. A unilateral deviation produces alternating moves: (D, M) -> (M, D) -> (D, M)... yielding payoff stream 5, 1, 5, 1... with continuation value V_D^(TFT) = (5 + δ)/(1 - δ²). Comparing V_C = 4/(1 - δ) against V_D^(TFT) gives 4(1 + δ) ≥ 5 + δ <=> 3δ ≥ 1 <=> δ ≥ 1/3. This matches the general Tit-for-Tat threshold δ* = (T - R)/(R - S) = (5 - 4)/(4 - 1) = 1/3. Notice that without forgiveness, a single deviation locks both players into endless alternating retaliation."
+      },
+      {
+        id: "q17",
+        weekId: 6,
+        weekTag: "Week 6: Asymmetric Relationships",
+        title: "Asymmetric Alliances & The 'Weakest Link' Principle",
+        scenario: "In an industrial supply chain partnership, an enterprise buyer (Player 1) and a specialized tier-1 component supplier (Player 2) cooperate repeatedly over time. The buyer's stage payoffs are R1 = 6, T1 = 8, P1 = 3. The supplier's stage payoffs are R2 = 5, T2 = 9, P2 = 1. Both share a common market discount factor δ.",
+        question: "What are the individual cooperation thresholds for both firms, and what is the binding condition for mutual cooperation to persist?",
+        options: [
+          "δ1* = 0.40, δ2* = 0.50; mutual cooperation requires δ ≥ max(0.40, 0.50) = 0.50, with the supplier serving as the 'weakest link' requiring greater patience.",
+          "Both firms share the exact same threshold δ* = 0.45 calculated by averaging their payoffs.",
+          "Only the OEM's threshold matters because the dominant player sets the contract rules.",
+          "Mutual cooperation is impossible whenever payoffs are asymmetric between supply chain partners."
+        ],
+        correctIndex: 0,
+        rationale: "In asymmetric repeated games, each player's no-deviation condition must hold independently: δ1* = (T1 - R1)/(T1 - P1) = (8 - 6)/(8 - 3) = 2/5 = 0.40; δ2* = (T2 - R2)/(T2 - P2) = (9 - 5)/(9 - 1) = 4/8 = 0.50. Because either side can unilaterally cheat, mutual cooperation requires δ ≥ max(δ1*, δ2*) = 0.50. The supplier is the 'weakest link' because their high temptation gain (9 - 5 = 4) and severe vulnerability demand a higher discount factor to restrain opportunism."
+      },
+      {
+        id: "q18",
+        weekId: 6,
+        weekTag: "Week 6: Discount Factor Decomposition",
+        title: "Managerial De-escalation: Decomposing δ = p / (1 + r)",
+        scenario: "An executive observes that rising central bank interest rates (r) and supply chain uncertainty (lowering continuation probability p) have driven the discount factor δ = p / (1 + r) below the critical Grim Trigger threshold δ* = 1/3, causing price discounting to spread across distributors.",
+        question: "In repeated game theory, which managerial intervention successfully restores cooperation without relying on unlawful collusion or excessively harsh punishments?",
+        options: [
+          "Increasing the frequency of interaction and monitoring cycles (e.g. weekly audits/billing instead of quarterly), which effectively shortens the period length and drives δ per decision period closer to 1.",
+          "Signing an explicit secret price-fixing agreement in violation of antitrust statutes.",
+          "Raising marginal production costs so that price cuts become impossible.",
+          "Suing all distributors simultaneously in commercial court."
+        ],
+        correctIndex: 0,
+        rationale: "Economic decomposition of the discount factor: Since δ = p / (1 + r) where r and p depend on the time interval between interactions, increasing interaction frequency (e.g., from annual to daily/weekly pricing checks) compresses the interest rate per period toward zero and pushes p per period toward 1, dramatically increasing δ. Increasing interaction frequency and transparency is the most potent legitimate managerial tool to sustain tacit cooperation."
+      },
+      {
+        id: "q19",
+        weekId: 6,
+        weekTag: "Week 6: Monitoring Noise & Forgiveness",
+        title: "Monitoring Noise, Attribution Errors & Grim Trigger Fragility",
+        scenario: "In a global shipping alliance, freight rates drop sharply during an unexpected market downturn. Carrier A's booking volume falls by 30%. Carrier A cannot observe whether the drop is caused by an exogenous macroeconomic downturn or secret spot discounting by rival Carrier B.",
+        question: "Why does Grim Trigger fail catastrophically in environments with monitoring noise, and what response rule does game theory recommend?",
+        options: [
+          "Grim Trigger treats every drop in sales as deliberate cheating, triggering irreversible price wars over false alarms; alliances should use threshold punishment with temporary duration (forgiveness) or transparent booking clearinghouses.",
+          "Grim Trigger succeeds because false alarms make competitors even more terrified of cheating.",
+          "Monitoring noise has zero impact on repeated game equilibria under the Folk Theorem.",
+          "Carriers should merge into a single monopoly to eliminate all pricing decisions."
+        ],
+        correctIndex: 0,
+        rationale: "Monitoring Noise and Recovery: In real-world business, observation is noisy (unobservable secret discounts vs macroeconomic demand shocks). Under Grim Trigger, a single false alarm permanently destroys cooperation forever. Sophisticated tacit alliances deploy forgiveness conventions, limited-period retaliations (Green & Porter style), or verified audit clearinghouses to avoid ruinous accidental wars."
       }
     ];
 
@@ -1575,9 +1703,15 @@ import { RepeatedGameSimulator } from "./components/RepeatedGameSimulator";
       { id: "comp_5", label: "Evaluate first-mover preemption vs. fast-follower second-mover timing advantages", category: "Strategic Timing" },
       { id: "comp_6", label: "Distinguish an isolated 'action' from a complete contingent 'strategy'", category: "Extensive Form Fundamentals" },
       { id: "comp_7", label: "Analyze technology capex & coupon warfare via strategic interdependence", category: "Capital Allocation" },
-      { id: "comp_8", label: "Assess repeated interaction mechanisms, monitoring, and cartel discipline (OPEC)", category: "Cooperation & Enforcement" },
+      { id: "comp_8", label: "Assess repeated interaction mechanisms, monitoring, and cartel discipline", category: "Cooperation & Enforcement" },
       { id: "comp_9", label: "Calculate Mixed Strategy Nash Equilibria using the Indifference Principle (p*, q*)", category: "Algorithmic & Mixed Games" },
-      { id: "comp_10", label: "Deploy algorithmic dynamic randomization to protect promotional and cybersecurity margins", category: "Managerial Randomization" }
+      { id: "comp_10", label: "Deploy algorithmic dynamic randomization to protect promotional and cybersecurity margins", category: "Managerial Randomization" },
+      { id: "comp_11", label: "Structure credible commitments & irreversible capacity devices (K = 1, MFC clauses)", category: "Strategic Commitment (W5)" },
+      { id: "comp_12", label: "Derive Grim Trigger discount factor thresholds δ* = (T - R)/(T - P) = 1/3 for duopoly pricing", category: "Repeated Games (W6)" },
+      { id: "comp_13", label: "Calculate Tit-for-Tat alternating retaliation cycles and no-deviation conditions", category: "Dynamic Enforcement (W6)" },
+      { id: "comp_14", label: "Solve asymmetric partnership thresholds δ ≥ max(δ₁*, δ₂*) and weakest-link risks", category: "Alliances & Asymmetry (W6)" },
+      { id: "comp_15", label: "Decompose discount factors δ = p/(1+r) and leverage interaction frequency to stabilize cartels", category: "Executive Levers (W6)" },
+      { id: "comp_16", label: "Design forgiveness conventions to prevent permanent price wars under noisy monitoring", category: "Monitoring & Recovery (W6)" }
     ];
 
     // --- Curated Reference Tools & Mini-Games ---
@@ -2491,7 +2625,8 @@ const MIXED_STRATEGY_PRESETS = [
       const [weekSubTab, setWeekSubTab] = useState<"notes" | "slides" | "simulator" | "exercise">("notes");
       const [toolsSubTab, setToolsSubTab] = useState<"matrix" | "tikz">("matrix");
       const [slideModalWeek, setSlideModalWeek] = useState<number | null>(null);
-      const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
+      const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
+      const [quizWeekFilter, setQuizWeekFilter] = useState<number | "all">("all");
       const [showExerciseSolution, setShowExerciseSolution] = useState<boolean>(false);
 
       const selectedWeek = useMemo(() => {
@@ -2502,6 +2637,19 @@ const MIXED_STRATEGY_PRESETS = [
       useEffect(() => {
         setShowExerciseSolution(false);
       }, [selectedWeekId]);
+
+      const filteredQuizQuestions = useMemo(() => {
+        if (quizWeekFilter === "all") return QUIZ_QUESTIONS;
+        return QUIZ_QUESTIONS.filter(q => q.weekId === quizWeekFilter);
+      }, [quizWeekFilter]);
+
+      const totalQuizAnswered = Object.keys(quizAnswers).length;
+      const totalQuizCorrect = useMemo(() => {
+        return Object.entries(quizAnswers).filter(([qId, ans]) => {
+          const question = QUIZ_QUESTIONS.find(q => q.id === qId);
+          return question && question.correctIndex === ans;
+        }).length;
+      }, [quizAnswers]);
 
       return (
         <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-blue-500/20 selection:text-blue-900">
@@ -2574,31 +2722,35 @@ const MIXED_STRATEGY_PRESETS = [
                   </button>
                 </div>
 
-                {/* Direct Week Selector Dropdown */}
-                <select
-                  value={selectedWeekId}
-                  onChange={(e) => {
-                    setSelectedWeekId(Number(e.target.value));
-                    setActiveTab("modules");
-                  }}
-                  className="text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-lg px-2.5 py-1.5 font-medium transition-colors focus:outline-none"
-                  aria-label="Jump to week"
-                >
-                  {CURRICULUM_DATA.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      Week {w.id}: {w.title.slice(0, 28)}...
-                    </option>
-                  ))}
-                </select>
+                {/* Direct Week Selector Dropdown & Slides Button: only appear when considering weekly modules */}
+                {activeTab === "modules" && (
+                  <>
+                    <select
+                      value={selectedWeekId}
+                      onChange={(e) => {
+                        setSelectedWeekId(Number(e.target.value));
+                        setActiveTab("modules");
+                      }}
+                      className="text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-lg px-2.5 py-1.5 font-medium transition-colors focus:outline-none"
+                      aria-label="Jump to week"
+                    >
+                      {CURRICULUM_DATA.map((w) => (
+                        <option key={w.id} value={w.id}>
+                          Week {w.id}: {w.title.slice(0, 28)}...
+                        </option>
+                      ))}
+                    </select>
 
-                <button
-                  onClick={() => setSlideModalWeek(selectedWeekId)}
-                  className="px-3 py-1.5 text-xs font-medium bg-slate-900 text-white hover:bg-slate-800 rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
-                  title="View slide deck PDF"
-                >
-                  <Icon name="book" className="w-3.5 h-3.5" />
-                  Slides (PDF)
-                </button>
+                    <button
+                      onClick={() => setSlideModalWeek(selectedWeekId)}
+                      className="px-3 py-1.5 text-xs font-medium bg-slate-900 text-white hover:bg-slate-800 rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
+                      title="View slide deck PDF"
+                    >
+                      <Icon name="book" className="w-3.5 h-3.5" />
+                      Slides (PDF)
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </header>
@@ -3204,59 +3356,151 @@ const MIXED_STRATEGY_PRESETS = [
             {/* VIEW 4: QUIZZES */}
             {activeTab === "quizzes" && (
               <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-xs space-y-6 animate-fadeIn">
-                <div className="border-b border-slate-100 pb-4">
-                  <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
-                    Knowledge Checks
+                {/* Header & Overall Performance Banner */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                  <div>
+                    <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
+                      Executive Knowledge Checks · Modules 1 to 6
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+                      Game Theory Strategic Decision Quizzes
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                      Test your understanding across all course modules: dominant strategies, backward induction, IESDS, mixed equilibria, commitment devices, and repeated games.
+                    </p>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 mt-1">
-                    Game Theory Review Quizzes
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Test your understanding of backward induction, dominant strategies, and mixed strategy Nash equilibria.
-                  </p>
+
+                  {/* Score Tracker */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 sm:p-4 shrink-0 text-center sm:text-right space-y-1">
+                    <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                      Overall Progress
+                    </div>
+                    <div className="text-lg font-bold text-slate-900 font-mono">
+                      <span className="text-emerald-600">{totalQuizCorrect}</span> / {totalQuizAnswered}{" "}
+                      <span className="text-xs font-normal text-slate-400">
+                        ({QUIZ_QUESTIONS.length} Questions)
+                      </span>
+                    </div>
+                    {totalQuizAnswered > 0 && (
+                      <div className="flex items-center justify-end gap-2 text-[11px]">
+                        <span className="text-slate-500 font-medium">
+                          Accuracy: {Math.round((totalQuizCorrect / totalQuizAnswered) * 100)}%
+                        </span>
+                        <button
+                          onClick={() => setQuizAnswers({})}
+                          className="text-red-600 hover:text-red-700 font-semibold underline ml-1"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
+                {/* Module Filter Strip */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+                  <span className="text-slate-400 font-semibold mr-1 shrink-0">Filter Module:</span>
+                  <button
+                    onClick={() => setQuizWeekFilter("all")}
+                    className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
+                      quizWeekFilter === "all"
+                        ? "bg-slate-900 text-white font-semibold shadow-xs"
+                        : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                    }`}
+                  >
+                    All Modules ({QUIZ_QUESTIONS.length})
+                  </button>
+                  {[1, 2, 3, 4, 5, 6].map(wId => {
+                    const count = QUIZ_QUESTIONS.filter(q => q.weekId === wId).length;
+                    return (
+                      <button
+                        key={wId}
+                        onClick={() => setQuizWeekFilter(wId)}
+                        className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
+                          quizWeekFilter === wId
+                            ? "bg-blue-600 text-white font-semibold shadow-xs"
+                            : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                        }`}
+                      >
+                        Week {wId} {wId === 6 ? `★ Repeated Games (${count})` : `(${count})`}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Questions List */}
                 <div className="space-y-6">
-                  {QUIZ_QUESTIONS.map((q, idx) => {
+                  {filteredQuizQuestions.map((q, idx) => {
                     const selected = quizAnswers[q.id];
                     const isAnswered = selected !== undefined;
                     const isCorrect = isAnswered && selected === q.correctIndex;
 
                     return (
-                      <div key={q.id} className="p-4 sm:p-5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="font-bold text-slate-500 uppercase tracking-wider font-mono">
-                            Question {idx + 1} · Week {q.weekId}
-                          </span>
+                      <div key={q.id} className="p-5 sm:p-6 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
+                        {/* Question Header Strip */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-blue-700 font-mono text-xs bg-blue-50 px-2.5 py-0.5 rounded border border-blue-200">
+                              Question {idx + 1}
+                            </span>
+                            <span className="text-xs font-semibold text-slate-600">
+                              {q.weekTag}
+                            </span>
+                          </div>
+
                           {isAnswered && (
-                            <span className={`font-bold px-2 py-0.5 rounded text-[11px] ${
-                              isCorrect ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"
+                            <span className={`font-bold px-2.5 py-0.5 rounded text-xs self-start sm:self-auto ${
+                              isCorrect ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : "bg-red-100 text-red-800 border border-red-300"
                             }`}>
-                              {isCorrect ? "✓ Correct" : "✗ Review"}
+                              {isCorrect ? "✓ Correct Answer" : "✗ Incorrect (Review Strategic Rationale)"}
                             </span>
                           )}
                         </div>
 
+                        {/* Question Title */}
+                        {q.title && (
+                          <h4 className="text-sm font-bold text-slate-900">
+                            {q.title}
+                          </h4>
+                        )}
+
+                        {/* Executive Scenario Context Box */}
+                        {q.scenario && (
+                          <div className="bg-white border border-slate-200/80 rounded-lg p-3.5 text-xs text-slate-700 leading-relaxed space-y-1">
+                            <span className="font-bold text-slate-800 uppercase tracking-wider text-[10px] block text-blue-800">
+                              🏢 Executive Scenario Context:
+                            </span>
+                            <p>{q.scenario}</p>
+                          </div>
+                        )}
+
+                        {/* Question Prompt */}
                         <p className="text-sm font-semibold text-slate-900 leading-snug">
                           {q.question}
                         </p>
 
-                        <div className="space-y-1.5 pt-1">
+                        {/* Options */}
+                        <div className="space-y-2 pt-1">
                           {q.options.map((opt, optIdx) => (
                             <button
                               key={optIdx}
                               onClick={() => setQuizAnswers(prev => ({ ...prev, [q.id]: optIdx }))}
-                              className={`w-full text-left p-2.5 rounded-lg text-xs font-medium border transition-colors flex items-center justify-between ${
+                              className={`w-full text-left p-3 rounded-lg text-xs font-medium border transition-all flex items-start justify-between gap-3 ${
                                 selected === optIdx
                                   ? optIdx === q.correctIndex
-                                    ? "bg-emerald-50 border-emerald-400 text-emerald-950"
-                                    : "bg-red-50 border-red-300 text-red-950"
-                                  : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                                    ? "bg-emerald-50 border-emerald-400 text-emerald-950 font-semibold shadow-xs"
+                                    : "bg-red-50 border-red-300 text-red-950 font-semibold"
+                                  : "bg-white border-slate-200 text-slate-700 hover:bg-slate-100/70"
                               }`}
                             >
-                              <span>{opt}</span>
+                              <div className="flex items-start gap-2.5">
+                                <span className="font-mono font-bold text-slate-400 shrink-0 mt-0.5">
+                                  {String.fromCharCode(65 + optIdx)}.
+                                </span>
+                                <span>{opt}</span>
+                              </div>
                               {selected === optIdx && (
-                                <span className="font-bold font-mono text-[11px]">
+                                <span className="font-bold font-mono text-xs shrink-0">
                                   {optIdx === q.correctIndex ? "✓" : "✗"}
                                 </span>
                               )}
@@ -3264,10 +3508,16 @@ const MIXED_STRATEGY_PRESETS = [
                           ))}
                         </div>
 
+                        {/* Strategic Rationale Explanation */}
                         {isAnswered && (
-                          <div className="p-3 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 space-y-1">
-                            <strong className="text-slate-900">Explanation & Strategic Rationale: </strong>
-                            <span>{q.rationale}</span>
+                          <div className="p-3.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 space-y-1.5 animate-fadeIn">
+                            <div className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px] uppercase tracking-wider">
+                              <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                              Strategic Rationale & Economic Analysis:
+                            </div>
+                            <p className="leading-relaxed pl-3 border-l-2 border-blue-500 text-slate-800">
+                              {q.rationale}
+                            </p>
                           </div>
                         )}
                       </div>

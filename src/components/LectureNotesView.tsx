@@ -872,7 +872,7 @@ export const LectureNotesView: React.FC<LectureNotesViewProps> = ({ selectedWeek
                 {/* Question 2 */}
                 <div className="bg-white p-4 rounded-lg border border-indigo-200 space-y-2">
                   <div className="font-bold text-slate-900">
-                    Q2: In the lecture pricing stage game (Reward R = 4, Temptation T = 5, Punishment P = 2), what is the minimum discount factor δ* needed to sustain cooperation under Grim Trigger?
+                    Q2: In a repeated duopoly pricing game (Cooperation Reward R = 4, Temptation T = 5, Price War Punishment P = 2), what is the minimum discount factor δ* needed to sustain cooperation under Grim Trigger?
                   </div>
                   <div className="space-y-1.5">
                     {[
@@ -899,6 +899,108 @@ export const LectureNotesView: React.FC<LectureNotesViewProps> = ({ selectedWeek
                   {quizRevealed["w6-q2"] && (
                     <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-emerald-950 text-[11px]">
                       <strong>Explanation:</strong> Correct answer is <strong>B</strong>! Using the general formula δ* = (T - R) / (T - P) = (5 - 4) / (5 - 2) = 1/3. As long as δ ≥ 1/3, the ongoing future loss from price wars (4 - 2 = 2 per period forever) heavily outweighs the one-period windfall gain from cheating (5 - 4 = 1).
+                    </div>
+                  )}
+                </div>
+
+                {/* Question 3 */}
+                <div className="bg-white p-4 rounded-lg border border-indigo-200 space-y-2">
+                  <div className="font-bold text-slate-900">
+                    Q3: In a repeated Prisoner's Dilemma with exact Tit-for-Tat enforcement, what happens after Player 1 unilaterally defects in round 1 against a Tit-for-Tat rival?
+                  </div>
+                  <div className="space-y-1.5">
+                    {[
+                      "The rival immediately surrenders, giving Player 1 maximum payoff T forever.",
+                      "Play alternates between (Discount, Maintain) and (Maintain, Discount), giving Player 1 payoff stream 5, 1, 5, 1... with V_D^(TFT) = (5 + δ)/(1 - δ²).",
+                      "Both players permanently receive the mutual punishment payoff P = 2.",
+                      "The game immediately ends because Tit-for-Tat cannot handle deviations."
+                    ].map((opt, oIdx) => (
+                      <button
+                        key={oIdx}
+                        onClick={() => handleSelectQuiz("w6-q3", oIdx)}
+                        className={`w-full text-left p-2 rounded border transition-colors ${
+                          quizAnswers["w6-q3"] === oIdx
+                            ? oIdx === 1
+                              ? "bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold"
+                              : "bg-red-50 border-red-300 text-red-900"
+                            : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {String.fromCharCode(65 + oIdx)}. {opt}
+                      </button>
+                    ))}
+                  </div>
+                  {quizRevealed["w6-q3"] && (
+                    <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-emerald-950 text-[11px]">
+                      <strong>Explanation:</strong> Correct answer is <strong>B</strong>! Because Tit-for-Tat mirrors the rival's previous action, a unilateral defection creates an alternating cycle: in odd periods Player 1 gets T = 5 (D, M), in even periods Player 1 gets S = 1 (M, D). The present value is V_D^(TFT) = (T + δS)/(1 - δ²), yielding cooperation condition δ ≥ (T - R)/(R - S) = 1/3.
+                    </div>
+                  )}
+                </div>
+
+                {/* Question 4 */}
+                <div className="bg-white p-4 rounded-lg border border-indigo-200 space-y-2">
+                  <div className="font-bold text-slate-900">
+                    Q4: In an asymmetric repeated partnership where Player 1 has discount threshold δ₁* = 0.35 and Player 2 has δ₂* = 0.55, what is the binding requirement for mutual cooperation?
+                  </div>
+                  <div className="space-y-1.5">
+                    {[
+                      "δ ≥ min(0.35, 0.55) = 0.35 because the more eager player leads.",
+                      "δ ≥ average(0.35, 0.55) = 0.45.",
+                      "δ ≥ max(δ₁*, δ₂*) = 0.55; both players' conditions must hold, so Player 2 is the 'weakest link'.",
+                      "Cooperation is impossible whenever thresholds are unequal."
+                    ].map((opt, oIdx) => (
+                      <button
+                        key={oIdx}
+                        onClick={() => handleSelectQuiz("w6-q4", oIdx)}
+                        className={`w-full text-left p-2 rounded border transition-colors ${
+                          quizAnswers["w6-q4"] === oIdx
+                            ? oIdx === 2
+                              ? "bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold"
+                              : "bg-red-50 border-red-300 text-red-900"
+                            : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {String.fromCharCode(65 + oIdx)}. {opt}
+                      </button>
+                    ))}
+                  </div>
+                  {quizRevealed["w6-q4"] && (
+                    <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-emerald-950 text-[11px]">
+                      <strong>Explanation:</strong> Correct answer is <strong>C</strong>! Because either partner can unilaterally cheat, tacit cooperation requires that neither firm finds cheating profitable. Hence δ ≥ max(δ₁*, δ₂*) = 0.55. The player with higher temptation or lower punishment is the 'weakest link' requiring greater market patience.
+                    </div>
+                  )}
+                </div>
+
+                {/* Question 5 */}
+                <div className="bg-white p-4 rounded-lg border border-indigo-200 space-y-2">
+                  <div className="font-bold text-slate-900">
+                    Q5: Why is the Grim Trigger strategy dangerously fragile in real business markets with monitoring noise and demand volatility?
+                  </div>
+                  <div className="space-y-1.5">
+                    {[
+                      "Because Grim Trigger has zero tolerance: an innocent macroeconomic demand slump can be mistaken for cheating, triggering permanent price wars that can never be recovered.",
+                      "Because Grim Trigger is too lenient and never punishes competitors.",
+                      "Because Grim Trigger requires solving complex differential equations during each transaction.",
+                      "Because competitors are legally forbidden from retaliating more than once."
+                    ].map((opt, oIdx) => (
+                      <button
+                        key={oIdx}
+                        onClick={() => handleSelectQuiz("w6-q5", oIdx)}
+                        className={`w-full text-left p-2 rounded border transition-colors ${
+                          quizAnswers["w6-q5"] === oIdx
+                            ? oIdx === 0
+                              ? "bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold"
+                              : "bg-red-50 border-red-300 text-red-900"
+                            : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {String.fromCharCode(65 + oIdx)}. {opt}
+                      </button>
+                    ))}
+                  </div>
+                  {quizRevealed["w6-q5"] && (
+                    <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-emerald-950 text-[11px]">
+                      <strong>Explanation:</strong> Correct answer is <strong>A</strong>! In real markets, firms observe outcomes (e.g. drop in orders) with noise. Under Grim Trigger, a single false alarm or recession causes irreversible permanent collapse of cooperation. Real-world alliances use forgiveness conventions, limited-period punishments (Green & Porter), or verified audit mechanisms.
                     </div>
                   )}
                 </div>

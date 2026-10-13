@@ -28,11 +28,11 @@ const PRESETS: Record<string, PresetScenario> = {
     P: 2,
     S: 1,
     story: "Two firms decide whether to Maintain margin (4, 4) or secretly Discount (5, 1). If both discount, a margin-eroding price war drops profits to (2, 2).",
-    citation: "CUHK Lecture 6 (Slides 3, 10–13, 21)"
+    citation: "Duopoly Pricing Model"
   },
   buyerSupplier: {
     name: "buyerSupplier",
-    label: "Lecture 6 App 1: Buyer–Supplier Relationship",
+    label: "Lecture Core: Buyer–Supplier Relationship",
     player1: "Enterprise Buyer",
     player2: "Component Supplier",
     cooperateAction: "Honor Terms / Quality",
@@ -42,7 +42,7 @@ const PRESETS: Record<string, PresetScenario> = {
     P: 2,
     S: 1,
     story: "An OEM and critical supplier interact repeatedly. Opportunistic unilateral breach yields an immediate windfall, but collapses future partnership into costly arm's-length conflict.",
-    citation: "Lecture 6 Application 1 (Slide 14)"
+    citation: "Supply Chain Game Model"
   },
   shipping: {
     name: "shipping",
@@ -56,7 +56,7 @@ const PRESETS: Record<string, PresetScenario> = {
     P: 25,
     S: 10,
     story: "Global carrier alliances (2M, Ocean Alliance) maintain tacit freight rate discipline ($60M each). Secret capacity dumping captures $90M upfront, triggering rate wars down to $25M.",
-    citation: "Lecture 6 Application 3 (Slide 16)"
+    citation: "Global Freight Alliance Model"
   }
 };
 
@@ -528,7 +528,7 @@ export const RepeatedGameSimulator: React.FC = () => {
               {strategyType === "grim" ? (
                 <div>
                   <div className="font-semibold text-red-400 mb-1 flex items-center justify-between">
-                    <span>Grim Trigger (Friedman 1971 • Slide 10–13):</span>
+                    <span>Grim Trigger (Friedman 1971):</span>
                     <span className="font-mono text-[11px] text-amber-300">
                       δ* = (T - R) / (T - P) = ({T} - {R}) / ({T} - {P}) = {deltaStarGrim.toFixed(3)}
                     </span>
@@ -540,13 +540,13 @@ export const RepeatedGameSimulator: React.FC = () => {
               ) : (
                 <div>
                   <div className="font-semibold text-blue-400 mb-1 flex items-center justify-between">
-                    <span>Tit for Tat (Axelrod 1984 • Slide 21):</span>
+                    <span>Tit for Tat (Axelrod 1984):</span>
                     <span className="font-mono text-[11px] text-amber-300">
                       δ* = (T - R) / (R - S) = ({T} - {R}) / ({R} - {S}) = {deltaStarTFT.toFixed(3)}
                     </span>
                   </div>
                   <p className="text-slate-400">
-                    Start by cooperating. In every subsequent period, mirror the rival's previous move. A unilateral breach triggers alternating retaliation: (D, C) → (C, D) → (D, C)... with payoff stream T, S, T, S... (Slide 21 exact derivation).
+                    Start by cooperating. In every subsequent period, mirror the rival's previous move. A unilateral breach triggers alternating retaliation: (D, C) → (C, D) → (D, C)... with payoff stream T, S, T, S... (exact alternating cycle).
                   </p>
                 </div>
               )}
@@ -575,7 +575,7 @@ export const RepeatedGameSimulator: React.FC = () => {
             {showDecomposition ? (
               <div className="bg-indigo-950/30 border border-indigo-800/50 rounded-lg p-3 space-y-3 text-xs">
                 <div className="flex items-center justify-between font-mono text-[11px] text-indigo-300">
-                  <span>Economic Formula (Slide 7): δ = p / (1 + r)</span>
+                  <span>Economic Formula: δ = p / (1 + r)</span>
                   <span>Calculated δ = {(continuationProb / (1 + interestRate)).toFixed(3)}</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -707,7 +707,7 @@ export const RepeatedGameSimulator: React.FC = () => {
               >
                 <option value="1">Round 1</option>
                 <option value="2">Round 2</option>
-                <option value="3">Round 3 (Slide 11 Baseline)</option>
+                <option value="3">Round 3 (Mid-Game Deviation)</option>
                 <option value="5">Round 5</option>
               </select>
             )}
@@ -798,12 +798,12 @@ export const RepeatedGameSimulator: React.FC = () => {
         </div>
       </div>
 
-      {/* Asymmetric Extension Toggle & Explanation (Lecture Slide 15) */}
+      {/* Asymmetric Extension Toggle & Explanation */}
       <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-4 sm:p-5 space-y-3.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xs sm:text-sm font-bold text-slate-200">
-              Asymmetric Relationships & Dual Thresholds (Slide 15)
+              Asymmetric Relationships & Dual Thresholds
             </span>
             <span className="text-[10px] bg-indigo-900/60 text-indigo-300 px-2 py-0.5 rounded font-mono">
               Weakest Link Theory
