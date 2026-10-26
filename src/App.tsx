@@ -1242,7 +1242,7 @@ import { AuctionSimulator } from "./components/AuctionSimulator";
       },
       {
         id: 7,
-        title: "Week 7: Auctions I — Bidding, Information, and Auction Rules",
+        title: "Auctions I — Bidding, Information, and Auction Rules",
         chineseTitle: "拍賣與競價策略（上）：四種基本拍賣機制與競價策略",
         status: "active",
         duration: "3 Hours • Mechanism Design & Bidding Lab",
@@ -2995,11 +2995,14 @@ const MIXED_STRATEGY_PRESETS = [
                       className="text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-lg px-2.5 py-1.5 font-medium transition-colors focus:outline-none"
                       aria-label="Jump to week"
                     >
-                      {CURRICULUM_DATA.map((w) => (
-                        <option key={w.id} value={w.id}>
-                          Week {w.id}: {w.title.slice(0, 28)}...
-                        </option>
-                      ))}
+                      {CURRICULUM_DATA.map((w) => {
+                        const displayTitle = w.title.replace(/^Week\s*\d+:\s*/i, "");
+                        return (
+                          <option key={w.id} value={w.id}>
+                            Week {w.id}: {displayTitle.length > 32 ? `${displayTitle.slice(0, 32)}...` : displayTitle}
+                          </option>
+                        );
+                      })}
                     </select>
 
                     <button
