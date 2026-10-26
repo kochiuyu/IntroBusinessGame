@@ -1882,6 +1882,70 @@ import { AuctionSimulator } from "./components/AuctionSimulator";
         ],
         correctIndex: 0,
         rationale: "In industrial and enterprise procurement, price is not the sole dimension of value. A low bid is valuable only if the contractor can reliably deliver the required technical capability, security standards, and uptime reliability. Pure lowest-price auctions create adverse selection, attracting financially precarious vendors who submit unviable bids and subsequently deliver defective systems or declare bankruptcy. Announced multi-attribute scoring formulas formally balance price savings against execution reliability."
+      },
+      {
+        id: "q25",
+        weekId: 7,
+        weekTag: "Week 7: Auctions I — Open Formats",
+        title: "English Ascending vs. Dutch Descending Clock Auctions",
+        scenario: "An international art consignment house conducts two sales: Lot A is sold via an English open ascending auction, where the auctioneer raises the price continuously until only one bidder remains in the room. Lot B is sold via a Dutch open descending auction, where a clock displays a price starting very high and continuously ticks downward until a bidder hits the buzzer.",
+        question: "In independent private-value settings, which sealed-bid mechanisms are strategically equivalent to the English ascending and Dutch descending auctions, respectively?",
+        options: [
+          "English resembles Second-Price (the winner pays the price where the second-highest bidder dropped out); Dutch is strategically equivalent to First-Price (the bidder decides when to stop the clock without observing others and pays that stopping price).",
+          "English resembles First-Price; Dutch resembles Second-Price.",
+          "Both open auction formats are strategically equivalent to pure lottery allocations.",
+          "Neither open auction format bears any mathematical or strategic relationship to sealed-bid auctions."
+        ],
+        correctIndex: 0,
+        rationale: "Under independent private values, in an English auction each bidder stays active until the standing price reaches their valuation. The auction terminates the moment the second-highest bidder drops out, meaning the winner pays approximately the second-highest valuation (matching Second-Price). In a Dutch auction, zero information is revealed as the clock falls. Bidders face the exact same trade-off as in First-Price: waiting longer yields a cheaper purchase price but increases the probability that a rival buzzes first (strategically equivalent to First-Price)."
+      },
+      {
+        id: "q26",
+        weekId: 7,
+        weekTag: "Week 7: Auctions I — Digital Search Ads",
+        title: "Digital Advertising Opportunity & Per-Click Valuation",
+        scenario: "A digital marketing director calculates that each consumer click on a sponsored search ad generates HK$50 in expected profit for the company. The ad network operates a Generalized Second-Price per-click auction.",
+        question: "Why is submitting a maximum bid equal to the true valuation of HK$50 per click the optimal decision, and what happens if the company bids HK$30 or HK$70?",
+        options: [
+          "Bidding HK$50 wins every click where the market clearing price is below HK$50 without inflating what is paid; bidding HK$30 risks losing profitable clicks clearing between HK$30 and HK$50, while bidding HK$70 risks winning clicks that clear above HK$50 at a financial loss.",
+          "Bidding HK$50 forces the search engine to charge exactly HK$50 on every single impression.",
+          "Bidding HK$30 is strictly superior because it guarantees an automatic 40% margin on every customer.",
+          "Bidding HK$70 is always dominant because advertising impression volume always matters more than profitability."
+        ],
+        correctIndex: 0,
+        rationale: "In a second-price digital search auction, your submitted bid determines whether your ad is shown, but your cost-per-click is set by the competitor ranked below you. Bidding your true click value of HK$50 ensures you win all clicks that yield positive return on ad spend (clearing price r < HK$50) without raising what you pay. Underbidding to HK$30 does not reduce your cost per click, but causes you to forfeit clicks clearing between HK$30 and HK$50. Overbidding to HK$70 wins clicks clearing between HK$50 and HK$70, generating a negative return on ad spend."
+      },
+      {
+        id: "q27",
+        weekId: 7,
+        weekTag: "Week 7: Auctions I — Platform Proxy Bidding",
+        title: "Automated Proxy Bidding Mechanics on E-Commerce Platforms",
+        scenario: "On a commercial auction marketplace, a business buyer enters a maximum willingness to pay of $350 for an enterprise server. The current standing bid is $100 with a minimum bid increment of $10. A rival enters a bid of $200.",
+        question: "How does the platform's automated proxy bidding agent execute this instruction, and why does this system mimic an English ascending auction?",
+        options: [
+          "The proxy agent immediately raises the standing bid to $210 (one increment above the rival's $200) and keeps the buyer in the lead, advancing only as rivals bid and stopping strictly at $350.",
+          "The proxy agent immediately bids the full $350, forcing the buyer to pay $350 immediately regardless of competitor bids.",
+          "The proxy agent splits the $350 into 35 micro-bids submitted randomly over the final ten minutes.",
+          "The proxy agent cancels the bid if any rival submits an offer higher than $100."
+        ],
+        correctIndex: 0,
+        rationale: "Platform proxy bidding operationalizes an English ascending auction without requiring continuous human attention: the bidder specifies their private valuation ceiling ($350). The system automatically places the minimum bid needed to maintain the lead (rival's bid + minimum increment = $200 + $10 = $210). If no rival exceeds $350, the bidder wins and pays only the increment above the second-highest rival maximum, preserving consumer surplus."
+      },
+      {
+        id: "q28",
+        weekId: 7,
+        weekTag: "Week 7: Auctions I — Spectrum Combinatorics",
+        title: "Spectrum Package Design: Complementarities vs. Substitutabilities",
+        scenario: "A government communications agency auctions radio spectrum. Region A and Region B are adjacent territories where operating both yields massive network efficiencies (complementarity). In contrast, Frequency Band X and Frequency Band Y in the same city provide identical technical capacity, but holding both yields diminishing returns (substitutability).",
+        question: "Why does auctioning related spectrum licenses as separate, sequential single-item auctions create severe strategic risks for telecom operators?",
+        options: [
+          "Sequential independent auctions create 'exposure risk' where an operator may win Region A at an aggressive price but lose Region B, leaving them with an incomplete, stranded network; package or combinatorial mechanisms allow bidding on bundles directly.",
+          "Sequential auctions are legally prohibited under the United Nations outer space treaty.",
+          "Sequential auctions guarantee that spectrum prices will collapse to zero in all regions.",
+          "Complementary frequency bands automatically cause electromagnetic interference if owned by the same company."
+        ],
+        correctIndex: 0,
+        rationale: "When items exhibit strong complementarities (Region A + Region B together are worth more than the sum of separate values), sequential single-item auctions expose bidders to 'exposure risk'—winning the first item at an aggressive price only to be outbid on the second, resulting in stranded capital. Effective spectrum auction design requires package or combinatorial bidding rules so bidders can condition bids on winning viable bundles."
       }
     ];
 
@@ -3622,8 +3686,15 @@ const MIXED_STRATEGY_PRESETS = [
                   >
                     All Modules ({QUIZ_QUESTIONS.length})
                   </button>
-                  {[1, 2, 3, 4, 5, 6].map(wId => {
+                  {[1, 2, 3, 4, 5, 6, 7].map(wId => {
                     const count = QUIZ_QUESTIONS.filter(q => q.weekId === wId).length;
+                    const weekBadge =
+                      wId === 7 ? "★ Auctions I" :
+                      wId === 6 ? "★ Repeated Games" :
+                      wId === 5 ? "Strategic Moves" :
+                      wId === 4 ? "Mixed Strategies" :
+                      wId === 3 ? "Nash Equilibrium" :
+                      wId === 2 ? "Sequential Trees" : "Intro Dilemmas";
                     return (
                       <button
                         key={wId}
@@ -3634,7 +3705,7 @@ const MIXED_STRATEGY_PRESETS = [
                             : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                         }`}
                       >
-                        Week {wId} {wId === 6 ? `★ Repeated Games (${count})` : `(${count})`}
+                        Week {wId}: {weekBadge} ({count})
                       </button>
                     );
                   })}
