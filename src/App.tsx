@@ -5,6 +5,7 @@ import { DominanceSolvableMatrix } from "./components/DominanceSolvableMatrix";
 import { CommitmentGameTree } from "./components/CommitmentGameTree";
 import { MixedStrategyVisualizer } from "./components/MixedStrategyVisualizer";
 import { RepeatedGameSimulator } from "./components/RepeatedGameSimulator";
+import { AuctionSimulator } from "./components/AuctionSimulator";
 
 // --- Clean Inline Lucide Icons ---
     const Icon = ({ name, className = "w-5 h-5", ...props }) => {
@@ -728,6 +729,106 @@ import { RepeatedGameSimulator } from "./components/RepeatedGameSimulator";
       ]
     };
 
+    const WEEK7_RECAP = {
+      weekId: 7,
+      title: "Course Recap: Auctions I — Bidding, Information, and Auction Rules",
+      chineseTitle: "課堂精華回顧：拍賣與競價策略（上）— 四種基本拍賣機制與競價策略",
+      duration: "3 Hours • Mechanism Design & Bidding Lab",
+      markdownPath: "./recaps/week07-recap.md",
+      academicTakeaway: "When values are private, auction rules shape what bidders reveal and how aggressively they compete.",
+      chineseTakeaway: "當估值屬於私有資訊時，拍賣機制的規則將從根本上決定競標者如何揭露資訊，以及競爭的激烈程度。",
+      readTime: "12 min read • Executive Synthesis (Slides 1–31)",
+      intro: "Week 7 transitions from repeated interactions over time (Week 6) to asymmetric private information and auction mechanisms. Auctions map submitted bids into allocations and payments. When sellers cannot directly observe buyers' valuations, mechanism rules determine whether bidders reveal their true willingness to pay or strategically shade bids. This seminar examines the four canonical auction formats (First-Price Sealed-Bid, Second-Price/Vickrey, English Ascending, Dutch Descending), the mathematical proof of weak dominance for truthful bidding in Vickrey auctions, optimal bid shading b*(v) = [(n-1)/n] · v, the Revenue Equivalence Theorem benchmark, the Winner's Curse in common-value assets, platform proxy bidding, and multi-attribute procurement scoring.",
+      sections: [
+        {
+          id: "w7-opening-dilemma",
+          title: "Opening Decision: A License Worth HK$100,000",
+          chineseTitle: "開篇抉擇：價值十萬港元的營運牌照競標",
+          content: [
+            "Your firm values an exclusive commercial operating license at HK$100,000. You submit a sealed bid against a rival whose valuation is unknown.",
+            "Under Rule A (First-Price): Highest bid wins and pays their own bid. Bidding HK$100,000 guarantees zero profit upon winning; you must shade downward.",
+            "Under Rule B (Second-Price): Highest bid wins and pays the highest losing bid. Bidding your exact HK$100,000 valuation is weakly dominant: your bid decides whether you win, but the rival's bid determines what you pay."
+          ]
+        },
+        {
+          id: "w7-canonical-formats",
+          title: "The Four Canonical Auction Formats & Equivalence Pairs",
+          chineseTitle: "四種經典拍賣機制與策略等價配對",
+          comparison: [
+            {
+              format: "First-Price Sealed Bid (FPSB)",
+              rule: "Confidential sealed bids; highest bid wins and pays own bid.",
+              strategy: "Strategic bid shading: b*(v) = [(n-1)/n] · v under risk neutrality."
+            },
+            {
+              format: "Second-Price Sealed Bid (Vickrey)",
+              rule: "Confidential sealed bids; highest bid wins and pays second-highest bid.",
+              strategy: "Truthful revelation: b*(v) = v is weakly dominant."
+            },
+            {
+              format: "English Open Ascending",
+              rule: "Price ticks upward continuously until only one bidder remains.",
+              strategy: "Stay active until price reaches valuation; resembles Second-Price."
+            },
+            {
+              format: "Dutch Open Descending Clock",
+              rule: "Price ticks downward continuously until the first bidder accepts.",
+              strategy: "Wait until price hits shaded target; strategically equivalent to First-Price."
+            }
+          ]
+        },
+        {
+          id: "w7-vickrey-dominance",
+          title: "Why Truthful Bidding is Weakly Dominant in Second-Price",
+          chineseTitle: "為何在次價拍賣中「誠實報價」是弱佔優策略",
+          content: [
+            "If the highest rival bid r < v: Bidding v wins and yields positive surplus v - r. Underbidding below r forfeits this profitable transaction; underbidding above r does not reduce your payment (you still pay r).",
+            "If the highest rival bid r > v: Bidding v loses and pays 0. Overbidding above r causes you to win at a price exceeding your valuation, resulting in negative surplus v - r < 0.",
+            "Conclusion: Truthful bidding b = v is at least as good as any alternative bid for every conceivable rival bid!"
+          ]
+        },
+        {
+          id: "w7-first-price-shading",
+          title: "First-Price Bid Shading: The Winning Prob vs Margin Trade-off",
+          chineseTitle: "首價拍賣競價折讓：得標機率與利潤空間的精確權衡",
+          formula: "b*(v) = [(n - 1) / n] · v",
+          derivation: "Higher bid increases win probability P(win) = [b/V_max]^(n-1) but reduces margin (v - b). First-order condition of expected profit (v - b) · [b/V_max]^(n-1) yields b*(v) = [(n-1)/n] · v.",
+          riskEffect: "Risk-averse bidders shade less aggressively (b*(v) = [(n-1)/(n-1+α)] · v) because the fear of losing outweighs marginal profit."
+        },
+        {
+          id: "w7-revenue-equivalence",
+          title: "The Revenue Equivalence Theorem & The 4 Strict Assumptions",
+          chineseTitle: "收益等價定理及其四項嚴格前置假設",
+          content: [
+            "Benchmark Theorem: Under risk neutrality, symmetry, independent private values (IPV), and efficient allocation to the highest-valuing bidder, all 4 canonical formats generate identical expected seller revenue: E[Revenue] = [(n-1)/(n+1)] · V_max.",
+            "Intuition: Strategic bid shading in First-Price exactly compensates for the lower payment rule in Second-Price on average.",
+            "Breakdown Conditions: Risk aversion causes First-Price to yield higher revenue; common values cause English auctions to reveal information and yield higher revenue."
+          ]
+        },
+        {
+          id: "w7-winners-curse",
+          title: "The Winner's Curse in Common-Value Settings",
+          chineseTitle: "共同價值拍賣與「贏家詛咒」逆向選擇風險",
+          content: [
+            "When asset value V is shared (mineral reserves, spectrum, corporate acquisitions), private signals s_i = V + ε_i are noisy.",
+            "The winner is systematically the bidder with the most optimistic positive estimation error max(ε_i).",
+            "Winning is informative: every rival estimated less. Naive bidders who bid unconditional estimates E[V|s_i] overpay and suffer post-award losses.",
+            "Rational Bidding Rule: Condition your bid on the hypothetical event of winning: b*(s_i) = E[V | s_i = max_j s_j] < s_i."
+          ]
+        },
+        {
+          id: "w7-procurement-scoring",
+          title: "Reverse Auctions & Multi-Attribute Procurement Scoring",
+          chineseTitle: "採購反向拍賣與價格-品質雙維度評分機制",
+          takeaways: [
+            "Ordinary auctions have 1 seller and many buyers (highest bid wins); reverse procurement auctions have 1 buyer and many suppliers (lowest acceptable offer wins).",
+            "Awarding solely on the lowest price creates severe adverse selection, contractor default, and execution delay.",
+            "Modern procurement mechanisms deploy formulaic two-dimensional scoring: Total Score = w_p · PriceScore + w_q · QualityScore to ensure operational delivery."
+          ]
+        }
+      ]
+    };
+
     // --- Complete 12-Week Curriculum Data Architecture ---
     const CURRICULUM_DATA = [
       {
@@ -1141,38 +1242,48 @@ import { RepeatedGameSimulator } from "./components/RepeatedGameSimulator";
       },
       {
         id: 7,
-        title: "Auctions & Bidding Strategy (Part 1)",
-        chineseTitle: "拍賣與競價策略（上）：四種基本拍賣機制",
-        status: "upcoming",
-        duration: "3 Hours • Procurement & Bidding Lab",
+        title: "Week 7: Auctions I — Bidding, Information, and Auction Rules",
+        chineseTitle: "拍賣與競價策略（上）：四種基本拍賣機制與競價策略",
+        status: "active",
+        duration: "3 Hours • Mechanism Design & Bidding Lab",
         preReadingUrl: "https://x.com/kochiuyu/status/2040217851693609308",
+        recap: WEEK7_RECAP,
         coreConcepts: [
-          "Ascending (English) Auctions",
-          "Descending Clock (Dutch) Auctions",
           "First-Price Sealed-Bid (FPSB) Strategic Shading",
-          "Vickrey Second-Price (SPSB) Truth-Telling Dominance",
-          "Revenue Equivalence Theorem & Private Value Environments"
+          "Vickrey Second-Price (SPSB) Weak Dominance",
+          "English Ascending vs. Dutch Descending Formats",
+          "Private Values vs. Common Values & Winner's Curse",
+          "Revenue Equivalence Theorem & Benchmark Assumptions",
+          "Platform Proxy Bidding & Digital Ad Opportunities",
+          "Reverse Auctions & Two-Dimensional Procurement Scoring"
         ],
         businessCases: [
-          "Offshore Wind Lease Auctions (UK Crown Estate)",
-          "US Treasury Debt Issuance Auctions",
-          "Corporate Procurement Reverse Auctions (General Electric)",
-          "Christie's & Sotheby's Fine Art Bidding Dynamics"
+          "Commercial Operating License Allocation (HK$100,000 Dilemma)",
+          "Platform Proxy Bidding Mechanics (eBay Automatic Bidding)",
+          "Digital Search Advertising Clicks & Quality Scores (Google Ads)",
+          "Radio Spectrum Combinatorial Packaging (Complements & Substitutes)",
+          "Corporate Sourcing & Two-Dimensional Reverse Procurement"
         ],
         slidePath: "./slides/week07.pdf",
-        pageCount: 42,
-                caseAnalysis: {
-          title: "Offshore Wind Seabed Lease Procurement Auction",
-          subtitle: "First-Price vs. Second-Price Sealed Bidding in Energy Infrastructure",
-          scenario: "A government energy agency auctions a prime 2GW offshore wind lease area. EnerCo values the lease at 00M based on its proprietary turbine grid connection, while rival WindPower values it at 20M. Both know their own private valuation, while valuations are independently uniformly distributed over [00M, ,000M].",
-          prompt: "Contrast EnerCo's optimal bidding strategy under a First-Price Sealed-Bid (FPSB) auction vs. a Second-Price Vickrey Auction (SPSB).",
+        pageCount: 31,
+        executiveSummary: [
+          "Auctions are formal allocation-and-payment mechanisms: when sellers do not know buyers' private willingness to pay, auction rules dictate how aggressively buyers bid.",
+          "Second-Price Truthful Revelation: in a Vickrey second-price auction, bidding your exact valuation (b = v) is a weakly dominant strategy regardless of rival behavior.",
+          "First-Price Bid Shading: bidding full value guarantees zero profit; risk-neutral bidders with uniform values shade bids to b*(v) = [(n-1)/n] · v to maximize expected surplus.",
+          "Revenue Equivalence Benchmark: under risk neutrality, symmetry, independent private values, and efficient allocation, all four canonical formats yield identical expected seller revenue.",
+          "The Winner's Curse: in common-value assets, winning implies your estimate was the most optimistic error among all bidders; rational bidding requires downward shading for adverse selection."
+        ],
+        caseAnalysis: {
+          title: "The Commercial License Allocation: Rule A (First-Price) vs. Rule B (Second-Price)",
+          subtitle: "Strategic Bid Shading vs. Truthful Revelation in Government Concessions",
+          scenario: "A municipal transport authority allocates one exclusive commercial operating license. Your firm values the license at HK$100,000 based on projected operational cash flows. A competing rival values the license based on their own proprietary fleet costs. Valuations are private and independently distributed over [HK$0, HK$100,000]. The authority considers two mechanism rules: Rule A (First-Price Sealed Bid, where the highest bid wins and pays their own bid) and Rule B (Second-Price Sealed Bid, where the highest bid wins and pays the highest losing bid).",
+          prompt: "Analyze the optimal bidding strategy under Rule A versus Rule B. Explain why bidding HK$100,000 under Rule A is a strategic mistake, while bidding HK$100,000 under Rule B is weakly dominant.",
           solution: {
-            equilibrium: "SPSB: Bid true valuation b* = 00M (weakly dominant). FPSB: Shade bid b* = E[V_rival | V_rival < 800] = 500 + (800 - 500)/2 = 50M.",
-            breakdown: "In a second-price auction, your bid determines winning but not the price paid; truthful bidding is strictly optimal. In a first-price auction, bidding your valuation guarantees zero surplus, creating an optimal tradeoff between winning probability and profit margin.",
-            managerialTakeaway: "Never shade your bid in second-price auctions. In first-price auctions, shade bids strategically based on the distribution of competitor numbers and valuation density."
+            equilibrium: "Rule A (First-Price): Optimal bid is b*(v) = [(2-1)/2] · HK$100,000 = HK$50,000. Rule B (Second-Price): Optimal bid is b*(v) = HK$100,000 (weakly dominant).",
+            breakdown: "1. Under Rule A: If you bid HK$100,000 and win, your profit is exactly HK$100,000 - HK$100,000 = HK$0. By shading your bid to HK$50,000, you balance a 50% probability of winning against a 50% profit margin, earning expected surplus of (HK$100k - HK$50k) · 0.50 = HK$25,000. 2. Under Rule B: Your submitted bid determines only whether you win, but NOT what you pay. If the rival bids r < HK$100k, bidding HK$100k wins and pays r, capturing positive surplus HK$100k - r. Bidding less than HK$100k does not lower your payment, but risks losing the license when the rival bids between your underbid and HK$100k! Overbidding above HK$100k risks winning when r > HK$100k, creating a catastrophic loss (HK$100k - r < 0).",
+            managerialTakeaway: "Mechanism Design Axiom: In second-price auctions, never shade your bid—bid your exact valuation. In first-price auctions, never bid your full valuation—shade strategically based on the intensity of rival competition and your corporate risk tolerance."
           }
-        },
-        upcomingNote: "Bidding calculator workbook and procurement scenario packet available prior to session."
+        }
       },
       {
         id: 8,
@@ -1691,6 +1802,86 @@ import { RepeatedGameSimulator } from "./components/RepeatedGameSimulator";
         ],
         correctIndex: 0,
         rationale: "Monitoring Noise and Recovery: In real-world business, observation is noisy (unobservable secret discounts vs macroeconomic demand shocks). Under Grim Trigger, a single false alarm permanently destroys cooperation forever. Sophisticated tacit alliances deploy forgiveness conventions, limited-period retaliations (Green & Porter style), or verified audit clearinghouses to avoid ruinous accidental wars."
+      },
+      {
+        id: "q20",
+        weekId: 7,
+        weekTag: "Week 7: Auctions I — Vickrey Weak Dominance",
+        title: "Second-Price Sealed-Bid (Vickrey) Truthful Bidding Dominance",
+        scenario: "A logistics company participates in a second-price sealed-bid auction for an exclusive port operating permit. Internal NPV analysis values the permit at exactly $100,000. The CFO considers submitting a lower bid of $80,000 to 'be cautious', or an aggressive bid of $120,000 to 'ensure winning'.",
+        question: "Why does bidding the exact valuation of $100,000 weakly dominate both $80,000 and $120,000 for any possible highest rival bid r?",
+        options: [
+          "Bidding $100,000 never increases the payment when winning (since the winner pays the second-highest bid r), while underbidding to $80,000 risks losing profitable outcomes when 80,000 < r < 100,000, and overbidding to $120,000 risks winning at a loss when 100,000 < r < 120,000.",
+          "Because bidding any amount other than your true valuation is strictly prohibited under Federal Reserve banking regulations.",
+          "Because the winner of a second-price auction must pay the exact average of all submitted bids.",
+          "Because underbidding guarantees that the second-highest bid will also decrease proportionally."
+        ],
+        correctIndex: 0,
+        rationale: "In a second-price sealed-bid auction, your bid determines whether you win, but NOT what you pay. If the highest rival bid r < $100,000, bidding $100,000 wins and pays r (surplus $100,000 - r > 0); underbidding to $80,000 either pays the exact same r or causes you to lose when 80k < r < 100k! If r > $100,000, bidding $100,000 loses cleanly and pays $0; overbidding to $120,000 risks winning when 100k < r < 120k and paying r > $100,000, yielding negative surplus. Truthful bidding b = v is a weakly dominant strategy."
+      },
+      {
+        id: "q21",
+        weekId: 7,
+        weekTag: "Week 7: Auctions I — First-Price Strategic Shading",
+        title: "First-Price Sealed-Bid Equilibrium Shading with n Symmetric Bidders",
+        scenario: "In an infrastructure procurement auction using First-Price Sealed-Bid rules, 4 symmetric, risk-neutral construction firms bid for a municipal concession. Valuations are independently and uniformly distributed between $0 and $200 million. EnerCo's private valuation is $160 million.",
+        question: "What is EnerCo's Bayesian Nash Equilibrium bid, and what strategic trade-off does this bid resolve?",
+        options: [
+          "Bid $120 million; it maximizes expected profit by balancing the probability of winning against the profit margin conditional on winning, following the symmetric equilibrium formula b*(v) = [(n-1)/n] · v = (3/4) · $160M.",
+          "Bid $160 million; bidding your exact valuation is always optimal across all auction mechanisms.",
+          "Bid $80 million; risk-neutral bidders always shade their bids by 50% regardless of the number of competitors.",
+          "Bid $200 million; submitting the maximum possible domain valuation guarantees winning without additional cost."
+        ],
+        correctIndex: 0,
+        rationale: "In a first-price auction, the winner pays their own bid. Bidding the true value of $160M yields zero profit upon winning. Each firm faces a trade-off: shading lower increases margin (v - b) if they win, but reduces win probability P(win) = (b/V_max)^(n-1). For n symmetric risk-neutral bidders with uniform valuations on [0, V_max], the unique Bayesian Nash Equilibrium bidding strategy is b*(v) = [(n-1)/n] · v. For n = 4 and v = $160M: b* = (3/4) · $160M = $120 million."
+      },
+      {
+        id: "q22",
+        weekId: 7,
+        weekTag: "Week 7: Auctions I — Revenue Equivalence Theorem",
+        title: "Revenue Equivalence Benchmark & The Role of Risk Aversion",
+        scenario: "A government treasury auctions $10 billion in debt securities. The economic advisory committee debates whether switching from a Second-Price mechanism (English/Vickrey) to a First-Price sealed-bid mechanism (Dutch/FPSB) will increase expected government revenue.",
+        question: "Under the Revenue Equivalence Theorem, when do both formats yield the exact same expected revenue, and how does risk aversion change this conclusion?",
+        options: [
+          "Both formats yield identical expected revenue under risk neutrality, bidder symmetry, independent private values, and efficient allocation; however, if bidders are risk-averse, the First-Price auction yields strictly higher expected seller revenue.",
+          "Both formats always yield identical revenue under all market conditions, including common values and risk aversion.",
+          "Second-Price auctions always yield 50% more revenue than First-Price auctions because the second-highest bid is higher than shaded bids.",
+          "First-Price auctions only yield revenue if there are fewer than three bidders."
+        ],
+        correctIndex: 0,
+        rationale: "The Revenue Equivalence Theorem (Vickrey 1961) establishes that under 4 strict assumptions (risk-neutral bidders, symmetric distribution of valuations, independent private values, and allocation to the highest-valuing bidder), all four canonical auction formats generate identical expected seller revenue. However, if bidders are risk-averse, they fear losing the auction more than paying a slightly higher price, causing them to shade less aggressively. Consequently, risk aversion makes First-Price auctions generate strictly higher expected revenue for the seller than Second-Price auctions."
+      },
+      {
+        id: "q23",
+        weekId: 7,
+        weekTag: "Week 7: Auctions I — Common Values & Winner's Curse",
+        title: "The Winner's Curse in Offshore Resource Extraction",
+        scenario: "Five energy conglomerates bid for an offshore deepwater oil drilling block. The actual quantity and market value of oil in the block is identical for all bidders ($500 million), but each firm conducts independent seismic testing, resulting in noisy estimates: s1 = $580M, s2 = $530M, s3 = $490M, s4 = $460M, s5 = $420M.",
+        question: "Why does naive bidding based on unconditional estimates lead to the Winner's Curse, and how must a rational bidder adjust?",
+        options: [
+          "Winning reveals that the winning bidder had the highest and most optimistic estimation error among all competitors; a rational bidder must condition their bid on the hypothesis of winning and shade their bid downward to account for adverse selection.",
+          "The winner's curse occurs because oil extraction equipment loses all salvage value after drilling commences.",
+          "A rational bidder should always bid double their signal to scare away competitors.",
+          "The winner's curse only occurs if competitors form an illegal bid-rigging cartel."
+        ],
+        correctIndex: 0,
+        rationale: "In common-value auctions, the underlying asset has a shared true value, but private signals are noisy. If all bidders submit bids based on their unconditional estimate E[V|s_i], the bidder with the largest positive error (s1 = $580M) wins and pays a price exceeding true value ($500M), suffering immediate financial losses! A rational bidder recognizes that winning is informative: winning implies having received the highest signal among all competitors. Therefore, rational bidding requires conditioning on E[V | s_i = max_j s_j] < s_i and shading downward to avoid the Winner's Curse."
+      },
+      {
+        id: "q24",
+        weekId: 7,
+        weekTag: "Week 7: Auctions I — Multi-Attribute Procurement",
+        title: "Two-Dimensional Sourcing: Price vs. Quality Scoring",
+        scenario: "A multinational technology conglomerate procures specialized cloud server infrastructure. The Chief Procurement Officer evaluates supplier bids using an announced evaluation formula: Total Score = 60% · Price Score + 40% · Quality/Reliability Score. A new vendor quotes an exceptionally low price that would score 100 on price, but receives a quality rating of only 55 due to lack of ISO security certifications.",
+        question: "Why does modern procurement mechanism design utilize two-dimensional scoring rather than a simple lowest-price reverse auction?",
+        options: [
+          "Pure lowest-price reverse auctions suffer from adverse selection and contractor default, where suppliers underbid below sustainable cost and later deliver substandard quality or fail to perform; multi-attribute scoring balances cost against delivery capability.",
+          "Two-dimensional scoring is designed solely to increase the total duration of the procurement cycle.",
+          "Because software servers cannot be purchased using monetary currency.",
+          "Because quality scores are mathematically guaranteed to decrease total corporate expenditure by 90%."
+        ],
+        correctIndex: 0,
+        rationale: "In industrial and enterprise procurement, price is not the sole dimension of value. A low bid is valuable only if the contractor can reliably deliver the required technical capability, security standards, and uptime reliability. Pure lowest-price auctions create adverse selection, attracting financially precarious vendors who submit unviable bids and subsequently deliver defective systems or declare bankruptcy. Announced multi-attribute scoring formulas formally balance price savings against execution reliability."
       }
     ];
 
@@ -1711,7 +1902,13 @@ import { RepeatedGameSimulator } from "./components/RepeatedGameSimulator";
       { id: "comp_13", label: "Calculate Tit-for-Tat alternating retaliation cycles and no-deviation conditions", category: "Dynamic Enforcement (W6)" },
       { id: "comp_14", label: "Solve asymmetric partnership thresholds δ ≥ max(δ₁*, δ₂*) and weakest-link risks", category: "Alliances & Asymmetry (W6)" },
       { id: "comp_15", label: "Decompose discount factors δ = p/(1+r) and leverage interaction frequency to stabilize cartels", category: "Executive Levers (W6)" },
-      { id: "comp_16", label: "Design forgiveness conventions to prevent permanent price wars under noisy monitoring", category: "Monitoring & Recovery (W6)" }
+      { id: "comp_16", label: "Design forgiveness conventions to prevent permanent price wars under noisy monitoring", category: "Monitoring & Recovery (W6)" },
+      { id: "comp_17", label: "Distinguish First-Price, Second-Price, English, and Dutch canonical auction rules", category: "Auction Mechanisms (W7)" },
+      { id: "comp_18", label: "Prove the weak dominance of truthful bidding (b = v) in Vickrey second-price auctions", category: "Mechanism Design (W7)" },
+      { id: "comp_19", label: "Calculate optimal Bayesian Nash equilibrium bid shading b*(v) = [(n-1)/n] · v in first-price auctions", category: "Strategic Bidding (W7)" },
+      { id: "comp_20", label: "Evaluate Revenue Equivalence benchmark conditions and identify when risk aversion breaks equivalence", category: "Revenue Equivalence (W7)" },
+      { id: "comp_21", label: "Adjust bidding strategies for adverse selection to mitigate the Winner's Curse in common-value assets", category: "Common Values & Risk (W7)" },
+      { id: "comp_22", label: "Structure two-dimensional price-quality scoring formulas in corporate reverse procurement auctions", category: "Enterprise Procurement (W7)" }
     ];
 
     // --- Curated Reference Tools & Mini-Games ---
@@ -3079,7 +3276,11 @@ const MIXED_STRATEGY_PRESETS = [
                 {/* SUBTAB 3: INTERACTIVE SIMULATOR */}
                 {weekSubTab === "simulator" && (
                   <div className="space-y-6">
-                    {selectedWeekId === 6 ? (
+                    {selectedWeekId === 7 ? (
+                      <div className="space-y-4">
+                        <AuctionSimulator />
+                      </div>
+                    ) : selectedWeekId === 6 ? (
                       <div className="space-y-4">
                         <RepeatedGameSimulator />
                       </div>
@@ -3176,6 +3377,17 @@ const MIXED_STRATEGY_PRESETS = [
                               Strategic Move Game Tree (Branching Out: Commitment vs. No Commitment)
                             </div>
                             <CommitmentGameTree initialK={1.0} />
+                          </div>
+                        )}
+
+                        {/* If Week 7, render interactive auction simulator */}
+                        {selectedWeek?.id === 7 && (
+                          <div className="space-y-2">
+                            <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                              Auction Mechanics & Bidding Strategy Lab (FPSB vs. SPSB vs. English vs. Dutch)
+                            </div>
+                            <AuctionSimulator />
                           </div>
                         )}
 

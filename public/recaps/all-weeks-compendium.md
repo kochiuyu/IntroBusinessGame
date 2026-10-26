@@ -756,3 +756,433 @@ Signing long-term exclusive content contracts establishes platform credibility, 
 
 #### Looking Ahead to Week 6:
 **Repeated Games & Dynamic Enforcement:** How repeated interactions, trigger strategies, and the shadow of the future enable cooperation without external contracts.
+
+
+---
+
+# Course Recap: Repeated Games — Cooperation, Punishment, and the Value of the Future
+
+**Course:** Game Theory for Business Strategy (商業策略博弈論)  
+**Lecture:** Week 6  
+**Instructor:** Prof. Chiu Yu Ko, CUHK Business School  
+**Academic Term:** Semester 2026–27 Term 1  
+**Core Maxim:** *"Future interaction can change what is rational today."*  
+**Chinese Maxim:** *未來的策略互動，能夠從根本上改變今天的理性選擇。*
+
+---
+
+## 1. Executive Overview: From Commitment to Repetition
+
+Week 6 transitions from **Strategic Moves and Irreversible Commitments** (Week 5) to **Dynamic Games and Repeated Interaction**. 
+
+| Dimension | Week 5: Strategic Commitment | Week 6: Repeated Games |
+| :--- | :--- | :--- |
+| **Primary Action** | Act now by sinking capital ($K$) or restricting choices | Play a stage game repeatedly over multiple time horizons |
+| **Mechanism** | Change future continuation incentives upfront | Observe past behaviour and condition future actions on history |
+| **Strategic Goal** | Influence a rival's subsequent choice in a sequential tree | Reward past cooperation and credibly punish opportunistic deviations |
+| **Flexibility** | Deliberately destroys or penalises own future flexibility | Preserves options while aligning ongoing incentives |
+| **Core Axiom** | *Commitment changes the future game* | *Repetition makes the future discipline the present* |
+
+In static games (Week 1 and Week 3), the Prisoner's Dilemma predicts inevitable margin destruction. When competitors know they will face each other again tomorrow, the promise of sustained mutual profitability—backed by the credible threat of retaliatory price wars—can transform cutthroat rivals into disciplined, tacitly cooperating partners.
+
+---
+
+## 2. Opening Decision: Price Competition Revisited
+
+### The Baseline Stage Game
+Two competing firms simultaneously decide whether to **Maintain** price margins or offer a secret **Discount** in each operating period:
+
+| Your Firm \ Rival | Rival: Maintain ($C$) | Rival: Discount ($D$) |
+| :--- | :---: | :---: |
+| **You: Maintain ($C$)** | $(4, 4)$ | $(1, 5)$ |
+| **You: Discount ($D$)** | $(5, 1)$ | $(2, 2)$ |
+
+*First payoff: Row Player (Your Firm); Second payoff: Column Player (Rival).*
+
+### Strategic Properties of the One-Shot Interaction:
+1. **Dominant Strategy:** For each firm, discounting yields a strictly higher immediate payoff:
+   - If rival Maintains: $5 > 4$ (Discounting grabs rival's customers and boosts market share).
+   - If rival Discounts: $2 > 1$ (Discounting defends market share from complete collapse).
+2. **Nash Equilibrium:** Both firms play their dominant strategy $[D, D]$, producing an equilibrium payoff of $(2, 2)$.
+3. **Collective Inefficiency:** Mutual maintenance $[C, C]$ yields $(4, 4)$—earning each firm double the profit.
+4. **The Central Strategic Question:** *Can the prospect of future interaction sustain Maintain–Maintain today without illegal explicit cartels?*
+
+---
+
+## 3. Today’s 6 Learning Outcomes
+
+By mastering Week 6, an executive can:
+1. **Distinguish** a single-period stage game from a dynamic repeated game.
+2. **Explain** why a known final period unravels cooperation through backward induction.
+3. **Compare** finite, indefinite, and infinite horizons in commercial relationships.
+4. **Contrast** the deterrence of Grim Trigger against the responsiveness of Tit for Tat.
+5. **Interpret** the economic meaning of the discount factor $\delta$ (cost of capital, continuation probability).
+6. **Calculate** the minimum discount factor $\delta^*$ required to sustain mutual cooperation.
+
+---
+
+## 4. Why a Known Final Period Unravels Cooperation
+
+Consider repeating the Prisoner's Dilemma for a fixed, publicly known number of rounds $T$ (e.g., a 10-year procurement contract expiring on December 31):
+
+1. **At Period $T$ (The Final Round):**  
+   There is no future tomorrow. No punishment can ever be executed. Period $T$ reduces identically to a one-shot game. Both firms' dominant strategy is to **Discount** (payoff $(2, 2)$).
+2. **At Period $T - 1$:**  
+   Both firms look ahead and recognize that period $T$ will inevitably end in $[D, D]$ regardless of what happens today. Maintaining price at $T - 1$ cannot protect tomorrow’s cooperation. Consequently, the incentive to discount at $T - 1$ is unconstrained. Both firms Discount at $T - 1$.
+3. **Backward Induction Unraveling:**  
+   The exact same backward-induction logic cascades all the way back to Period 1.
+
+> **The Backward-Induction Theorem:**  
+> *In any finitely repeated Prisoner's Dilemma with a known, fixed terminal date, mutual defection repeats in every single period.*
+
+---
+
+## 5. Three Ways to Model the Time Horizon
+
+To discipline opportunistic behavior in the present, players must face an **indefinite horizon** where the game never possesses an obvious "last round":
+
+| Horizon | Formal Meaning | Strategic Implication | Real-World Domain |
+| :--- | :--- | :--- | :--- |
+| **Finite, Known End** | Everyone knows the exact terminal period $T$. | Backward induction unravels cooperation completely from period 1. | Lame-duck CEOs, expiring short-term construction joint ventures. |
+| **Indefinite Horizon** | The interaction continues to next period with probability $p \in (0, 1)$. | There is never a certain final period; future discipline remains potent in every round. | Ongoing corporate supplier networks, platform partner ecosystems. |
+| **Infinite Horizon** | Theoretical benchmark with no terminal period ($t \to \infty$). | Tractable mathematical proxy for ongoing long-term business relationships. | Sovereign debt, global container shipping alliances, duopoly airline routes. |
+
+*Crucial Insight:* The essence of repeated-game cooperation is **not literal immortality**, but rather **the absence of a known final interaction**.
+
+---
+
+## 6. Two Foundational Repeated-Game Strategies
+
+A repeated-game strategy is a complete plan of action conditioning today's choice on the entire history of past play:
+
+### 1. Grim Trigger (Friedman 1971)
+- **Rule:** Begin by cooperating. Continue cooperating as long as nobody has ever defected. If the rival discounts even once, switch to cutthroat competition ($D$) **forever**.
+- **Strength:** Creates the maximum possible deterrent penalty, lowering the required patience ($\delta^*$) needed to maintain peace.
+- **Weakness:** Exceptionally fragile. A single data error, miscommunication, or external demand shock triggers permanent price war destruction.
+
+### 2. Tit for Tat (Axelrod 1984)
+- **Rule:** Begin by cooperating. In every subsequent period, exactly copy the rival's action from the previous period.
+- **Strength:** Highly forgiving and transparent. Punishment ceases immediately once the rival resumes cooperation.
+- **Weakness:** Vulnerable to echoing retaliation cycles (defects trigger alternating counter-defects).
+
+---
+
+## 7. The Discount Factor $\delta$: Patience & The Value of the Future
+
+The discount factor $\delta \in [0, 1]$ measures how strongly a decision-maker values future earnings relative to cash in hand today:
+
+$$\delta = \frac{p}{1 + r}$$
+
+Where:
+- $p$ is the probability that the business relationship continues into the next period.
+- $r$ is the firm's cost of capital / interest rate per period.
+
+### Interpretation:
+- A payoff of $4$ received next period is worth $4\delta$ today.
+- A payoff of $4$ received two periods later is worth $4\delta^2$ today.
+- **High $\delta$ ($\delta \to 1$):** High patience, low interest rates, highly stable and ongoing market relationship $\implies$ **Cooperation is easy**.
+- **Low $\delta$ ($\delta \to 0$):** High short-term pressure, quarterly earnings desperation, high risk of disruption $\implies$ **Cooperation collapses**.
+
+---
+
+## 8. Step-by-Step Mathematical Derivations
+
+### Derivation 1: Value of Cooperating Forever ($V_C$)
+Under mutual cooperation $[C, C]$, each firm earns $4$ in every period:
+
+$$V_C = 4 + 4\delta + 4\delta^2 + 4\delta^3 + \dots = \sum_{t=0}^{\infty} 4\delta^t$$
+
+Using the geometric series formula $\sum_{t=0}^{\infty} a r^t = \frac{a}{1 - r}$ for $|r| < 1$:
+
+$$V_C = \frac{4}{1 - \delta}$$
+
+### Derivation 2: Value of Deviating Once under Grim Trigger ($V_D$)
+If your firm chooses to cheat by offering a secret discount in Period 1:
+- Today ($t=0$): You capture the unilateral temptation payoff of $5$ (while rival gets $1$).
+- Tomorrow onward ($t \ge 1$): The rival observes the discount and triggers permanent retaliatory punishment. Both firms discount forever, yielding $2$ in every continuation period.
+
+$$V_D = 5 + 2\delta + 2\delta^2 + 2\delta^3 + \dots = 5 + \frac{2\delta}{1 - \delta}$$
+
+### Derivation 3: The Critical Threshold $\delta^*$
+Cooperation is self-enforcing if and only if the present value of lasting cooperation is at least as large as the value of cheating:
+
+$$V_C \ge V_D \iff \frac{4}{1 - \delta} \ge 5 + \frac{2\delta}{1 - \delta}$$
+
+Multiplying both sides by $(1 - \delta)$:
+$$4 \ge 5(1 - \delta) + 2\delta$$
+$$4 \ge 5 - 5\delta + 2\delta$$
+$$4 \ge 5 - 3\delta$$
+$$3\delta \ge 1 \iff \mathbf{\delta \ge \frac{1}{3}}$$
+
+> **Economic Meaning of $\delta \ge \frac{1}{3}$:**  
+> As long as firms discount the future by less than $66.7\%$ per period (or probability of continuing exceeds $33.3\%$), the threat of future margin collapse from $4$ down to $2$ completely overcomes the one-time temptation to pocket an extra $5 - 4 = 1$.
+
+---
+
+### Derivation 4: General Grim Trigger Formula
+
+Let:
+- $R$ = Reward for mutual cooperation (e.g. $4$)
+- $T$ = Temptation payoff from unilateral deviation (e.g. $5$)
+- $P$ = Punishment payoff under punishment equilibrium (e.g. $2$)
+- $S$ = Sucker's payoff when cheated (e.g. $1$)
+
+The incentive constraint:
+$$\frac{R}{1 - \delta} \ge T + \frac{\delta P}{1 - \delta} \iff R \ge T(1 - \delta) + \delta P \iff \delta(T - P) \ge T - R$$
+
+$$\mathbf{\delta^* = \frac{T - R}{T - P}}$$
+
+#### Strategic Sensitivities:
+1. **Temptation Gain ($T - R$):** As the short-term prize from cheating increases, $\delta^*$ rises (cooperation becomes harder).
+2. **Punishment Severity ($R - P$):** As the punishment payoff $P$ decreases (harsher retaliatory pain), $\delta^*$ drops (cooperation becomes easier).
+
+---
+
+### Derivation 5: Asymmetric Relationships & Dual Thresholds
+
+In many supply chain partnerships, one firm is a dominant buyer and the other is a small supplier:
+
+$$\delta_1^* = \frac{T_1 - R_1}{T_1 - P_1}, \qquad \delta_2^* = \frac{T_2 - R_2}{T_2 - P_2}$$
+
+$$\mathbf{\text{Binding Condition: } \delta \ge \max(\delta_1^*, \delta_2^*)}$$
+
+Both parties must be sufficiently patient. The player with the larger temptation gain or milder punishment payoff is the **weakest link** whose threshold dictates whether the partnership survives.
+
+---
+
+### Derivation 6: Tit-for-Tat Alternating Retaliation
+
+If a firm deviates against exact Tit for Tat, play alternates between $[D, C]$ and $[C, D]$:
+Payoff sequence: $5, 1, 5, 1, \dots$
+
+$$V_{TFT} = 5 + \delta + 5\delta^2 + \delta^3 + \dots = \frac{5 + \delta}{1 - \delta^2}$$
+
+Comparing $\frac{4}{1 - \delta} \ge \frac{5 + \delta}{1 - \delta^2} \implies \frac{4(1 + \delta)}{1 - \delta^2} \ge \frac{5 + \delta}{1 - \delta^2} \implies 4 + 4\delta \ge 5 + \delta \implies 3\delta \ge 1 \implies \mathbf{\delta \ge \frac{1}{3}}$.
+
+---
+
+## 9. Practical Realities: Monitoring & Recovery
+
+In theoretical models, actions are observed with $100\%$ precision without delay. In executive reality:
+
+1. **The Monitoring Problem:**
+   - Secret volume rebates, non-price perks, and customized enterprise bundling mask cheating.
+   - External market downturns (e.g., industry demand drop) look indistinguishable from competitor price cuts.
+2. **The Recovery Problem:**
+   - Permanent Grim Trigger punishment destroys trillions in enterprise value after a simple false positive.
+   - Sustainable commercial alliances require **monitoring conventions** (industry transparency indices, audits) and **forgiving reset mechanisms** (e.g., Contrite Tit-for-Tat, finite punishment phases).
+
+---
+
+## 10. Common Executive Pitfalls to Avoid
+
+| Common Mistake | Executive Correction |
+| :--- | :--- |
+| **Treating repeated play as independent one-shot rounds** | Explicitly define how tomorrow's action depends on yesterday's history. |
+| **Ignoring the known contract expiration date** | Anticipate end-of-contract unraveling; restructure contracts with automatic renewals or performance earnouts. |
+| **Adding future profits without discounting** | Weight period $t$ payoffs by $\delta^t$; cash today is not cash in 5 years. |
+| **Checking only one player in asymmetric alliances** | Always compute separate thresholds for both buyer and supplier. |
+| **Assuming punishment is automatic and costless** | Ensure retaliatory threats are observable, attributable, and credible to execute. |
+
+
+---
+
+# Course Recap: Auctions I — Bidding, Information, and Auction Rules (Week 7)
+
+**Course:** Game Theory for Business Strategy (商業策略博弈論)  
+**Course Level:** Executive Master & MBA  
+**Academic Term:** Semester 2026–27 Term 1  
+**Motto:** *"When values are private, auction rules shape what bidders reveal and how aggressively they compete."*  
+**Instructor:** Prof. Chiu Yu Ko, CUHK Business School  
+
+---
+
+## 1. Executive Summary & The Transition from Week 6 to Week 7
+
+| Dimension | Week 6: Repeated Games | Week 7: Auctions & Mechanism Design |
+| :--- | :--- | :--- |
+| **Information Structure** | Symmetrical or historical observation | **Private Information** (private valuations & signals) |
+| **Strategic Levers** | Future rewards and punishments, patience ($\delta$) | **Allocation and Payment Rules** |
+| **Strategy Space** | History-dependent actions across time | **Strategic Bidding Functions** $b_i(v_i)$ |
+| **Core Principle** | *Repetition changes incentives across time* | *Auctions change incentives through rules* |
+
+Auctions are formal economic mechanisms that map submitted bids into **allocations** (who gets what) and **payments** (who pays what). In conventional competitive markets, buyers are price-takers. In an auction, buyers actively determine or influence transaction prices under severe uncertainty about rivals' private valuations.
+
+---
+
+## 2. Opening Executive Decision: A Licence Worth HK$100,000
+
+Consider an opening dilemma: Your firm and a competitor submit sealed bids for an exclusive commercial operating licence. Your corporate valuation of the licence is **HK$100,000**. You do not know your rival's valuation or planned bid.
+
+- **Rule A (First-Price):** Highest bid wins; winner pays their **own bid**.
+- **Rule B (Second-Price):** Highest bid wins; winner pays the **highest losing bid** (second price).
+
+### Key Insight:
+Should you submit the exact same bid under both rules? **No!**
+- Under Rule A, bidding HK$100,000 guarantees **zero profit** even if you win ($100,000 - 100,000 = 0$). You must strategically **shade your bid** below HK$100,000.
+- Under Rule B, your bid decides only **whether you win**, not **what you pay**. Bidding your exact valuation of HK$100,000 is a **weakly dominant strategy**.
+
+---
+
+## 3. Valuation Environments: Private Value vs. Common Value
+
+Before analyzing bidding rules, an executive must classify the **informational environment**:
+
+| Environment | Economic Definition | Corporate Examples | Strategic Question |
+| :--- | :--- | :--- | :--- |
+| **Private Value** | A bidder's valuation depends exclusively on its own internal preferences, cost structure, or end-use utility. Learning rivals' valuations would not alter own value. | Art acquired for personal enjoyment, custom manufacturing equipment, proprietary internal software licenses. | *"What is this asset worth to my specific business?"* |
+| **Common Value** | The underlying asset possesses a shared, objective monetary value across all competitors, but bidders hold imperfect, noisy private signals or engineering estimates. | Offshore oil drilling blocks, company acquisition for resale, 5G wireless spectrum rights, government mineral extraction. | *"Would learning rivals' signals change my estimate of the asset's true value?"* |
+
+---
+
+## 4. The Four Canonical Auction Formats
+
+Every auction mechanism consists of an **allocation rule** and a **payment rule**:
+
+```
+                       ┌───────────────────────────────┐
+                       │    Canonical Auction Formats  │
+                       └──────────────┬────────────────┘
+                                      │
+            ┌─────────────────────────┴─────────────────────────┐
+            ▼                                                   ▼
+     [ Sealed Bids ]                                     [ Open Formats ]
+   ┌────────────────────────────────┐                  ┌────────────────────────────────┐
+   │ 1. First-Price Sealed Bid      │                  │ 3. English Ascending           │
+   │    Highest bid wins, pays own  │                  │    Price rises until 1 remains │
+   │ 2. Second-Price Sealed (Vickrey│                  │ 4. Dutch Descending Clock      │
+   │    Highest bid wins, pays 2nd  │                  │    Price drops until 1 accepts │
+   └────────────────────────────────┘                  └────────────────────────────────┘
+```
+
+### Strategic Equivalence Pairs:
+1. **English Open Ascending $\approx$ Second-Price Sealed Bid (Vickrey):**  
+   In an English ascending auction with private values, each bidder remains active until the standing price reaches their valuation. The auction terminates the instant the second-highest bidder drops out. The winner acquires the asset at approximately the second-highest valuation!
+2. **Dutch Open Descending $\approx$ First-Price Sealed Bid:**  
+   In a Dutch clock auction, no information is revealed while the clock ticks downward. The first bidder to hit the buzzer wins and immediately pays that standing clock price. Deciding when to stop the clock requires balancing the exact same trade-off as choosing a sealed bid in a first-price auction.
+
+---
+
+## 5. Second-Price Auction: Why Truthful Bidding ($b=v$) is Weakly Dominant
+
+In a private-value Second-Price (Vickrey) auction, **bidding your true valuation ($b^* = v$) is a weakly dominant strategy**. It yields a payoff at least as high as any alternative bid, regardless of the highest rival bid $r$.
+
+### Mathematical Dominance Proof:
+Let your true valuation be $v$, your submitted bid be $b$, and the highest rival bid be $r$:
+
+1. **Scenario 1: Highest Rival Bid Below Your Value ($r < v$):**
+   - You want to win because the transaction is profitable: Surplus $= v - r > 0$.
+   - **Bidding $b = v$:** Wins and pays $r$, yielding positive surplus $v - r > 0$.
+   - **Underbidding ($b < v$):** If you underbid below $r$ ($b < r < v$), you **lose** the auction, earning $0$ instead of $v - r$. If you underbid above $r$ ($r < b < v$), you still pay $r$. Underbidding never reduces your payment; it only creates the risk of losing profitable deals!
+
+2. **Scenario 2: Highest Rival Bid Above Your Value ($r > v$):**
+   - You want to lose because winning requires paying more than the item is worth: $v - r < 0$.
+   - **Bidding $b = v$:** Loses cleanly and pays nothing, yielding surplus $0$.
+   - **Overbidding ($b > v$):** If you overbid above $r$ ($v < r < b$), you win the item but must pay $r > v$, suffering a **net loss** ($v - r < 0$). If you overbid below $r$ ($v < b < r$), you still lose. Overbidding never improves your surplus; it only introduces the catastrophic risk of winning at an unprofitable price!
+
+> **The Vickrey Separation Principle:**  
+> *Your bid determines whether you win; the rival's bid determines what you pay.*
+
+---
+
+## 6. First-Price Auction: The Bid-Shading Optimization Trade-off
+
+In a First-Price auction, the winner pays their **own bid**. Bidding your true value ($b = v$) guarantees zero surplus upon winning ($v - v = 0$). Bidders must strategically **shade their bids**.
+
+### The Fundamental Trade-off:
+- **Bid Higher ($b \uparrow$):** Increases the probability of winning $\Pr(\text{Win}) = F(b)^{n-1}$, but leaves a smaller profit margin conditional on winning $(v - b)$.
+- **Bid Lower ($b \downarrow$):** Captures a larger profit margin $(v - b)$ if you win, but increases the probability that a rival outbids you.
+
+### Risk-Neutral Symmetric Bayesian Nash Equilibrium:
+Under $n$ symmetric, risk-neutral bidders with private valuations distributed uniformly on $[0, V_{\max}]$:
+
+$$b^*(v) = \frac{n - 1}{n} v$$
+
+| Number of Bidders ($n$) | Equilibrium Bid $b^*(v)$ | Strategic Interpretation |
+| :---: | :---: | :--- |
+| **$n = 2$** | $b^*(v) = \frac{1}{2} v = 0.50 v$ | Heavy shading; low competitive pressure allows capturing 50% margin. |
+| **$n = 3$** | $b^*(v) = \frac{2}{3} v \approx 0.67 v$ | Moderate shading; rival competition disciplines discounts. |
+| **$n = 4$** | $b^*(v) = \frac{3}{4} v = 0.75 v$ | High competition; bidders bid 75% of value. |
+| **$n \to \infty$** | $b^*(v) \to v$ | Perfectly competitive limit; bid shading vanishes. |
+
+### The Impact of Risk Aversion:
+If bidders are **risk-averse** (represented by utility $u(w) = w^\alpha$ with $0 < \alpha < 1$):
+$$b^*(v) = \frac{n - 1}{n - 1 + \alpha} v > \frac{n - 1}{n} v$$
+Risk-averse executives **shade less aggressively** (bid higher) because the fear of losing entirely outweighs the desire for extra profit margin.
+
+---
+
+## 7. The Revenue Equivalence Theorem: Benchmark & Caveats
+
+### The Theorem (Vickrey 1961, Riley & Samuelson 1981):
+> Under four benchmark conditions, **all four canonical auction formats** (First-Price, Second-Price, English, Dutch) yield the **exact same expected seller revenue**!
+
+$$\mathbb{E}[\text{Seller Revenue}] = \frac{n - 1}{n + 1} V_{\max}$$
+
+### Intuition:
+Suppose four bidders value an asset at 10, 9, 8, and 7.
+- In a Second-Price auction, truthful bidding causes the bidder with valuation 10 to win and pay **9**.
+- In a First-Price auction, the winner pays their own bid, but shades it. Under equilibrium shading, the expected bid of the highest-valuation bidder equals **9**.
+Strategic bid adjustment perfectly offsets the apparent difference in payment rules on average!
+
+### The 4 Strict Assumptions (When Revenue Equivalence Breaks):
+1. **Risk Neutrality:** If bidders are risk-averse, First-Price auctions yield strictly **higher revenue** than Second-Price auctions because fear of losing forces aggressive bidding.
+2. **Symmetric Bidders:** If one bidder has a known structural advantage (e.g., an incumbent vs. an entrant), Second-Price auctions can suffer from entrant deterrence, while First-Price auctions may generate higher revenue.
+3. **Independent Private Values (IPV):** In common-value settings, English auctions reveal rivals' signals dynamically, mitigating the Winner's Curse and yielding higher seller revenue than sealed-bid formats.
+4. **Efficient Allocation to the Highest Valuation:** Reserve prices, bidder caps, and entry fees distort allocations.
+
+---
+
+## 8. The Winner's Curse in Common-Value Settings
+
+In common-value auctions (e.g., mineral rights, real estate redevelopment, tech acquisitions), the asset has a shared true value $V$, but each bidder receives an imperfect private signal $s_i = V + \epsilon_i$.
+
+### The Core Information Trap:
+- If all bidders submit bids based on their naive unconditional estimate $\mathbb{E}[V | s_i]$, **the winner is the bidder who received the highest, most optimistic error $\max(\epsilon_i)$**!
+- **Winning is informative:** The very fact that you won means that *every single competitor estimated the asset to be worth less than you did*.
+- If you failed to discount for this adverse selection in advance, you will overpay:
+
+$$\mathbb{E}[V \mid \text{Winning}] = \mathbb{E}[V \mid s_i > \max_{j \neq i} s_j] < \mathbb{E}[V \mid s_i]$$
+
+> **Executive Rule:**  
+> *Rational bidding requires conditioning your bid not on your unconditional estimate today, but on the hypothetical scenario that your estimate turns out to be the highest among all competitors.*
+
+---
+
+## 9. Modern Strategic Applications
+
+### 1. Platform Proxy Bidding (eBay Style):
+Bidders enter their maximum willingness to pay ($v$). The automated proxy agent raises the standing bid by the minimum required increment whenever a competitor bids, stopping strictly at the stated ceiling. This operationalizes an English ascending auction with minimal monitoring costs.
+
+### 2. Digital Search Advertising (Google Ads & GSP):
+Search engines allocate sponsored ad positions using **Generalized Second Price (GSP)** auctions. Advertisers submit maximum bids per click, which are multiplied by a Quality Score (CTR and relevance). The winner pays the minimum bid necessary to defeat the advertiser ranked directly below them.
+
+### 3. Spectrum Auctions:
+Governments allocate radio spectrum blocks characterized by **complementarities** (neighbouring geographic regions are more valuable together) and **substitutabilities** (overlapping frequencies cause technical redundancy). Designing spectrum auctions requires combinatorial clock package mechanics.
+
+### 4. Procurement & Reverse Auctions:
+In corporate procurement, one buyer solicits bids from multiple suppliers. The lowest bidder wins.
+- **Two-Dimensional Scoring:** Because low-cost suppliers often carry higher bankruptcy, delivery, or quality failure risks, enterprise buyers deploy formulaic scoring:
+$$\text{Total Score} = w_{\text{price}} \cdot \text{PriceScore} + w_{\text{quality}} \cdot \text{QualityScore}$$
+
+---
+
+## 10. Checklist for Auction Strategy & Analysis (Slide 25)
+
+When preparing to bid in or design an auction, execute this 6-step diagnostic checklist:
+
+1. **Define the Environment:** What object or package is being allocated? Who are the eligible competitors?
+2. **Classify Values:** Is this a private-value setting (own use/cost) or a common-value setting (shared resale/production asset)?
+3. **Inspect the Rules:** Are bids open or sealed? What is the allocation rule? What is the payment rule (own bid vs. second price)?
+4. **Check Information Flows:** What information is revealed before, during, and after bidding?
+5. **Derive the Strategic Incentive:** Should you bid truthfully (Second-Price / English) or shade your bid (First-Price / Dutch)?
+6. **Adjust for the Winner's Curse & Quality:** If common values exist, shade for adverse selection. If procurement, state verifiable minimum quality standards.
+
+---
+
+## 11. Exit Ticket Synthesis & Key Formulas
+
+- **Second-Price Truthful Bidding:** $b^*(v) = v$ (Weakly dominant in private values).
+- **First-Price Bid Shading:** $b^*(v) = \frac{n-1}{n} v$ (Under risk neutrality and uniform $[0, V_{\max}]$).
+- **Revenue Equivalence Benchmark:** $\mathbb{E}[\text{Revenue}] = \frac{n-1}{n+1} V_{\max}$ across all four canonical formats under IPV.
+- **Winner's Curse Correction:** $\text{Bid} = \mathbb{E}[V \mid s_i = \max_{j} s_j]$.

@@ -7,6 +7,7 @@ import { CommitmentGameTree } from "./CommitmentGameTree";
 import { MixedStrategyVisualizer } from "./MixedStrategyVisualizer";
 import { ElaboratedBusinessCasesView } from "./ElaboratedBusinessCasesView";
 import { RepeatedGameSimulator } from "./RepeatedGameSimulator";
+import { AuctionSimulator } from "./AuctionSimulator";
 
 interface LectureNotesViewProps {
   selectedWeek: {
@@ -539,8 +540,85 @@ export const LectureNotesView: React.FC<LectureNotesViewProps> = ({ selectedWeek
             </div>
           )}
 
-          {/* WEEKS 7+ EXECUTIVE MODULES OVERVIEW */}
-          {selectedWeek.id > 6 && (
+          {/* WEEK 7 BEGINNER INTUITION */}
+          {selectedWeek.id === 7 && (
+            <div className="space-y-6">
+              {/* Beginner Overview Card */}
+              <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-5 space-y-3">
+                <div className="flex items-center gap-2 text-emerald-900 font-bold text-base">
+                  <span>🌱</span> Week 7 in Plain English: How Auction Rules Shape Bidding and Value
+                </div>
+                <p className="text-emerald-950 text-xs sm:text-sm">
+                  In everyday retail, prices are fixed. But for high-stakes business assets—such as 5G spectrum bands, digital search ad clicks, corporate procurement contracts, and commercial licenses—sellers do not know buyers' private willingness to pay. <strong>Auctions are economic mechanisms that map bids into allocations (who gets the asset) and payments (what the winner pays)</strong>. The rules of the auction fundamentally dictate how aggressively you should bid!
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+                  <div className="bg-white p-3 rounded-lg border border-emerald-200 shadow-2xs">
+                    <strong className="text-emerald-900 block mb-1">1. Second-Price Dominance</strong>
+                    In a Vickrey (Second-Price) auction, the winner pays the second-highest bid. Bidding your exact true value is weakly dominant: your bid determines <em>whether</em> you win, not <em>what</em> you pay!
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-emerald-200 shadow-2xs">
+                    <strong className="text-emerald-900 block mb-1">2. First-Price Bid Shading</strong>
+                    In a First-Price auction, the winner pays their own bid. Bidding your full valuation yields zero profit! Rational bidders shade bids below value: b*(v) = [(n-1)/n] · v.
+                  </div>
+                  <div className="bg-white p-3 rounded-lg border border-emerald-200 shadow-2xs">
+                    <strong className="text-emerald-900 block mb-1">3. The Winner's Curse</strong>
+                    In shared-value assets (oil fields, spectrum), winning reveals your estimate was the most optimistic error among all bidders. Failing to shade down leads to negative profits!
+                  </div>
+                </div>
+              </div>
+
+              {/* Opening Decision & 4 Formats Card */}
+              <div className="border border-slate-200 rounded-xl p-5 bg-white space-y-3">
+                <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                  <span>⚖️</span> The Opening Dilemma: A License Worth HK$100,000
+                </h3>
+                <p className="text-slate-600 text-xs sm:text-sm">
+                  Suppose your company values an exclusive operating license at <strong>HK$100,000</strong>. You submit a sealed bid against a rival:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="font-bold text-blue-900 mb-1">Rule A: First-Price Sealed Bid</div>
+                    <p className="text-slate-700 text-[11px]">
+                      Highest bid wins, winner pays <strong>own bid</strong>. If you bid HK$100,000, your surplus is HK$0. You must strategically shade your bid downward.
+                    </p>
+                  </div>
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+                    <div className="font-bold text-emerald-900 mb-1">Rule B: Second-Price Sealed Bid</div>
+                    <p className="text-slate-700 text-[11px]">
+                      Highest bid wins, winner pays <strong>second-highest bid</strong>. Bidding your exact HK$100,000 valuation ensures you win whenever profitable and never overpay!
+                    </p>
+                  </div>
+                </div>
+
+                {/* Interactive Simulator Embedded */}
+                <div className="mt-4 pt-3 border-t border-slate-200 space-y-2">
+                  <div className="text-xs font-bold text-slate-900 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                    Interactive Auction Mechanics Simulator: 4 Canonical Formats, Vickrey Proof & Winner's Curse
+                  </div>
+                  <AuctionSimulator />
+                </div>
+              </div>
+
+              {/* Beginner Trap: Why Bidding True Value Fails in First-Price */}
+              <div className="border border-amber-200 bg-amber-50/40 rounded-xl p-5 space-y-3">
+                <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
+                  <span>⚠️</span> Beginner Pitfall Alert: "Should I Always Bid My True Valuation?"
+                </div>
+                <div className="text-xs text-slate-700 space-y-2">
+                  <p>
+                    <strong>ABSOLUTELY NOT!</strong> Truthful bidding (b = v) is optimal <em>only</em> in Second-Price (Vickrey) and English ascending auctions.
+                  </p>
+                  <p>
+                    In a First-Price or Dutch auction, bidding your true value guarantees that your profit margin is <strong>zero</strong> if you win: Surplus = Valuation - Bid = v - v = 0! You must shade your bid to balance the probability of winning against your profit margin.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* WEEKS 8+ EXECUTIVE MODULES OVERVIEW */}
+          {selectedWeek.id > 7 && (
             <div className="space-y-6">
               <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-5 space-y-3">
                 <div className="flex items-center gap-2 text-emerald-900 font-bold text-base">
@@ -832,6 +910,180 @@ export const LectureNotesView: React.FC<LectureNotesViewProps> = ({ selectedWeek
               </div>
               <span className="text-[11px] text-indigo-700 font-medium">Instant Feedback & Explanation</span>
             </div>
+
+            {selectedWeek.id === 7 && (
+              <div className="space-y-4 text-xs">
+                {/* Question 1 */}
+                <div className="bg-white p-4 rounded-lg border border-indigo-200 space-y-2">
+                  <div className="font-bold text-slate-900">
+                    Q1: In a second-price sealed-bid (Vickrey) private-value auction, you value an asset at $100. Why does submitting a truthful bid of exactly $100 weakly dominate submitting an underbid such as $80?
+                  </div>
+                  <div className="space-y-1.5">
+                    {[
+                      "An underbid never lowers what you pay when you win (since you pay the rival's bid), but risks losing the item whenever the highest competitor bids between $80 and $100 where winning would have yielded positive surplus.",
+                      "Because underbidding triggers an automatic fine from the auctioneer.",
+                      "Because in a second-price auction, the winner is forced to pay their own submitted bid.",
+                      "Underbidding is actually optimal whenever there are more than two bidders."
+                    ].map((opt, oIdx) => (
+                      <button
+                        key={oIdx}
+                        onClick={() => handleSelectQuiz("w7-q1", oIdx)}
+                        className={`w-full text-left p-2 rounded border transition-colors ${
+                          quizAnswers["w7-q1"] === oIdx
+                            ? oIdx === 0
+                              ? "bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold"
+                              : "bg-red-50 border-red-300 text-red-900"
+                            : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {String.fromCharCode(65 + oIdx)}. {opt}
+                      </button>
+                    ))}
+                  </div>
+                  {quizRevealed["w7-q1"] && (
+                    <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-emerald-950 text-[11px]">
+                      <strong>Explanation:</strong> Correct answer is <strong>A</strong>! In a second-price auction, your bid determines whether you win, while the rival's bid determines what you pay. Lowering your bid from $100 to $80 does not reduce your price if you win (you still pay the rival's bid r). However, if the highest rival bid r is between $80 and $100, bidding $80 causes you to lose an asset that would have yielded positive surplus ($100 - r &gt; 0)!
+                    </div>
+                  )}
+                </div>
+
+                {/* Question 2 */}
+                <div className="bg-white p-4 rounded-lg border border-indigo-200 space-y-2">
+                  <div className="font-bold text-slate-900">
+                    Q2: In a first-price sealed-bid auction with 4 symmetric, risk-neutral bidders whose private values are uniformly distributed over [0, $120], your private valuation is $100. What is your optimal equilibrium bid, and what trade-off does it solve?
+                  </div>
+                  <div className="space-y-1.5">
+                    {[
+                      "Bid $75; it maximizes expected profit by balancing the probability of winning against the profit margin conditional on winning, following b*(v) = [(n-1)/n] · v = (3/4) · $100.",
+                      "Bid $100; bidding true value is always optimal in any sealed-bid auction format.",
+                      "Bid $50; with 4 bidders, you should always shade your bid by half.",
+                      "Bid $120; bidding the maximum valuation guarantees winning at minimal cost."
+                    ].map((opt, oIdx) => (
+                      <button
+                        key={oIdx}
+                        onClick={() => handleSelectQuiz("w7-q2", oIdx)}
+                        className={`w-full text-left p-2 rounded border transition-colors ${
+                          quizAnswers["w7-q2"] === oIdx
+                            ? oIdx === 0
+                              ? "bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold"
+                              : "bg-red-50 border-red-300 text-red-900"
+                            : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {String.fromCharCode(65 + oIdx)}. {opt}
+                      </button>
+                    ))}
+                  </div>
+                  {quizRevealed["w7-q2"] && (
+                    <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-emerald-950 text-[11px]">
+                      <strong>Explanation:</strong> Correct answer is <strong>A</strong>! In a first-price auction, the winner pays their own bid. Bidding your true value ($100) gives zero surplus upon winning. The optimal equilibrium bid for n symmetric risk-neutral bidders with uniform values is b*(v) = [(n-1)/n] · v = [(4-1)/4] · $100 = (3/4) · $100 = $75. This peak balances the win probability (75/120)³ with the margin ($100 - $75 = $25).
+                    </div>
+                  )}
+                </div>
+
+                {/* Question 3 */}
+                <div className="bg-white p-4 rounded-lg border border-indigo-200 space-y-2">
+                  <div className="font-bold text-slate-900">
+                    Q3: Under what set of benchmark economic conditions do the four canonical auction formats (First-Price, Second-Price, English, Dutch) generate the exact same expected seller revenue?
+                  </div>
+                  <div className="space-y-1.5">
+                    {[
+                      "Risk-neutral bidders, symmetric competitors, independent private values (IPV), and efficient allocation to the highest-valuing bidder.",
+                      "Risk-averse bidders, common values, unlimited reserve prices, and secret side-deals.",
+                      "Monopoly sellers, complete information about competitor values, and English auction rules only.",
+                      "Revenue equivalence only holds when there are exactly two bidders and all bids are public."
+                    ].map((opt, oIdx) => (
+                      <button
+                        key={oIdx}
+                        onClick={() => handleSelectQuiz("w7-q3", oIdx)}
+                        className={`w-full text-left p-2 rounded border transition-colors ${
+                          quizAnswers["w7-q3"] === oIdx
+                            ? oIdx === 0
+                              ? "bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold"
+                              : "bg-red-50 border-red-300 text-red-900"
+                            : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {String.fromCharCode(65 + oIdx)}. {opt}
+                      </button>
+                    ))}
+                  </div>
+                  {quizRevealed["w7-q3"] && (
+                    <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-emerald-950 text-[11px]">
+                      <strong>Explanation:</strong> Correct answer is <strong>A</strong>! The Revenue Equivalence Theorem (Vickrey 1961, Riley & Samuelson 1981) proves that all four canonical formats generate identical expected seller revenue if bidders are risk neutral, symmetric, have independent private values (IPV), and the item is allocated efficiently to the highest-valuation bidder. If bidders are risk averse, First-Price yields strictly higher revenue!
+                    </div>
+                  )}
+                </div>
+
+                {/* Question 4 */}
+                <div className="bg-white p-4 rounded-lg border border-indigo-200 space-y-2">
+                  <div className="font-bold text-slate-900">
+                    Q4: In an auction for an offshore commercial extraction license whose true underlying market value is identical for all bidders, each firm receives a noisy geological estimate. Why is winning this auction dangerous if bidders bid naively based on their unconditional estimates?
+                  </div>
+                  <div className="space-y-1.5">
+                    {[
+                      "Winning reveals that your private estimate was the highest and most optimistic among all competitors; without downward bid shading, the winner systematically overpays relative to true asset value.",
+                      "Winning forces the firm to share all proprietary geological data with the government.",
+                      "The second-place bidder can legally sue the winner to confiscate the license.",
+                      "Extraction licenses automatically lose 50% of their market value the moment they are sold."
+                    ].map((opt, oIdx) => (
+                      <button
+                        key={oIdx}
+                        onClick={() => handleSelectQuiz("w7-q4", oIdx)}
+                        className={`w-full text-left p-2 rounded border transition-colors ${
+                          quizAnswers["w7-q4"] === oIdx
+                            ? oIdx === 0
+                              ? "bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold"
+                              : "bg-red-50 border-red-300 text-red-900"
+                            : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {String.fromCharCode(65 + oIdx)}. {opt}
+                      </button>
+                    ))}
+                  </div>
+                  {quizRevealed["w7-q4"] && (
+                    <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-emerald-950 text-[11px]">
+                      <strong>Explanation:</strong> Correct answer is <strong>A</strong>! The Winner's Curse: In common-value settings, winning is informative. The fact that you won implies every competitor received a lower estimate. If you bid based on your unconditional estimate E[V|s_i], you suffer from adverse selection because E[V | s_i = max_j s_j] &lt; E[V | s_i]. Rational bidding requires conditioning your bid on the event of winning and shading down to prevent post-award losses.
+                    </div>
+                  )}
+                </div>
+
+                {/* Question 5 */}
+                <div className="bg-white p-4 rounded-lg border border-indigo-200 space-y-2">
+                  <div className="font-bold text-slate-900">
+                    Q5: An enterprise procurement department solicits bids for critical mission software. Rather than awarding the contract solely to the lowest price bidder, the chief procurement officer uses an announced formula: Total Score = 60% · Price Score + 40% · Quality/Reliability Score. Why is this multi-attribute mechanism superior to a pure lowest-price reverse auction?
+                  </div>
+                  <div className="space-y-1.5">
+                    {[
+                      "Awarding purely on lowest price invites aggressive underbidding by financially fragile suppliers who may default, delay delivery, or compromise technical quality; multi-attribute scoring aligns price competition with delivery reliability.",
+                      "Two-dimensional scoring is legally mandated by the World Trade Organization for all purchases above $10,000.",
+                      "It guarantees that the highest-priced supplier always wins the contract.",
+                      "It completely eliminates the need to evaluate supplier technical credentials."
+                    ].map((opt, oIdx) => (
+                      <button
+                        key={oIdx}
+                        onClick={() => handleSelectQuiz("w7-q5", oIdx)}
+                        className={`w-full text-left p-2 rounded border transition-colors ${
+                          quizAnswers["w7-q5"] === oIdx
+                            ? oIdx === 0
+                              ? "bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold"
+                              : "bg-red-50 border-red-300 text-red-900"
+                            : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {String.fromCharCode(65 + oIdx)}. {opt}
+                      </button>
+                    ))}
+                  </div>
+                  {quizRevealed["w7-q5"] && (
+                    <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-emerald-950 text-[11px]">
+                      <strong>Explanation:</strong> Correct answer is <strong>A</strong>! In enterprise reverse auctions, price is not the only dimension of contract performance. A low bid is valuable only if the supplier possesses the operational capability to deliver the stated specification. Formulaic multi-attribute scoring evaluates price alongside verifiable quality, technical competence, and financial stability to avoid contractor default.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {selectedWeek.id === 6 && (
               <div className="space-y-4 text-xs">
@@ -1272,6 +1524,161 @@ export const LectureNotesView: React.FC<LectureNotesViewProps> = ({ selectedWeek
       {/* ========================================================================= */}
       {learningMode === "formal" && (
         <div className="space-y-6 text-slate-800 text-sm leading-relaxed animate-fadeIn">
+          {/* WEEK 7 FORMAL DERIVATIONS */}
+          {selectedWeek.id === 7 && (
+            <div className="space-y-6">
+              {/* Derivation 1: Vickrey Weak Dominance Proof */}
+              <div className="border border-slate-200 rounded-xl p-5 bg-white space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-base">
+                      1. Formal Algebraic Proof: Weak Dominance of Truthful Bidding in Vickrey (Second-Price) Auctions
+                    </h3>
+                    <p className="text-slate-600 text-xs">
+                      Rigorous proof showing that bidding b = v dominates underbidding and overbidding for any rival bid profile.
+                    </p>
+                  </div>
+                  <span className="text-xs font-mono bg-emerald-100 px-2 py-0.5 rounded text-emerald-800 font-bold">
+                    Vickrey Separation Theorem
+                  </span>
+                </div>
+
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-lg font-mono text-xs space-y-1.5">
+                  <div className="font-bold text-blue-900">Payoff Function under Second-Price Sealed Bid:</div>
+                  <div className="text-slate-800 text-[11px]">
+                    Let bidder i have private value v_i and submit bid b_i. Let r = max_{'{j \\ne i}'} b_j be the highest rival bid.<br />
+                    π_i(b_i, r) = (v_i - r) if b_i &gt; r, and 0 if b_i &lt; r (with tie-breaking share if b_i = r).
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  {/* Proof Case 1: Underbidding */}
+                  <div className="p-4 bg-amber-50/50 border border-amber-200 rounded-xl space-y-2">
+                    <div className="font-bold text-amber-950 flex items-center justify-between">
+                      <span>Case A: Underbidding b_i' &lt; v_i</span>
+                      <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-mono">b &lt; v</span>
+                    </div>
+                    <div className="font-mono bg-white p-2.5 rounded-lg border border-amber-200 space-y-1 text-slate-800 text-[11px]">
+                      <div>1. If r &lt; b_i' &lt; v_i: Both b_i and b_i' win and pay r. Payoff = v_i - r.</div>
+                      <div>2. If b_i' &lt; r &lt; v_i: Truthful bid v_i wins (payoff v_i - r &gt; 0). Underbid b_i' LOSES (payoff 0).</div>
+                      <div>3. If b_i' &lt; v_i &lt; r: Both lose and pay 0.</div>
+                      <div className="text-amber-900 font-bold pt-1 border-t border-amber-200">
+                        Result: π(v_i, r) ≥ π(b_i', r) for all r, strictly greater if b_i' &lt; r &lt; v_i.
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Proof Case 2: Overbidding */}
+                  <div className="p-4 bg-rose-50/50 border border-rose-200 rounded-xl space-y-2">
+                    <div className="font-bold text-rose-950 flex items-center justify-between">
+                      <span>Case B: Overbidding b_i'' &gt; v_i</span>
+                      <span className="text-[10px] bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded font-mono">b &gt; v</span>
+                    </div>
+                    <div className="font-mono bg-white p-2.5 rounded-lg border border-rose-200 space-y-1 text-slate-800 text-[11px]">
+                      <div>1. If r &lt; v_i &lt; b_i'': Both win and pay r. Payoff = v_i - r.</div>
+                      <div>2. If v_i &lt; r &lt; b_i'': Truthful bid loses (payoff 0). Overbid b_i'' WINS and pays r &gt; v_i (payoff v_i - r &lt; 0)!</div>
+                      <div>3. If v_i &lt; b_i'' &lt; r: Both lose and pay 0.</div>
+                      <div className="text-rose-900 font-bold pt-1 border-t border-rose-200">
+                        Result: π(v_i, r) ≥ π(b_i'', r) for all r, strictly greater if v_i &lt; r &lt; b_i''.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-950">
+                  <strong>Dominance Conclusion:</strong> Bidding b_i = v_i weakly dominates every other feasible bid. The bidder does not need to forecast competitor valuations, the number of rivals, or risk preferences: truthful bidding is universally robust!
+                </div>
+              </div>
+
+              {/* Derivation 2: First-Price Bid Shading ODE */}
+              <div className="border border-slate-200 rounded-xl p-5 bg-white space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-base">
+                      2. Bayesian Nash Equilibrium: First-Price Bid Shading Derivation
+                    </h3>
+                    <p className="text-slate-600 text-xs">
+                      Calculus optimization of winning probability vs. margin under uniform distribution [0, V_max].
+                    </p>
+                  </div>
+                  <span className="text-xs font-mono bg-blue-100 px-2 py-0.5 rounded text-blue-700 font-bold">
+                    b*(v) = [(n-1)/n] · v
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2 text-xs">
+                  <div className="font-bold text-slate-900 flex items-center gap-2">
+                    <span>📐</span> Step-by-Step Optimization Derivation:
+                  </div>
+                  <div className="font-mono text-slate-800 bg-white p-3.5 rounded-lg border border-slate-200 space-y-1.5 text-[11px]">
+                    <div>Let v_i ~ i.i.d. U[0, V_max] with n risk-neutral bidders.</div>
+                    <div>Assume symmetric strictly increasing bidding function b(v). Bidding b wins if b &gt; max_{'{j \\ne i}'} b(v_j) ⟺ v_j &lt; b^{'-1'}(b).</div>
+                    <div>Winning Probability: P_win(b) = [F(b^{'-1'}(b))]^{'{n-1}'} = [b^{'-1'}(b) / V_max]^{'{n-1}'}.</div>
+                    <div className="text-blue-900 font-semibold pt-1">
+                      Expected Profit: max_b  E[Π(b)] = (v - b) · [b^{'-1'}(b) / V_max]^{'{n-1}'}
+                    </div>
+                    <div className="text-slate-500 pt-1">Setting derivative with respect to b to zero and applying symmetry b^{'-1'}(b) = v:</div>
+                    <div>d/db [(v - b) · (v / V_max)^{'{n-1}'}] = 0 ⟺ -(v)^{'{n-1}'} + (v - b) · (n - 1) v^{'{n-2}'} · (dv/db) = 0</div>
+                    <div>Dividing by v^{'{n-2}'}: -v · (db/dv) + (n - 1)(v - b) = 0 ⟺ v · b'(v) + (n - 1) b(v) = (n - 1) v</div>
+                    <div className="text-emerald-700 font-bold text-xs pt-1 border-t border-slate-200">
+                      Integrating with boundary condition b(0) = 0:  b*(v) = [(n - 1) / n] · v
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Derivation 3: Revenue Equivalence Theorem & The Winner's Curse */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div className="border border-slate-200 rounded-xl p-4 bg-white space-y-2">
+                  <div className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                    <span>🏛️</span> Revenue Equivalence Theorem
+                  </div>
+                  <p className="text-slate-600 text-[11px]">
+                    Expected revenue comparison for n bidders ~ U[0, V_max]:
+                  </p>
+                  <div className="font-mono bg-slate-50 p-2.5 rounded border border-slate-200 text-indigo-950 font-bold text-[11px] space-y-1">
+                    <div>E[Rev_SPSB] = E[V_(n-1)] = [(n - 1)/(n + 1)] · V_max</div>
+                    <div>E[Rev_FPSB] = [(n - 1)/n] · E[V_(n)] = [(n - 1)/n] · [n/(n + 1)] · V_max</div>
+                    <div className="text-emerald-700 pt-1 border-t border-slate-200">
+                      E[Rev_SPSB] ≡ E[Rev_FPSB] = [(n - 1)/(n + 1)] · V_max
+                    </div>
+                  </div>
+                  <p className="text-slate-600 text-[10px]">
+                    Fails if bidders are risk averse: First-Price yields strictly higher revenue.
+                  </p>
+                </div>
+
+                <div className="border border-slate-200 rounded-xl p-4 bg-white space-y-2">
+                  <div className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                    <span>⚠️</span> Winner's Curse Conditioning
+                  </div>
+                  <p className="text-slate-600 text-[11px]">
+                    In common values, true asset value is V. Private noisy signal s_i = V + ε_i:
+                  </p>
+                  <div className="font-mono bg-slate-50 p-2.5 rounded border border-slate-200 text-rose-950 font-bold text-[11px] space-y-1">
+                    <div>Naive: E[V | s_i] = s_i</div>
+                    <div className="text-red-700">Adverse Selection: E[V | Winning] = E[V | s_i = max_j s_j] &lt; s_i</div>
+                    <div className="text-emerald-800 pt-1 border-t border-slate-200">
+                      Rational Bid: b*(s_i) = E[V | s_i = max_j s_j] &lt; s_i
+                    </div>
+                  </div>
+                  <p className="text-slate-600 text-[10px]">
+                    Rational bidding accounts for the informative event of winning.
+                  </p>
+                </div>
+              </div>
+
+              {/* Embedded Interactive Simulator */}
+              <div className="border border-slate-200 rounded-xl p-5 bg-white space-y-3">
+                <div className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                  Interactive Mechanism Design & Bidding Calculator
+                </div>
+                <AuctionSimulator />
+              </div>
+            </div>
+          )}
+
           {/* WEEK 6 FORMAL DERIVATIONS */}
           {selectedWeek.id === 6 && (
             <div className="space-y-6">
